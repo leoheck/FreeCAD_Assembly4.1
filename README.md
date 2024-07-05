@@ -1,6 +1,6 @@
 # FreeCAD Assembly 4 workbench
 
-Current version 0.50.13
+Current version 0.50.14
 
 
 ## Overview
@@ -27,9 +27,9 @@ Parts are placed relative to each-other by matching features inside them. Specif
 
 Assembly 4 is available through the FreeCAD Addon Manager (menu **Tools > Addon Manager**). It is called _Assembly4_ in the Addon Repository.
 
-**Important Note:** Assembly 4 needs FreeCAD v0.19 or above. Assembly4 is **not** compatible with FreeCAD v0.18 and before.
+**Important Note:** Assembly 4 needs FreeCAD v0.19 or above, v0.21.1 is recommended
 
-**Important Note:** FreeCAD introduced a [new data format](https://github.com/FreeCAD/FreeCAD/pull/12714) during the 0.22 development cycle that is incompatible with previous FreeCAD versions : if you open a file made with the latest v0.22 development version with stable v0.21, all attachments are irreversibly lost. This is a FreeCAD regression independent from Assembly4.
+**Important Note:** FreeCAD introduced a [change in the data format](https://github.com/FreeCAD/FreeCAD/pull/12714) during the 0.22 development cycle. 
 
 
 ### Manual Installation
