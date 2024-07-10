@@ -9,11 +9,17 @@ import os
 import random as rnd
 
 from PySide import QtGui, QtCore
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP
 import FreeCADGui as Gui
 import FreeCAD as App
 
 import Asm4_libs as Asm4
 import Part
+import Asm4_locator
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 PARTID2CHECK = ['App::Link']
 
@@ -25,8 +31,8 @@ class checkInterference:
 
 
     def GetResources(self):
-        menutext = "Check Intereferences"
-        tooltip  = "Check interferences among assembled objects (may take time)"
+        menutext = _atr("Asm4_checkInterference", "Check Intereferences")
+        tooltip = _atr("Asm4_checkInterference", "Check interferences among assembled objects (may take time)")
         iconFile = os.path.join(Asm4.iconPath, 'Asm4_Interference_Check.svg')
         return {
             "MenuText": menutext,
@@ -70,13 +76,13 @@ class checkInterference:
 
         # build the list of objects to consider
         self.partList = []
-        print("\n>> BUILDING PART LIST ...")
+        print(_atr("Asm4_checkInterference", "\n>> BUILDING PART LIST ..."))
         for obj in self.assembly.Group:
             if obj.Visibility and obj.TypeId in PARTID2CHECK :
                 obj_cpy = self.make_shape_copy( self.modelDoc, obj )
                 self.ShapesCopy.addObject( obj_cpy )
                 self.partList.append( obj_cpy )
-        print( "FOUND {} OBJECTS\n".format(len(self.partList)) )
+        print(_atr("Asm4_checkInterference", "FOUND {} OBJECTS\n").format(len(self.partList)))
         self.modelDoc.recompute()
         Gui.updateGui()
 
@@ -85,7 +91,7 @@ class checkInterference:
             self.assembly.Visibility = False
             self.parse_interferences( self.modelDoc )
             # Update intersections (remove empty and change colors)
-            print("\n>> PROCESSING INTERSECTIONS ... ")
+            print(_atr("Asm4_checkInterference", "\n>> PROCESSING INTERSECTIONS ... "))
             hasConflict = False
             for obj in self.ConflictsGroup.Group:
                 if obj.TypeId == "Part::MultiCommon" :
@@ -99,12 +105,12 @@ class checkInterference:
                     else:
                         self.modelDoc.removeObject(obj.Name)
         else:
-            print('Not enough parts for intersections\n')
+            print(_atr("Asm4_checkInterference", 'Not enough parts for intersections\n'))
         # Summary
         if hasConflict:
-            print("DONE. \nThere seems to be some conflicts between parts\n")
+            print(_atr("Asm4_checkInterference", "DONE. \nThere seems to be some conflicts between parts\n"))
         else:
-            print("DONE. No conflicts found\n")
+            print(_atr("Asm4_checkInterference", "DONE. No conflicts found\n"))
         self.modelDoc.recompute()
         Gui.updateGui()
 

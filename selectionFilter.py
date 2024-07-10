@@ -10,9 +10,16 @@ from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP, translate
 
+global Asm4_icon, Asm4_path, Asm4_trans
 import Asm4_libs as Asm4
+import Asm4_locator
 
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 global Asm4_3DselObserver
 Asm4_3DselObserver = None
@@ -35,8 +42,8 @@ Asm4_3DselObserver = None
 """
 class selectionFilterClearCmd:
     def GetResources(self):
-        return {"MenuText": "Clear all selection filters",
-                "ToolTip": "Clear all selection filters",
+        return {"MenuText": translate("Asm4_selectionFilter", "Clear all selection filters"),
+                "ToolTip": translate("Asm4_selectionFilter", "Clear all selection filters"),
                 "Pixmap" : os.path.join( Asm4.iconPath , 'Asm4_SelectionAll.svg')
                 }
     def IsActive(self):
@@ -46,13 +53,13 @@ class selectionFilterClearCmd:
         Gui.Selection.removeSelectionGate()
         observerDisable()
         uncheckAll()
-        FCC.PrintMessage("All selection filters cleared\n")
+        FCC.PrintMessage(translate("Asm4_selectionFilter", "All selection filters cleared\n"))
 
 
 class selectionFilterVertexCmd:
     def GetResources(self):
-        return {"MenuText": "Select only Vertices",
-                "ToolTip": "Select only Vertices",
+        return {"MenuText": translate("Asm4_selectionFilter", "Select only Vertices"),
+                "ToolTip": translate("Asm4_selectionFilter", "Select only Vertices"),
                 "Pixmap" : os.path.join( Asm4.iconPath , 'Snap_Vertex.svg')
                 }
     def IsActive(self):
@@ -68,8 +75,8 @@ class selectionFilterVertexCmd:
 
 class selectionFilterEdgeCmd:
     def GetResources(self):
-        return {"MenuText": "Select only Edges",
-                "ToolTip": "Select only Edges",
+        return {"MenuText": translate("Asm4_selectionFilter", "Select only Edges"),
+                "ToolTip": translate("Asm4_selectionFilter", "Select only Edges"),
                 "Pixmap" : os.path.join( Asm4.iconPath , 'Snap_Edge.svg')
                 }
     def IsActive(self):
@@ -85,8 +92,8 @@ class selectionFilterEdgeCmd:
 
 class selectionFilterFaceCmd:
     def GetResources(self):
-        return {"MenuText": "Select only Faces",
-                "ToolTip": "Select only Faces",
+        return {"MenuText": translate("Asm4_selectionFilter", "Select only Faces"),
+                "ToolTip": translate("Asm4_selectionFilter", "Select only Faces"),
                 "Pixmap" : os.path.join( Asm4.iconPath , 'Snap_Face.svg')
                 }
     def IsActive(self):
@@ -170,10 +177,10 @@ class selObserver3DViewCmd( QtGui.QDialog):
         Asm4_3DselObserver = None
 
     def GetResources(self):
-        return {"MenuText": "Enable/Disable 3D View selection mode",
-                "ToolTip": "Enable/Disable 3D View selection mode\n\n"    + \
+        return {"MenuText": translate("Asm4_selectionFilter", "Enable/Disable 3D View selection mode"),
+                "ToolTip": translate("Asm4_selectionFilter", "Enable/Disable 3D View selection mode\n\n"    + \
                 "Allows to select a Link object in the 3D view\n" + \
-                "window instead of the Model tree",
+                "window instead of the Model tree"),
                 "Pixmap" : os.path.join( Asm4.iconPath , 'Asm4_enableLinkSelection.svg')
                 }
 
@@ -233,7 +240,7 @@ def observerEnable():
     # add the listener, 0 forces to resolve the links
     Gui.Selection.addObserver(Asm4_3DselObserver, 0)
     setButton(3,True)
-    FCC.PrintMessage("Asm4 3D view selection mode is now ENABLED\n")
+    FCC.PrintMessage(translate("Asm4_selectionFilter", "Asm4 3D view selection mode is now ENABLED\n"))
 
 
 def observerDisable():
@@ -242,7 +249,7 @@ def observerDisable():
     setButton(3,False)
     # only print to Console if the Asm4_3DselObserver was there
     if Asm4_3DselObserver:
-        FCC.PrintMessage("Asm4 3D view selection mode is now DISABLED\n")
+        FCC.PrintMessage(translate("Asm4_selectionFilter", "Asm4 3D view selection mode is now DISABLED\n"))
     Asm4_3DselObserver = None
 
 

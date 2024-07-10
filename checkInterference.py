@@ -15,6 +15,7 @@ import time
 from timeit import default_timer as timer
 
 from PySide import QtGui, QtCore
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP
 
 import FreeCADGui as Gui
 import FreeCAD as App
@@ -22,6 +23,11 @@ import FreeCAD as App
 import Asm4_libs as Asm4
 import showHideLcsCmd as lcs
 import Part
+import Asm4_locator
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 class checkInterference:
 
@@ -30,8 +36,8 @@ class checkInterference:
 
 
     def GetResources(self):
-        menutext = "Check Intereferences"
-        tooltip  = "Check interferences among assembled objects (may take time)"
+        menutext = _atr("Asm4_checkInterference", "Check Intereferences")
+        tooltip = _atr("Asm4_checkInterference", "Check interferences among assembled objects (may take time)")
         iconFile = os.path.join(Asm4.iconPath, 'Asm4_Interference_Check.svg')
         return {
             "MenuText": menutext,
@@ -447,7 +453,7 @@ class checkInterference:
         self.min_volume_allowed = float(self.min_volume_input.text())
         self.log_write("Minimum interference volume = {}".format(self.min_volume_allowed))
         self.enable_elements(False)
-        self.cancel_abort_button.setText("Abort")
+        self.cancel_abort_button.setText(_atr("Asm4_checkInterference", "Abort"))
         self.Assembly = Asm4.getAssembly()
         self.progress_bar_reset()
         self.remove_interference_folder()
@@ -458,7 +464,7 @@ class checkInterference:
         self.processing = False
         self.abort_processing = False
         self.enable_elements(True)
-        self.cancel_abort_button.setText("Close")
+        self.cancel_abort_button.setText(_atr("Asm4_checkInterference", "Close"))
         self.Assembly.recompute()
 
 
@@ -521,16 +527,19 @@ class checkInterference:
     def drawUI(self):
 
         # Main Window (QDialog)
-        self.UI.setWindowTitle('Interference Checks')
+        self.UI.setWindowTitle( _atr("Asm4_checkInterference", 'Interference Checks'))
         self.UI.setWindowIcon(QtGui.QIcon(os.path.join(Asm4.iconPath , 'FreeCad.svg')))
         self.UI.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.UI.setModal(False)
         self.main_layout = QtGui.QVBoxLayout(self.UI)
 
         # Checkboxes
-        self.touching_faces_checkbox = QtGui.QCheckBox("Allow faces touching")
-        self.include_fasteners_checkbox = QtGui.QCheckBox("Include fasteners")
-        self.verbose_checkbox = QtGui.QCheckBox("Verbose")
+        self.touching_faces_checkbox = QtGui.QCheckBox(
+            _atr("Asm4_checkInterference", "Allow faces touching"))
+        self.include_fasteners_checkbox = QtGui.QCheckBox(
+            _atr("Asm4_checkInterference", "Include fasteners"))
+        self.verbose_checkbox = QtGui.QCheckBox(
+            _atr("Asm4_checkInterference", "Verbose"))
         self.touching_faces_checkbox.setChecked(True)
         self.include_fasteners_checkbox.setChecked(False)
         self.verbose_checkbox.setChecked(False)
@@ -539,7 +548,7 @@ class checkInterference:
         self.verbose_checkbox.stateChanged.connect(self.on_verbosity)
 
         self.form_layout = QtGui.QFormLayout()
-        self.min_volume_label = QtGui.QLabel("Minimum interference volume:")
+        self.min_volume_label = QtGui.QLabel(_atr("Asm4_checkInterference", "Minimum interference volume:"))
         self.min_volume_input = QtGui.QLineEdit()
         self.min_volume_input.setFixedWidth(10)
         self.min_volume_input.setText(str(self.min_volume_allowed))
@@ -577,19 +586,19 @@ class checkInterference:
         self.button_layout = QtGui.QHBoxLayout()
 
         # Delete Interferences folder
-        self.clear_button = QtGui.QPushButton('Clear Checks')
+        self.clear_button = QtGui.QPushButton(_atr("Asm4_checkInterference", 'Clear Checks'))
         self.clear_button.setDefault(True)
         self.button_layout.addWidget(self.clear_button)
         self.main_layout.addLayout(self.button_layout)
 
         # Start button
-        self.check_button = QtGui.QPushButton('Check Interferences')
+        self.check_button = QtGui.QPushButton(_atr("Asm4_checkInterference", 'Check Interferences'))
         self.check_button.setDefault(True)
         self.button_layout.addWidget(self.check_button)
         self.main_layout.addLayout(self.button_layout)
 
         # Cancel button
-        self.cancel_abort_button = QtGui.QPushButton('Cancel')
+        self.cancel_abort_button = QtGui.QPushButton(_atr("Asm4_checkInterference", 'Cancel'))
         self.cancel_abort_button.setDefault(True)
         self.button_layout.addWidget(self.cancel_abort_button)
         self.main_layout.addLayout(self.button_layout)

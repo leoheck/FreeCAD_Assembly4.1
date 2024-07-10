@@ -12,9 +12,15 @@ import re
 from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP, translate
 
 import Asm4_libs as Asm4
 import infoPartCmd
+import Asm4_locator
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 #import infoKeys
 #All infor from infoKeys is process by infoPartCmd shouldn't need to
 
@@ -66,12 +72,12 @@ class makeBOM:
     def GetResources(self):
 
         if self.follow_subassemblies == True:
-            menutext = "Bill of Materials"
-            tooltip  = "Create the Bill of Materials of the Assembly including sub-assemblies"
+            menutext = translate("Asm4_makeBOM", "Bill of Materials")
+            tooltip  = translate("Asm4_makeBOM", "Create the Bill of Materials of the Assembly including sub-assemblies")
             iconFile = os.path.join( Asm4.iconPath, 'Asm4_PartsList_Subassemblies.svg' )
         else:
-            menutext = "Local Bill of Materials"
-            tooltip  = "Create the Bill of Materials of the Assembly"
+            menutext = translate("Asm4_makeBOM", "Local Bill of Materials")
+            tooltip  = translate("Asm4_makeBOM", "Create the Bill of Materials of the Assembly")
             iconFile = os.path.join( Asm4.iconPath, 'Asm4_PartsList.svg' )
 
         return {
@@ -96,13 +102,13 @@ class makeBOM:
 
         try:
             self.model = self.modelDoc.Assembly
-            print("ASM4> BOM of the Assembly 4 Model")
+            print(translate("Asm4_makeBOM", "ASM4> BOM of the Assembly 4 Model"))
         except:
             try:
                 self.model = self.modelDoc.Model
-                print("ASM4> BOM of the legacy Assembly 4 Model")
+                print(translate("Asm4_makeBOM", "ASM4> BOM of the legacy Assembly 4 Model"))
             except:
-                print("ASM4> BOM might not work with this file")
+                print(translate("Asm4_makeBOM", "ASM4> BOM might not work with this file"))
 
         self.drawUI()
         self.UI.show()
@@ -112,9 +118,9 @@ class makeBOM:
         self.BomKeyForAutoFillList = {}
 
         if self.follow_subassemblies == True:
-            print("ASM4> BOM following sub-assemblies")
+            print(translate("Asm4_makeBOM", "ASM4> BOM following sub-assemblies"))
         else:
-            print("ASM4> BOM local parts only")
+            print(translate("Asm4_makeBOM", "ASM4> BOM local parts only"))
 
         # This recursive routine goes through the Bom to find parts making up the
         # Assembly it then runs the Autofill to make sure that values than can be automatically applied are
@@ -184,7 +190,7 @@ class makeBOM:
             pass #This should be fine
 
         else:
-            print ("Nothing Applied")
+            print (translate("Asm4_makeBOM", "Nothing Applied"))
         #===================================
         # Continue walking inside the groups
         #=====  ==============================
@@ -223,7 +229,7 @@ class makeBOM:
             self.BomKeyList = {}
 
 
-        print ("-------------------------------------------------- remove after debugging")
+        print (translate("Asm4_makeBOM", "-------------------------------------------------- remove after debugging"))
         print (obj.TypeId)
         print (obj.Label)
         #=======================
@@ -293,13 +299,13 @@ class makeBOM:
                         qtd = self.BomKeyList[BomKey]['Qty.'] + 1
                         print("ASM4> {level}{qtd}x | {obj_typeid} | {obj_name} | {obj_label}".format(level=self.indent(level, tag=" "), obj_label=obj.Label, obj_name=obj.FullName, obj_typeid=obj.TypeId, qtd=qtd))
                         self.Verbose += "> {level} | {type}: {label}, {fullname}\n".format(level=obj.Label, type="PART", label=obj.Label, fullname=obj.FullName)
-                        self.Verbose += "- object already added (" + str(qtd) + ")\n\n"
+                        self.Verbose += translate("Asm4_makeBOM", "- object already added (") + str(qtd) + ")\n\n"
                         self.BomKeyList[BomKey]['Qty.'] = qtd
 
                 else:
                     print("ASM4> {level}1x | {obj_typeid} | {obj_name} | {obj_label}".format(level=self.indent(level, tag=" "), obj_label=obj.Label, obj_name=obj.FullName, obj_typeid=obj.TypeId))
                     self.Verbose += "> {level} | {type}: {label}, {fullname}\n".format(level=obj.Label, type="PARTDESIGN", label=obj.Label, fullname=obj.FullName)
-                    self.Verbose += "- adding object (1)\n"
+                    self.Verbose += translate("Asm4_makeBOM", "- adding object (1)\n")
                     self.BomKeyList[BomKey] = dict()
 
                     for prop in self.infoKeysUser:
@@ -316,7 +322,7 @@ class makeBOM:
                                 data = getattr(obj,prop,"-")
 
                         except Exception as e:
-                            data = "todo Remove after debug" + str(e)
+                            data = translate("Asm4_makeBOM", "todo Remove after debug") + str(e)
 
                         if data != "-":
                             self.Verbose += data + '\n'
@@ -356,14 +362,14 @@ class makeBOM:
                         qtd = self.BomKeyList[BomKey]['Qty.'] + 1
                         print("ASM4> {level}| {qtd}x | {obj_typeid} | {obj_name} | {obj_label}".format(level=self.indent(level, tag=" "), obj_label=obj_label, obj_name=obj.FullName, obj_typeid=obj.TypeId, qtd=qtd))
                         self.Verbose += "> {level} | {type}: {label}, {fullname}\n".format(level=obj_label, type="FASTENER", label=obj_label, fullname=obj.FullName)
-                        self.Verbose += "- object already added (" + str(qtd) + ")\n\n"
+                        self.Verbose += translate("Asm4_makeBOM", "- object already added (") + str(qtd) + ")\n\n"
                         self.BomKeyList[BomKey]['Qty.'] = qtd
 
                 else: # if the part is a was not added already
                     print("ASM4> {level}| 1x | {obj_typeid} | {obj_name} | {obj_label}".format(level=self.indent(level, tag=" "), obj_label=obj_label, obj_name=obj.FullName, obj_typeid=obj.TypeId))
 
                     self.Verbose += "> {level} | {type}: {label}, {fullname}\n".format(level=obj_label, type="FASTENER", label=obj_label, fullname=obj.FullName)
-                    self.Verbose += "- adding object (1)\n"
+                    self.Verbose += translate("Asm4_makeBOM", "- adding object (1)\n")
 
                     self.BomKeyList[obj_label] = dict()
                     for prop in self.infoKeysUser:
@@ -398,7 +404,7 @@ class makeBOM:
                     self.BomKeyList[BomKey]['Qty.'] = 1
                     self.Verbose += '\n'
         else:
-            print ("Nothing Applied")
+            print (translate("Asm4_makeBOM", "Nothing Applied"))
 
         # else:
             # print("@", obj.TypeId)
@@ -422,7 +428,7 @@ class makeBOM:
 
         return
 
-        self.Verbose += '\nBOM creation is done\n'
+        self.Verbose += translate("Asm4_makeBOM", '\nBOM creation is done\n')
 
     # Copy Parts list to Spreadsheet
     def inSpreadsheet(self):
@@ -464,7 +470,7 @@ class makeBOM:
 
         document.recompute()
 
-        self.Verbose += "\n" + spreadsheet.Label + ' spreadsheet was created.\n'
+        self.Verbose += "\n" + spreadsheet.Label + translate("Asm4_makeBOM", ' spreadsheet was created.\n')
 
 
     def onOK(self):
@@ -478,7 +484,7 @@ class makeBOM:
     # Define the UI (static elements, only)
     def drawUI(self):
         # Main Window (QDialog)
-        self.UI.setWindowTitle('Parts List (BOM)')
+        self.UI.setWindowTitle(translate("Asm4_makeBOM", 'Parts List (BOM)'))
         self.UI.setWindowIcon(QtGui.QIcon(os.path.join(Asm4.iconPath , 'FreeCad.svg')))
         self.UI.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.UI.setModal(False)
@@ -486,9 +492,9 @@ class makeBOM:
 
         # Help and Log
         self.LabelBOML1 = QtGui.QLabel()
-        self.LabelBOML1.setText('BOM generates bill of materials.\n\nIt uses the Parts\' info to generate entries on BOM, unless autofill is set.\n')
+        self.LabelBOML1.setText(translate("Asm4_makeBOM", 'BOM generates bill of materials.\n\nIt uses the Parts\' info to generate entries on BOM, unless autofill is set.\n'))
         self.LabelBOML2 = QtGui.QLabel()
-        self.LabelBOML2.setText("Check <a href='https://github.com/Zolko-123/FreeCAD_Assembly4/tree/master/Examples/ConfigBOM/README.md'>BOM tutorial</a>")
+        self.LabelBOML2.setText(translate("Asm4_makeBOM", "Check <a href='https://github.com/Zolko-123/FreeCAD_Assembly4/tree/master/Examples/ConfigBOM/README.md'>BOM tutorial</a>"))
         self.LabelBOML2.setOpenExternalLinks(True)
         self.LabelBOML3 = QtGui.QLabel()
         self.LabelBOML3.setText('\n\nReport:')
@@ -506,7 +512,7 @@ class makeBOM:
         self.buttonLayout = QtGui.QHBoxLayout()
 
         # OK button
-        self.OkButton = QtGui.QPushButton('OK')
+        self.OkButton = QtGui.QPushButton(translate("Asm4_makeBOM", 'OK'))
         self.OkButton.setDefault(True)
         self.buttonLayout.addWidget(self.OkButton)
         self.mainLayout.addLayout(self.buttonLayout)

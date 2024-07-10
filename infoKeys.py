@@ -9,7 +9,14 @@
 
 import os, json
 import Asm4_libs as Asm4
+import FreeCADGui as Gui
 import FreeCAD as App
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP, translate
+import Asm4_locator
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 
 #UserAdded fields and routines should be defined  this is file.
@@ -28,7 +35,7 @@ partInfoUserAdded = [
 '''
 
 infoToolTipUserAdded ={
-'FileName': 'File Name'}
+'FileName': translate("Asm4_InfoPart", 'File Name')}
 '''
     'DrawnBy': 'Drawn By',
     'DrawnDate': 'Drawn Date',
@@ -52,7 +59,7 @@ def AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, singleBod
     else:
 
         #The parts list will still generate from functions within infopartcmd
-        raise NotImplementedError("Function not implemented yet")
+        raise NotImplementedError(translate("Asm4_InfoPart", "Function not implemented yet"))
 
 
 
@@ -87,8 +94,8 @@ def jtCustomizations(part, doc, singleBodyOfPart):
     part.DrawingName = base_part_id
     part.DrawingRevision = revision
 
-    print("Base Part ID:", base_part_id)
-    print("Revision:", revision)
+    print(translate("Asm4_InfoPart", "Base Part ID:"), base_part_id)
+    print(translate("Asm4_InfoPart", "Revision:"), revision)
 
     # Todo in my business rules base_part_id should be the PartID unless there are multiple parts in the drawing.
     # in that case the base_part_id should be prepended by a :1 :2 .etc
@@ -135,7 +142,7 @@ def jtCustomizations(part, doc, singleBodyOfPart):
         if singleBodyOfPart is not None:
             part.PartDescription = singleBodyOfPart.Label
         else:
-            part.PartDescription ="Multi Body Part(Not implemented)"
+            part.PartDescription = translate("Asm4_InfoPart", "Multi Body Part(Not implemented)")
     part.PartID = partIdtoAdd
 
 

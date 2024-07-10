@@ -16,8 +16,11 @@ import FreeCAD as App
 
 import Asm4_libs as Asm4
 from Asm4_Translate import translate
-
-
+import Asm4_locator
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 class newAssemblyCmd:
     """
@@ -39,7 +42,7 @@ def makeAssembly():
     def GetResources(self):
         tooltip  = translate("Commands", "<p>Create a new Assembly container</p>")
         iconFile = os.path.join( Asm4.iconPath , 'Asm4_Model.svg')
-        return {"MenuText": "New Assembly", "ToolTip": tooltip, "Pixmap" : iconFile }
+        return {"MenuText": translate("Asm4_newAssembly", "New Assembly"), "ToolTip": tooltip, "Pixmap" : iconFile }
 
 
     def IsActive(self):
@@ -56,13 +59,13 @@ def makeAssembly():
         assy = Asm4.getAssembly()
         if assy is not None:
             if assy.TypeId=='App::Part':
-                message = "This document already contains a valid Assembly, please use it"
+                message = translate("Asm4_newAssembly", "This document already contains a valid Assembly, please use it")
                 Asm4.warningBox(message)
                 # set the Type to Assembly
                 assy.Type = 'Assembly'
             else:
-                message  = "This document already contains another FreeCAD object called \"Assembly\", "
-                message += "but it's of type \""+assy.TypeId+"\", unsuitable for an assembly. I can\'t proceed."
+                message  = translate("Asm4_newAssembly", "This document already contains another FreeCAD object called \"Assembly\", " + \
+                "but it's of type \""+assy.TypeId+"\", unsuitable for an assembly. I can\'t proceed.")
                 Asm4.warningBox(message)
             # abort
             return
@@ -110,7 +113,7 @@ def makeAssembly():
                 if obj.TypeId in Asm4.containerTypes and obj.Name!='Assembly' and obj.getParentGeoFeatureGroup() is None:
                     partsGroup.addObject(obj)
         else:
-            Asm4.warningBox( 'There seems to already be a Parts object, you might get unexpected behaviour' )
+            Asm4.warningBox( translate("Asm4_newAssembly", 'There seems to already be a Parts object, you might get unexpected behaviour') )
 
         # recompute to get rid of the small overlays
         assembly.recompute()

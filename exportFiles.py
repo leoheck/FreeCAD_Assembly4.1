@@ -24,11 +24,17 @@ import os, json, re, zipfile
 
 
 from PySide import QtGui, QtCore
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP
 import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
 import Asm4_libs as Asm4
+import Asm4_locator
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 '''
 has_anytree = False
@@ -43,10 +49,10 @@ except ImportError:
 class listLinkedFiles():
 
     def GetResources(self):
-        menutext = "Structure tree of the assembly"
-        tooltip  = "<p>Show the hierarchical tree structure of parts and sub-assemblies in the assembly. "
-        tooltip += "The tree is displayed with ASCII art</p>"
-        tooltip += "<p><b>Usage</b>: select an entity and click the command</p>"
+        menutext = _atr("Asm4_Export", "Tree of Linked Files")
+        tooltip = _atr("Asm4_Export", "<p>Show the hierarchical tree structure of parts in the selected container. "
+                       + "The tree is displayed with ASCII art</p>"
+                       + "<p><b>Usage</b>: select an entity and click the command</p>")
         iconFile = os.path.join(Asm4.iconPath, 'Asm4_List_Liked_Files_Tree.svg')
         return {
             "MenuText": menutext,
@@ -93,7 +99,7 @@ class listLinkedFiles():
         elif Asm4.getAssembly():
             objects = [ Asm4.getAssembly() ]
         else:
-            FCC.PrintWarning("Oups, you shouldn't see this message, something went wrong")
+            FCC.PrintWarning(_atr("Asm4_Export", "Oups, you shouldn't see this message, something went wrong"))
         # get the directory path of the selected object
         filename = objects[0].Document.Name
         self.root_path = objects[0].Document.FileName.partition(filename)[0]
@@ -163,7 +169,7 @@ class listLinkedFiles():
         """Copies ASCII tree to clipboard"""
         self.tree_view.selectAll()
         self.tree_view.copy()
-        self.tree_view.setPlainText("Copied to clipboard")
+        self.tree_view.setPlainText(_atr("Asm4_Export", "Copied to clipboard"))
         QtCore.QTimer.singleShot(3000, lambda:self.tree_view.setPlainText(self.ascii_tree))
 
 
@@ -172,7 +178,7 @@ class listLinkedFiles():
         # Our main window will be a QDialog
         # make this dialog stay above the others, always visible
         self.UI.setWindowFlags( QtCore.Qt.WindowStaysOnTopHint )
-        self.UI.setWindowTitle('Tree structure of the selected object')
+        self.UI.setWindowTitle(_atr("Asm4_Export", 'Tree structure of the selected object'))
         self.UI.setWindowIcon( QtGui.QIcon( os.path.join( Asm4.iconPath , 'FreeCad.svg' ) ) )
         self.UI.setMinimumWidth(470)
         self.UI.resize(470,300)
@@ -189,10 +195,10 @@ class listLinkedFiles():
         f.setStyleHint(QtGui.QFont.Monospace);
         self.tree_view.setFont(f);
         button_box = QtGui.QDialogButtonBox()
-        copy_clip_but = QtGui.QPushButton("Copy to clipboard", button_box)
+        copy_clip_but = QtGui.QPushButton(_atr("Asm4_Export", "Copy to clipboard"), button_box)
         button_box.addButton(copy_clip_but, QtGui.QDialogButtonBox.ActionRole)
         #button_box.addStretch()
-        close_dlg_but = QtGui.QPushButton("Close", button_box)
+        close_dlg_but = QtGui.QPushButton(_atr("Asm4_Export", "Close"), button_box)
         button_box.addButton(close_dlg_but, QtGui.QDialogButtonBox.RejectRole)
         #button_box.addButton(QtGui.QDialogButtonBox.Close)
         #button_box.button(QtGui.QDialogButtonBox.Close).setDefault(True)

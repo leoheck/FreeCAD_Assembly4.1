@@ -9,11 +9,17 @@ import os
 import random as rnd
 
 from PySide import QtGui, QtCore
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP
 import FreeCADGui as Gui
 import FreeCAD as App
 
 import Asm4_libs as Asm4
 import Part
+import Asm4_locator
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 class checkInterference:
 
@@ -21,8 +27,8 @@ class checkInterference:
         super(checkInterference, self).__init__()
 
     def GetResources(self):
-        menutext = "Check Intereferences"
-        tooltip  = "Check interferences among assembled objects (may take time)"
+        menutext = _atr("Asm4_checkInterference", "Check Intereferences")
+        tooltip = _atr("Asm4_checkInterference", "Check interferences among assembled objects (may take time)")
         iconFile = os.path.join(Asm4.iconPath, 'Asm4_Interference_Check.svg')
         return {
             "MenuText": menutext,
@@ -140,7 +146,7 @@ class checkInterference:
         self.modelDoc.recompute()
         Gui.updateGui()
 
-        print("\n>> USED PARTS:")
+        print(_atr("Asm4_checkInterference", "\n>> USED PARTS:"))
         for p, part in enumerate(checked_dict):
             print("  ", p+1, part)
         print("")
@@ -183,11 +189,11 @@ class checkInterference:
         try:
             if obj.Shape:
                 try:
-                    print("{} | Collision detected".format(obj.Label))
+                    print(_atr("Asm4_checkInterference", "{} | Collision detected").format(obj.Label))
                     if obj.Shape.Volume > 0.0:
                         return False
                     else:
-                        print("{} | Touching faces (REMOVING)".format(obj.Label))
+                        print(_atr("Asm4_checkInterference", "{} | Touching faces (REMOVING)").format(obj.Label))
                         for shape in obj.Shapes:
                             self.modelDoc.removeObject(shape.Name)
                         self.modelDoc.removeObject(obj.Name)

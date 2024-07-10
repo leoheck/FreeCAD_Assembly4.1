@@ -4,15 +4,19 @@
 # showHideLcsCmd.py
 
 import os
+import Asm4_locator
 
 import FreeCADGui as Gui
 import FreeCAD as App
 
 import Asm4_libs as Asm4
 from Asm4_Translate import translate
+global Asm4_icon, Asm4_path, Asm4_trans
 
-
-
+Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Gui.addLanguagePath(Asm4_trans)
+Gui.updateLocale()
 
 """
     +-----------------------------------------------+
