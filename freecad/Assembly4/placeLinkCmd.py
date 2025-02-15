@@ -58,15 +58,15 @@ class placeLinkCmd:
                 ):
                     return True
 
-                elif obj.TypeId != "App:Link":
+                else:
                     direct_parent = Asm4.getDirectParent()
                     if direct_parent and direct_parent is not root:
-                        Gui.Selection.clearSelection()
-                        Gui.Selection.addSelection(
-                            App.ActiveDocument.Name, direct_parent.Name
-                        )
-                        obj = Gui.Selection.getSelection()[0]
-                        return True
+                        if (
+                            hasattr(obj, "Placement")
+                            and obj.getTypeIdOfProperty("Placement")
+                            == "App::PropertyPlacement"
+                        ):
+                            return True
 
         return False
 
@@ -145,33 +145,40 @@ class placeLinkCmd:
                                     Gui.Control.showDialog(ui)
                         # the selected object doesn't belong to the root assembly
                         else:
+                            # update selection with the direct parent
+                            direct_parent = Asm4.getDirectParent()
+                            Gui.Selection.clearSelection()
+                            Gui.Selection.addSelection(
+                                App.ActiveDocument.Name, direct_parent.Name
+                            )
+                            selection = Gui.Selection.getSelection()[0]
+                            parent = selection.getParentGeoFeatureGroup()
 
-                            # update selection if something inside the containers/link is selected
-                            # specially when selecting objects by clicking in 3d model
-                            if selection.TypeId != "App:Link":
-                                direct_parent = Asm4.getDirectParent()
-                                Gui.Selection.clearSelection()
-                                Gui.Selection.addSelection(
-                                    App.ActiveDocument.Name, direct_parent.Name
-                                )
-                                selection = direct_parent
-                                # selection = Gui.Selection.getSelection()[0]
-
+                            if parent and parent == Asm4.getAssembly():
+                                # if it's a valid assembly and part
                                 if Asm4.isAsm4EE(selection):
-                                    # launch the UI in the task panel
-                                    ui = placePartUI()
-                                    Gui.Control.showDialog(ui)
-                                else:
-                                    Asm4.warningBox(
-                                        "Please select an object in the assembly Model."
-                                    )
-
+                                    # BUGFIX: if the part was corrupted by Assembly4 v0.11.5:
+                                    if hasattr(selection, "MapMode"):
+                                        Asm4.warningBox(
+                                            "This Part has the Attachment extension, it can only be placed manually"
+                                        )
+                                    else:
+                                        # launch the UI in the task panel
+                                        ui = placeLinkUI()
+                                        Gui.Control.showDialog(ui)
+                            # else try to convert it
                             else:
-                                Asm4.warningBox(
-                                    "Please select an object in the assembly Model."
+                                convert = Asm4.confirmBox(
+                                    "This Part wasn't assembled with this Assembly4 WorkBench, but I can convert it."
                                 )
-
-                            return
+                                if convert:
+                                    Asm4.makeAsmProperties(selection, reset=True)
+                                    # launch the UI in the task panel
+                                    ui = placeLinkUI()
+                                    Gui.Control.showDialog(ui)
+                else:
+                    Asm4.warningBox("Please select an object in the assembly Model.")
+        return
 
 
 """
