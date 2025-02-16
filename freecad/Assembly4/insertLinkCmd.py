@@ -43,6 +43,7 @@ class insertLink:
         iconFile = "Link_Part.svg"
         return {
             "MenuText": "Insert Part",
+            "Accel": "i",
             "ToolTip": tooltip,
             "Pixmap": os.path.join(Asm4.iconPath, iconFile),
         }

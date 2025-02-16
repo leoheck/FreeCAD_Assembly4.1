@@ -47,7 +47,20 @@ class newPart:
             self.icon = os.path.join(Asm4.iconPath, "Asm4_Group.svg")
 
     def GetResources(self):
-        return {"MenuText": self.menutext, "ToolTip": self.tooltip, "Pixmap": self.icon}
+
+        if self.partName == "Part":
+            acell = "p"
+        elif self.partName == "Body":
+            acell = "b"
+        elif self.partName == "Group":
+            acell = "g"
+
+        return {
+            "MenuText": self.menutext,
+            "Accel": acell,
+            "ToolTip": self.tooltip,
+            "Pixmap": self.icon,
+        }
 
     def IsActive(self):
         if App.ActiveDocument:
