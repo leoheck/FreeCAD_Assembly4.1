@@ -11,15 +11,14 @@ import os
 import json
 
 from PySide import QtGui, QtCore
+from Asm4_Translate import _atr, QT_TRANSLATE_NOOP
 import FreeCADGui as Gui
 import FreeCAD as App
 
 import Asm4_libs as Asm4
 
 from AnimationLib import animationProvider
-
-
-
+import Asm4_locator
 
 
 """
@@ -44,10 +43,9 @@ class animationPlotter():
 
 
     def GetResources(self):
-        tooltip  = "Plot trajectories of Points"
-        tooltip += "\n\nOnly visible Datum Points are shown"
+        tooltip  = App.Qt.translate("Asm4_Plot", "Plot trajectories of Points\n\nOnly visible Datum Points are shown")
         iconFile = os.path.join( Asm4.iconPath, 'Asm4_PartsList.svg' )
-        return {"MenuText": "Plot Animation", "ToolTip": tooltip, "Pixmap": iconFile }
+        return {"MenuText": App.Qt.translate("Asm4_Plot", "Plot Animation"), "ToolTip": tooltip, "Pixmap": iconFile }
 
 
     #def Activated(self):
@@ -63,7 +61,7 @@ class animationPlotter():
             try:
                 self.model = self.modelDoc.Assembly
             except:
-                print("Unrecognized assembly type, this might not work")
+                print(App.Qt.translate("Asm4_Plot", "Unrecognized assembly type, this might not work"))
         # get the Variables holder
         try : 
             self.Variables = self.model.getObject('Variables')
@@ -71,22 +69,22 @@ class animationPlotter():
             self.varName = str(self.animProvider.varList.currentText())
             self.varVal = self.Variables.getPropertyByName(self.varName)
         except :
-            print("This Model deosn't seem to have compatible Variables")
+            print(App.Qt.translate("Asm4_Plot", "This Model deosn't seem to have compatible Variables"))
             return
 
         # show initially the UI
         self.drawUI()
         self.UI.show()
         self.CSV.clear()
-        csvtext = '# Running animation sequence on variable \"'+self.varName+'\", please wait... \n'
+        csvtext = App.Qt.translate("Asm4_Plot", '# Running animation sequence on variable \"')+self.varName+App.Qt.translate("Asm4_Plot", '\", please wait... \n')
         self.CSV.setPlainText(csvtext)
         Gui.updateGui()
         
         # Datum points to be plotted
         self.plotPoints = self.getPoints()
         # Title of the CSV document
-        title = '# CVS output'
-        header1 = 'Iter;Variable;'
+        title = App.Qt.translate("Asm4_Plot", '# CVS output')
+        header1 = App.Qt.translate("Asm4_Plot", 'Iter;Variable;')
         header2 = ' # ;' +self.varName+ ';'
         for i in range(self.nbPts):
             pt = self.plotPoints[i]
@@ -97,7 +95,7 @@ class animationPlotter():
         self.CSV.appendPlainText(header2)
         # Calculate all the trajectories
         trajectories = self.grabFrames(self.plotPoints, True)
-        self.CSV.appendPlainText('Finished '+str(self.nbSteps)+' iterations')
+        self.CSV.appendPlainText(App.Qt.translate("Asm4_Plot", 'Finished ')+str(self.nbSteps)+App.Qt.translate("Asm4_Plot", ' iterations'))
 
 
     # store the intermediate points
@@ -175,7 +173,7 @@ class animationPlotter():
     """
     def drawUI(self):
         # Our main window will be a QDialog
-        self.UI.setWindowTitle('Plot trajectories of the animation')
+        self.UI.setWindowTitle(App.Qt.translate("Asm4_Plot", 'Plot trajectories of the animation'))
         self.UI.setWindowIcon( QtGui.QIcon( os.path.join( Asm4.iconPath , 'FreeCad.svg' ) ) )
         self.UI.setWindowFlags( QtCore.Qt.WindowStaysOnTopHint )
         self.UI.setModal(False)
@@ -187,9 +185,9 @@ class animationPlotter():
 
         # Help and Log :
         self.winLabel = QtGui.QLabel()
-        text = 'Animation Plotter: this tool plots the values of all the variables '
-        text+= 'and the X,Y,Z coordinates of each *visible* Datum Point '
-        text+= 'for each step of the animation sequence'
+        text = App.Qt.translate("Asm4_Plot", 'Animation Plotter: this tool plots the values of all the variables ' + \
+        'and the X,Y,Z coordinates of each *visible* Datum Point ' + \
+        'for each step of the animation sequence')
         self.winLabel.setText(text)
         self.winLabel.setWordWrap(True)
         self.mainLayout.addWidget(self.winLabel)
@@ -203,26 +201,26 @@ class animationPlotter():
         self.buttonLayout = QtGui.QHBoxLayout()
         
         # Cancel button
-        self.CancelButton = QtGui.QPushButton('Cancel')
-        self.CancelButton.setToolTip("Remove trajectories and Exit")
+        self.CancelButton = QtGui.QPushButton(App.Qt.translate("Asm4_Plot", 'Cancel'))
+        self.CancelButton.setToolTip(App.Qt.translate("Asm4_Plot", "Remove trajectories and Exit"))
         self.buttonLayout.addWidget(self.CancelButton)
         self.buttonLayout.addStretch()
         
         # Refresh button
-        self.RefreshButton = QtGui.QPushButton('Refresh')
-        self.RefreshButton.setToolTip("Recalculate animation sequence")
+        self.RefreshButton = QtGui.QPushButton(App.Qt.translate("Asm4_Plot", 'Refresh'))
+        self.RefreshButton.setToolTip(App.Qt.translate("Asm4_Plot", "Recalculate animation sequence"))
         self.buttonLayout.addWidget(self.RefreshButton)
         #self.buttonLayout.addStretch()
 
         # Export button
-        self.ExportButton = QtGui.QPushButton('Export')
-        self.ExportButton.setToolTip("Save data as plain text *.CSV file")
+        self.ExportButton = QtGui.QPushButton(App.Qt.translate("Asm4_Plot", 'Export'))
+        self.ExportButton.setToolTip(App.Qt.translate("Asm4_Plot", "Save data as plain text *.CSV file"))
         self.buttonLayout.addWidget(self.ExportButton)
         self.buttonLayout.addStretch()
 
         # OK button
-        self.OkButton = QtGui.QPushButton('OK')
-        self.OkButton.setToolTip('Close animation widget and keep plots')
+        self.OkButton = QtGui.QPushButton(App.Qt.translate("Asm4_Plot", 'OK'))
+        self.OkButton.setToolTip(App.Qt.translate("Asm4_Plot", 'Close animation widget and keep plots'))
         self.OkButton.setDefault(True)
         self.buttonLayout.addWidget(self.OkButton)
         self.mainLayout.addLayout(self.buttonLayout)
