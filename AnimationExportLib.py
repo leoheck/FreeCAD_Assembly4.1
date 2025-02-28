@@ -669,7 +669,7 @@ class fileSelectorWidget(QtGui.QWidget):
     def __init__(self, type="read", parent=None):
         super().__init__(parent)
 
-        self.label = QtGui.QLabel(App.Qt.translate("Asm4_Animate"), "File:", parent)
+        self.label = QtGui.QLabel(App.Qt.translate("Asm4_Animate", "File:"), parent)
         self.leFilename = QtGui.QLineEdit(parent)
         self.pbSelectFile = QtGui.QPushButton(App.Qt.translate("Asm4_Animate", "Select"), parent)
         #self.pbSelectFile.resize(50, self.pbSelectFile.height())
