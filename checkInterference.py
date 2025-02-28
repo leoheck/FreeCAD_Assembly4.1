@@ -182,7 +182,7 @@ class checkInterference:
 
         # Main folder
         Interferences = self.Document.addObject('App::DocumentObjectGroup', 'Interferences')
-        self.Document.Tip = App.Qt.translate("Asm4_checkInterference", Interferences)
+        self.Document.Tip = Interferences
         Interferences.Label = App.Qt.translate("Asm4_checkInterference", 'Interferences')
 
         # Nested Part
@@ -194,7 +194,7 @@ class checkInterference:
 
         # Nested folder
         Intersections = self.Document.addObject('App::DocumentObjectGroup', 'Intersections')
-        self.Document.Tip = App.Qt.translate("Asm4_checkInterference", Intersections)
+        self.Document.Tip = Intersections
         Intersections.Label = App.Qt.translate("Asm4_checkInterference", 'Intersections')
         Interferences.addObject(Intersections)
 
@@ -511,7 +511,7 @@ class checkInterference:
 
 
     def on_allow_touching_faces(self, state):
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.Checked or self.touching_faces_checkbox.isChecked():
             self.allow_faces_touching = True
         else:
             self.allow_faces_touching = False
@@ -519,7 +519,7 @@ class checkInterference:
 
 
     def on_fasteners_check(self, state):
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.Checked or self.include_fasteners_checkbox.isChecked():
             self.check_fasteners = True
         else:
             self.check_fasteners = False
@@ -530,7 +530,7 @@ class checkInterference:
         self.log_number_of_comparisons()
 
     def on_verbosity(self, state):
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.Checked or  self.verbose_checkbox.isChecked():
             self.verbose = True
         else:
             self.verbose = False
@@ -572,7 +572,12 @@ class checkInterference:
         self.form_layout = QtGui.QFormLayout()
         self.min_volume_label = QtGui.QLabel(App.Qt.translate("Asm4_checkInterference", "Minimum interference volume:"))
         self.min_volume_input = QtGui.QLineEdit()
-        self.min_volume_input.setFixedWidth(10)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy.Minimum, QtGui.QSizePolicy.Policy.Fixed)
+        self.min_volume_input.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.min_volume_input.sizePolicy().hasHeightForWidth())
+        self.min_volume_input.setSizePolicy(sizePolicy)
+        self.min_volume_input.setMinimumSize(QtCore.QSize(10, 25))
+        self.min_volume_input.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.min_volume_input.setText(str(self.min_volume_allowed))
         self.form_layout.addRow(self.min_volume_label, self.min_volume_input)
 
@@ -600,7 +605,7 @@ class checkInterference:
         self.log_view.verticalScrollBar().setValue(self.log_view.verticalScrollBar().maximum())
 
         text_color = Gui.getMainWindow().palette().text().color()
-        #        text_bg = Gui.getMainWindow().palette().background().color()
+        # text_bg = Gui.getMainWindow().palette().background().color()
 
         self.log_view.setStyleSheet("QTextEdit:!editable{color: white, background-color: black};")
 
