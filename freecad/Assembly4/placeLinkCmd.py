@@ -59,8 +59,8 @@ class placeLinkCmd:
                     return True
 
                 else:
-                    direct_parent = Asm4.getDirectParent()
-                    if direct_parent and direct_parent is not root:
+                    link_obj = Asm4.getAppLinkObj()
+                    if link_obj and link_obj is not root:
                         if (
                             hasattr(obj, "Placement")
                             and obj.getTypeIdOfProperty("Placement")
@@ -145,14 +145,15 @@ class placeLinkCmd:
                                     Gui.Control.showDialog(ui)
                         # the selected object doesn't belong to the root assembly
                         else:
-                            # update selection with the direct parent
-                            direct_parent = Asm4.getDirectParent()
-                            Gui.Selection.clearSelection()
-                            Gui.Selection.addSelection(
-                                App.ActiveDocument.Name, direct_parent.Name
-                            )
-                            selection = Gui.Selection.getSelection()[0]
-                            parent = selection.getParentGeoFeatureGroup()
+                            # update selection with the link object
+                            link_obj = Asm4.getAppLinkObj()
+                            if link_obj != None:
+                                Gui.Selection.clearSelection()
+                                Gui.Selection.addSelection(
+                                    App.ActiveDocument.Name, link_obj.Name
+                                )
+                                selection = Gui.Selection.getSelection()[0]
+                                parent = selection.getParentGeoFeatureGroup()
 
                             if parent and parent == Asm4.getAssembly():
                                 # if it's a valid assembly and part
