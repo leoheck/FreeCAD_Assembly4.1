@@ -30,8 +30,8 @@ class checkInterference:
 
 
     def GetResources(self):
-        menutext = "Check Intereferences"
-        tooltip  = "Check interferences among assembled objects (may take time)"
+        menutext = App.Qt.translate("Asm4_checkInterference", "Check Intereferences")
+        tooltip  = App.Qt.translate("Asm4_checkInterference", "Check interferences among assembled objects (may take time)")
         iconFile = os.path.join(Asm4.iconPath, 'Asm4_Interference_Check.svg')
         return {
             "MenuText": menutext,
@@ -100,9 +100,9 @@ class checkInterference:
             if obj.Visibility == True and (obj.TypeId == 'App::Link'):
                 self.n_objects_without_fasteners += 1
         if self.check_fasteners:
-            self.log_write("The {} has {} objects. (with fasteners)".format(self.Assembly.Label, self.n_objects))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "The {} has {} objects. (with fasteners)").format(self.Assembly.Label, self.n_objects))
         else:
-            self.log_write("The {} has {} objects.".format(self.Assembly.Label, self.n_objects_without_fasteners))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "The {} has {} objects.").format(self.Assembly.Label, self.n_objects_without_fasteners))
 
 
     def log_number_of_comparisons(self):
@@ -118,23 +118,23 @@ class checkInterference:
             self.total_comparisons_without_fasteners = 0
 
         if self.check_fasteners:
-            self.log_write("Totaling {} possible comparisons (with fasteners)".format(self.total_comparisons))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "Totaling {} possible comparisons (with fasteners)").format(self.total_comparisons))
         else:
-            self.log_write("Totaling {} possible comparisons".format(self.total_comparisons_without_fasteners))
-        self.log_write("Interferences check may take time.")
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "Totaling {} possible comparisons").format(self.total_comparisons_without_fasteners))
+        self.log_write(App.Qt.translate("Asm4_checkInterference", "Interferences check may take time."))
 
 
     def log_elapsed_time(self, start_time_s, end_time_s):
 
         elapsed_time_s = end_time_s - start_time_s
         if elapsed_time_s < 1:
-            self.log_write("\nElapsed time: {:.2f} ms".format(elapsed_time_s * 1000))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\nElapsed time: {:.2f} ms").format(elapsed_time_s * 1000))
         elif elapsed_time_s < 60:
-            self.log_write("\nElapsed time: {:.2f} s".format(elapsed_time_s))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\nElapsed time: {:.2f} s").format(elapsed_time_s))
         elif elapsed_time_s < 3600:
-            self.log_write("\nElapsed time: {:.2f} min".format(elapsed_time_s / 60))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\nElapsed time: {:.2f} min").format(elapsed_time_s / 60))
         else:
-            self.log_write("\nElapsed time: {:.2f} h".format(elapsed_time_s / 3600))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\nElapsed time: {:.2f} h").format(elapsed_time_s / 3600))
 
 
     def width_of_number_of_objects(self):
@@ -147,7 +147,7 @@ class checkInterference:
 
     def log_checked_objects(self, checked_dict):
         self.log_write("")
-        self.log_write("Checked items:")
+        self.log_write(App.Qt.translate("Asm4_checkInterference", "Checked items:"))
         k=0
         for key, values in checked_dict.items():
             self.log_write("{}. {}".format(k+1, key))
@@ -163,7 +163,7 @@ class checkInterference:
         else:
             self.progress_bar.setMaximum(self.total_comparisons_without_fasteners)
 
-        self.log_write("\n>>> Starting to check for interferences... <<<")
+        self.log_write(App.Qt.translate("Asm4_checkInterference", "\n>>> Starting to check for interferences... <<<"))
 
         start_time_s = timer()
 
@@ -183,7 +183,7 @@ class checkInterference:
         # Main folder
         Interferences = self.Document.addObject('App::DocumentObjectGroup', 'Interferences')
         self.Document.Tip = Interferences
-        Interferences.Label = 'Interferences'
+        Interferences.Label = App.Qt.translate("Asm4_checkInterference", 'Interferences')
 
         # Nested Part
         assembly_copy_name = self.Assembly.Label + "_copy"
@@ -195,7 +195,7 @@ class checkInterference:
         # Nested folder
         Intersections = self.Document.addObject('App::DocumentObjectGroup', 'Intersections')
         self.Document.Tip = Intersections
-        Intersections.Label = 'Intersections'
+        Intersections.Label = App.Qt.translate("Asm4_checkInterference", 'Intersections')
         Interferences.addObject(Intersections)
 
         c = 1 # index of the comparison
@@ -300,12 +300,12 @@ class checkInterference:
 
         # Remove the intersections folder if there is no intersections
         if not Intersections.Group:
-            self.log_write("\n>>> No interferences were found. The {} is clean! <<<".format(self.Assembly.Label))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\n>>> No interferences were found. The {} is clean! <<<").format(self.Assembly.Label))
             self.remove_interference_folder()
             self.Assembly.Visibility = True
             Gui.updateGui()
         else:
-            self.log_write("\n>>> Found {} interferences <<<".format(self.interference_count))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\n>>> Found {} interferences <<<").format(self.interference_count))
 
         end_time_s = timer()
         self.log_elapsed_time(start_time_s, end_time_s)
@@ -340,12 +340,12 @@ class checkInterference:
             Gui.updateGui()
 
         if not obj2.Shape.Solids:
-            self.log_write("{}| {} does not have shape.".format(indent, obj2.Label))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "{}| {} does not have shape.").format(indent, obj2.Label))
             shape_missing = 1
             Gui.updateGui()
 
         if shape_missing:
-            self.log_write("{}| There are missing shape(s) (SKIPPING).".format(indent))
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "{}| There are missing shape(s) (SKIPPING).").format(indent))
             self.Document.removeObject(obj1.Name)
             self.Document.removeObject(obj2.Name)
             Gui.updateGui()
@@ -469,20 +469,20 @@ class checkInterference:
         self.log_write("=====================================\n")
         self.processing = True
         self.min_volume_allowed = float(self.min_volume_input.text())
-        self.log_write("Minimum interference volume = {}".format(self.min_volume_allowed))
+        self.log_write(App.Qt.translate("Asm4_checkInterference", "Minimum interference volume = {}").format(self.min_volume_allowed))
         self.enable_elements(False)
-        self.cancel_abort_button.setText("Abort")
+        self.cancel_abort_button.setText(App.Qt.translate("Asm4_checkInterference", "Abort"))
         self.Assembly = Asm4.getAssembly()
         self.progress_bar_reset()
         self.remove_interference_folder()
         self.check_interferences()
         if self.abort_processing:
             self.progress_bar_reset()
-            self.log_write("\n>>> OPERATION HAS BEEN ABORTED <<<")
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\n>>> OPERATION HAS BEEN ABORTED <<<"))
         self.processing = False
         self.abort_processing = False
         self.enable_elements(True)
-        self.cancel_abort_button.setText("Close")
+        self.cancel_abort_button.setText(App.Qt.translate("Asm4_checkInterference", "Close"))
         self.Assembly.recompute()
 
 
@@ -491,7 +491,7 @@ class checkInterference:
             self.UI.close()
         else:
             self.abort_processing = True
-            self.log_write("\nAborting the current processing...")
+            self.log_write(App.Qt.translate("Asm4_checkInterference", "\nAborting the current processing..."))
             self.Assembly.Visibility = True
 
             try:
@@ -505,35 +505,36 @@ class checkInterference:
         self.log_clear()
         self.log_number_of_objects()
         self.log_number_of_comparisons()
-        self.cancel_abort_button.setText("Close")
+        self.interference_count = 0 # reset count when clear interference heck.
+        self.cancel_abort_button.setText(App.Qt.translate("Asm4_checkInterference", "Close"))
         self.Assembly.Visibility = True
 
 
     def on_allow_touching_faces(self, state):
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.Checked or self.touching_faces_checkbox.isChecked():
             self.allow_faces_touching = True
         else:
             self.allow_faces_touching = False
-        self.log_write("Allow faces touching = {}".format(self.allow_faces_touching))
+        self.log_write(App.Qt.translate("Asm4_checkInterference", "Allow faces touching = {}").format(self.allow_faces_touching))
 
 
     def on_fasteners_check(self, state):
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.Checked or self.include_fasteners_checkbox.isChecked():
             self.check_fasteners = True
         else:
             self.check_fasteners = False
         self.log_clear()
-        self.log_write("Check fasteners = {}".format(self.check_fasteners))
+        self.log_write(App.Qt.translate("Asm4_checkInterference", "Check fasteners = {}").format(self.check_fasteners))
         self.log_write("==============================")
         self.log_number_of_objects()
         self.log_number_of_comparisons()
 
     def on_verbosity(self, state):
-        if state == QtCore.Qt.Checked:
+        if state == QtCore.Qt.Checked or  self.verbose_checkbox.isChecked():
             self.verbose = True
         else:
             self.verbose = False
-        self.log_write("Verbose = {}".format(self.verbose))
+        self.log_write(App.Qt.translate("Asm4_checkInterference", "Verbose = {}").format(self.verbose))
 
 
     def progress_bar_reset(self):
@@ -551,16 +552,16 @@ class checkInterference:
     def drawUI(self):
 
         # Main Window (QDialog)
-        self.UI.setWindowTitle('Interference Checks')
+        self.UI.setWindowTitle(App.Qt.translate("Asm4_checkInterference", 'Interference Checks'))
         self.UI.setWindowIcon(QtGui.QIcon(os.path.join(Asm4.iconPath , 'FreeCad.svg')))
         self.UI.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.UI.setModal(False)
         self.main_layout = QtGui.QVBoxLayout(self.UI)
 
         # Checkboxes
-        self.touching_faces_checkbox = QtGui.QCheckBox("Allow faces touching")
-        self.include_fasteners_checkbox = QtGui.QCheckBox("Include fasteners")
-        self.verbose_checkbox = QtGui.QCheckBox("Verbose")
+        self.touching_faces_checkbox = QtGui.QCheckBox(App.Qt.translate("Asm4_checkInterference", "Allow faces touching"))
+        self.include_fasteners_checkbox = QtGui.QCheckBox(App.Qt.translate("Asm4_checkInterference", "Include fasteners"))
+        self.verbose_checkbox = QtGui.QCheckBox(App.Qt.translate("Asm4_checkInterference", "Verbose"))
         self.touching_faces_checkbox.setChecked(True)
         self.include_fasteners_checkbox.setChecked(False)
         self.verbose_checkbox.setChecked(False)
@@ -569,9 +570,14 @@ class checkInterference:
         self.verbose_checkbox.stateChanged.connect(self.on_verbosity)
 
         self.form_layout = QtGui.QFormLayout()
-        self.min_volume_label = QtGui.QLabel("Minimum interference volume:")
+        self.min_volume_label = QtGui.QLabel(App.Qt.translate("Asm4_checkInterference", "Minimum interference volume:"))
         self.min_volume_input = QtGui.QLineEdit()
-        self.min_volume_input.setFixedWidth(10)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy.Minimum, QtGui.QSizePolicy.Policy.Fixed)
+        self.min_volume_input.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.min_volume_input.sizePolicy().hasHeightForWidth())
+        self.min_volume_input.setSizePolicy(sizePolicy)
+        self.min_volume_input.setMinimumSize(QtCore.QSize(10, 25))
+        self.min_volume_input.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.min_volume_input.setText(str(self.min_volume_allowed))
         self.form_layout.addRow(self.min_volume_label, self.min_volume_input)
 
@@ -599,7 +605,7 @@ class checkInterference:
         self.log_view.verticalScrollBar().setValue(self.log_view.verticalScrollBar().maximum())
 
         text_color = Gui.getMainWindow().palette().text().color()
-        text_bg = Gui.getMainWindow().palette().background().color()
+        # text_bg = Gui.getMainWindow().palette().background().color()
 
         self.log_view.setStyleSheet("QTextEdit:!editable{color: white, background-color: black};")
 
@@ -615,19 +621,19 @@ class checkInterference:
         self.button_layout = QtGui.QHBoxLayout()
 
         # Delete Interferences folder
-        self.clear_button = QtGui.QPushButton('Clear Checks')
+        self.clear_button = QtGui.QPushButton(App.Qt.translate("Asm4_checkInterference", 'Clear Checks'))
         self.clear_button.setDefault(True)
         self.button_layout.addWidget(self.clear_button)
         self.main_layout.addLayout(self.button_layout)
 
         # Start button
-        self.check_button = QtGui.QPushButton('Check Interferences')
+        self.check_button = QtGui.QPushButton(App.Qt.translate("Asm4_checkInterference", 'Check Interferences'))
         self.check_button.setDefault(True)
         self.button_layout.addWidget(self.check_button)
         self.main_layout.addLayout(self.button_layout)
 
         # Cancel button
-        self.cancel_abort_button = QtGui.QPushButton('Close')
+        self.cancel_abort_button = QtGui.QPushButton(App.Qt.translate("Asm4_checkInterference", 'Close'))
         self.cancel_abort_button.setDefault(True)
         self.button_layout.addWidget(self.cancel_abort_button)
         self.main_layout.addLayout(self.button_layout)
