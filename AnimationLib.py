@@ -549,19 +549,19 @@ class animateVariable(animationProvider):
         # select Variable
         self.varList = updatingComboBox()
         self.formLayout.addRow(QtGui.QLabel(App.Qt.translate("Asm4_Animate", 'Variable')),self.varList)
-        # Range Minimum
+        # Range Minimum (1e10 is an arbitrary value to get rid of NumPy dependency)
         self.beginValue = QtGui.QDoubleSpinBox()
-        self.beginValue.setRange(numpy.finfo(float).min, numpy.finfo(float).max)
+        self.beginValue.setRange(-1e10, 1e10) # self.beginValue.setRange(numpy.finfo(float).min, numpy.finfo(float).max)
         self.beginValue.setKeyboardTracking(False)
         self.formLayout.addRow(QtGui.QLabel(App.Qt.translate("Asm4_Animate", 'Range Begin')), self.beginValue)
         # Maximum
         self.endValue = QtGui.QDoubleSpinBox()
-        self.endValue.setRange(numpy.finfo(float).min, numpy.finfo(float).max)
+        self.endValue.setRange(-1e10, 1e10) # self.endValue.setRange(numpy.finfo(float).min, numpy.finfo(float).max)
         self.endValue.setKeyboardTracking(False)
         self.formLayout.addRow(QtGui.QLabel(App.Qt.translate("Asm4_Animate", 'Range End')), self.endValue)
         # Step
         self.stepValue = QtGui.QDoubleSpinBox()
-        self.stepValue.setRange( 0.01, numpy.finfo(float).max )
+        self.stepValue.setRange( 0.01, 1e10 ) # self.stepValue.setRange( 0.01, numpy.finfo(float).max )
         self.stepValue.setValue( 1.0 )
         self.stepValue.setKeyboardTracking(False)
         self.formLayout.addRow(QtGui.QLabel(App.Qt.translate("Asm4_Animate", 'Step Size')), self.stepValue)

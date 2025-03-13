@@ -169,7 +169,8 @@ class animationExporter():
             self.imageList.extend(list(reversed(self.imageList)))
 
         # Grab the stats from image1 to use for the resultant video
-        height, width, layers = numpy.array(self.imageList[0]).shape
+        # height, width, layers = numpy.array(self.imageList[0]).shape
+        width, height = self.imageList[0].size
 
         # create video
         fps = self.expDiag.sbOutFPS.value()
