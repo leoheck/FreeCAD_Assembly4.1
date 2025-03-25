@@ -731,8 +731,9 @@ def getAppLinkObj():
     sel = sels[0]
     doc = sel.Document
     sub = sel.SubElementNames[0] if sel.SubElementNames else ""
-    subs = sub.split(".")[:-1]
-    path = [sel.Object] + [doc.getObject(name) for name in subs]
+    path = [sel.Object]
+    for name in sub.split(".")[:-1]:
+        path.append(path[-1].getSubObject(name + ".", 1))
     try:
         for o in path:
             if o.isDerivedFrom('App::Link') and o.LinkedObject is not None and o.LinkedObject.TypeId in containerTypes:
