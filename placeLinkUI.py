@@ -77,22 +77,25 @@ class placeLinkUI():
         try:
             self.XRotationStep = self.selectedObj.xRotationStep.Value
         except:
-            self.XRotationStep = 45
+            self.XRotationStep = 90
             self.selectedObj.addProperty("App::PropertyAngle", "xRotationStep", "Assembly", "X Rotation Step")
+            self.selectedObj.setPropertyStatus('xRotationStep', 'Hidden')
             self.selectedObj.xRotationStep = self.XRotationStep
 
         try:
             self.YRotationStep = self.selectedObj.yRotationStep.Value
         except:
-            self.YRotationStep = 45
+            self.YRotationStep = 90
             self.selectedObj.addProperty("App::PropertyAngle", "yRotationStep", "Assembly", "Y Rotation Step")
+            self.selectedObj.setPropertyStatus('yRotationStep', 'Hidden')
             self.selectedObj.yRotationStep = self.YRotationStep
 
         try:
             self.ZRotationStep = self.selectedObj.zRotationStep.Value
         except:
-            self.ZRotationStep = 45
+            self.ZRotationStep = 90
             self.selectedObj.addProperty("App::PropertyAngle", "zRotationStep", "Assembly", "Z Rotation Step")
+            self.selectedObj.setPropertyStatus('zRotationStep', 'Hidden')
             self.selectedObj.zRotationStep = self.ZRotationStep
 
 
