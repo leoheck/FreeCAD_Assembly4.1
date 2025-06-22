@@ -13,12 +13,12 @@ The project results from discussions on the FreeCAD forum [about an assembly wit
 
 ## Principle
 
-The very principle of Assembly4 is that FreeCAD container objects ( of type `App::Part` or `PartDesign::Body`) are linked together using the `App::Link` interface introduced in FreeCAD v0.19. The host parent assembly is also an `App::Part` type container objects called `Model`. The parts that are linked can be in the same document as the assembly or an external document, invariably. 
+The very principle of Assembly4 is that FreeCAD container objects ( of type `App::Part` or `PartDesign::Body`) are linked together using the `App::Link` interface introduced in FreeCAD v0.19. The host parent assembly is also an `App::Part` type container objects called `Model`. The parts that are linked can be in the same document as the assembly or an external document, invariably.
 
 Even though an Assembly4 assembly is a standard FreeCAD `App::Part` type object, it has some particularities:
 
-* it is called *Model* at creation time  
-* it contains a group called *Constraints* at the root  
+* it is called *Model* at creation time
+* it contains a group called *Constraints* at the root
 * it contains a Datum Coordinate System called *LCS_0* at the root
 * it contains an `App::FeaturePython` object called *Variables* that can hold assembly-wide variables
 * a FreeCAD document may contain only 1 Assembly4 *Model* (but can contain many `App::Part` obects)
@@ -56,19 +56,19 @@ We list here the code that creates various objects used in Assembly4. The purpos
 
 Linked parts are placed to each-other by matching their Datum Coordinate Systems (`PartDesign::CoordinateSystem`, called here-after LCS (Local Coordinate System)). There is no need for any geometry to be present to place and constrain parts relative to each other. LCS are used because they are both mechanical objects, since they fix all 6 degrees of freedom in an isostatic way, and mathematical objects that can be easily manipulated by rigorous methods (mainly combination and inversion).
 
-To actually include some geometry, a body needs to be created, and designed using the PartDesign workbench. To be linked with the previously created model, this body needs to be inside the `App::Part container` called 'Model'.  
+To actually include some geometry, a body needs to be created, and designed using the PartDesign workbench. To be linked with the previously created model, this body needs to be inside the `App::Part container` called 'Model'.
 
-The result is the following:  
+The result is the following:
 ![](Resources/media/Asm4_Bielle_tree_arrows.png)
 
-* the part _Bielle_ is placed in the assembly by attaching it's _LCS_0_ to the _LCS_0_ of the parent assembly. 
+* the part _Bielle_ is placed in the assembly by attaching it's _LCS_0_ to the _LCS_0_ of the parent assembly.
 * the part _Cuve_ is placed in the assembly by placing its _LCS_0_ on the _LCS_1_ of the part _Bielle_
 * the part _Bague_ is placed in the assembly by placing its _LCS_0_ on the _LCS_0_ of the part _Bielle_
 * the parts _Screw_CHC_1_ and _Screw_CHC_2_ are placed in the assembly by placing their _LCS_0_ on the _LCS_1_ and _LCS_2_ of the part _Cuve_
 
 ## ExpressionEngine
 
-Assembly4 uses a special and very useful feature of FreeCAD, the **ExpressionEngine**. Some parameters can be entered through mathematical formulae, that are evaluated by this ExpressionEngine. For Assembly4, it's the parameter _`Placement`_ of the inserted _`App::Link`_ object that is calculated, such that 2 LCS - one in the linked part and the one in the assembly - are superimposed. 
+Assembly4 uses a special and very useful feature of FreeCAD, the **ExpressionEngine**. Some parameters can be entered through mathematical formulae, that are evaluated by this ExpressionEngine. For Assembly4, it's the parameter _`Placement`_ of the inserted _`App::Link`_ object that is calculated, such that 2 LCS - one in the linked part and the one in the assembly - are superimposed.
 
 In normal use, the ExpressionEngine of an _`App::Link`_ object is hidden, it must be shown as in the following screenshot:
 
@@ -95,7 +95,7 @@ The syntax of the ExpressionEngine is the following:
 
 ### Constraints
 
-To each part inserted into an assembly is associated an `App::FeaturePython` object, placed in the 'Constraints' group. This object contains information about the placement of the linked object in the assembly. It also contains an `App::Placement`, called '`AttachmentOffset`', which introduces an offset between the LCS in the part and the LCS in the assembly. The main purpose of this offset is to correct bad orientations between the 2 matching LCS. 
+To each part inserted into an assembly is associated an `App::FeaturePython` object, placed in the 'Constraints' group. This object contains information about the placement of the linked object in the assembly. It also contains an `App::Placement`, called '`AttachmentOffset`', which introduces an offset between the LCS in the part and the LCS in the assembly. The main purpose of this offset is to correct bad orientations between the 2 matching LCS.
 
 
 **Note:** These constraints are not really constraints in the traditional CAD sense, but since `App::FeaturePython` objects are very versatile, they could be expanded to contain real constraints in some (distant) future.
