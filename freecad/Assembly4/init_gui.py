@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-###################################################################################
+################################################################################
 #
 #  InitGui.py
 #
@@ -19,8 +19,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #
-#
-###################################################################################
+################################################################################
 
 import sys
 import os
@@ -155,7 +154,7 @@ class Assembly4Workbench(Gui.Workbench):
         from . import newAssemblyCmd  # created an App::Part container called 'Assembly'
         from . import newDatumCmd  # creates a new LCS in 'Model'
         from . import newPartCmd  # creates a new App::Part container called 'Model'
-        from . import infoPartCmd  # edits part information for BoM
+        # from . import infoPartCmd  # edits part information for BoM
         from . import insertLinkCmd  # inserts an App::Link to a 'Model' in another file
         from . import placeLinkCmd # places a linked part by snapping LCS (in the Part and in the Assembly)
         from . import importDatumCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
@@ -242,7 +241,7 @@ class Assembly4Workbench(Gui.Workbench):
             "Asm4_importDatum",
             "Asm4_shapeBinder",
             "Separator",
-            "Asm4_infoPart",
+            # "Asm4_infoPart",
             #"Asm4_makeLocalBOM",
             #"Asm4_makeBOM",
             "Asm4_listLinkedFiles",
@@ -273,7 +272,7 @@ class Assembly4Workbench(Gui.Workbench):
             "Asm4_newPart",
             "Asm4_newBody",
             "Asm4_newGroup",
-            "Asm4_infoPart",
+            # "Asm4_infoPart",
             "Asm4_insertLink",
             "Asm4_variantLink",
             self.FastenersCmd,
