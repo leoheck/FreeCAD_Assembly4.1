@@ -16,65 +16,60 @@ from FreeCAD import Console as FCC
 from . import Asm4_libs as Asm4
 from . import infoKeys
 
-#This is partcoded part information.
-partInfo = [
-    'BomKey',
-    'DrawingName',
-    'DrawingRevision',
-    'PartID',
-    'PartDescription']
-
+# This is partcoded part information.
+partInfo = ["BomKey", "DrawingName", "DrawingRevision", "PartID", "PartDescription"]
 
 
 infoToolTip = {
-    'BomKey': 'BomKey',
-    'DrawingName':     'Document or File name',
-    'DrawingRevision': 'Document Revision',
-    'PartID':     'Part ID',
-    'PartDescription': 'Part Description'}
+    "BomKey": "BomKey",
+    "DrawingName": "Document or File name",
+    "DrawingRevision": "Document Revision",
+    "PartID": "Part ID",
+    "PartDescription": "Part Description",
+}
 
 # Remaining fields that can be customized
 try:
     import infoKeys
+
     partInfo += infoKeys.partInfoUserAdded
     infoToolTip.update(infoKeys.infoToolTipUserAdded)
 except ImportError:
     pass
 
 
-
-
-partInfo_Invisible = [
-    'FastenerDiameter',
-    'FastenerLength',
-    'FastenerType']
+partInfo_Invisible = ["FastenerDiameter", "FastenerLength", "FastenerType"]
 
 infoToolTip_Invisible = {
-    'FastenerDiameter': 'Fastener diameter',
-    'FastenerLength':   'Fastener length',
-    'FastenerType':     'Fastener type'}
+    "FastenerDiameter": "Fastener diameter",
+    "FastenerLength": "Fastener length",
+    "FastenerType": "Fastener type",
+}
 
-ConfUserDir = os.path.join(App.getUserAppDataDir(),'Templates')
+ConfUserDir = os.path.join(App.getUserAppDataDir(), "Templates")
 ConfUserFilename = "Asm4_infoPartConf.json"
 ConfUserFilejson = os.path.join(ConfUserDir, ConfUserFilename)
 
 
-
 # Check if the configuration file exists
 try:
-    file = open(ConfUserFilejson, 'r')
+    file = open(ConfUserFilejson, "r")
     file.close()
 except:
     partInfoDef = dict()
     for prop in partInfo:
-        partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': True})
+        partInfoDef.setdefault(
+            prop, {"userData": prop, "active": True, "visible": True}
+        )
     for prop in partInfo_Invisible:
-        partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': False})
+        partInfoDef.setdefault(
+            prop, {"userData": prop, "active": True, "visible": False}
+        )
     try:
         os.mkdir(ConfUserDir)
     except:
         pass
-    file = open(ConfUserFilejson, 'x')
+    file = open(ConfUserFilejson, "x")
     json.dump(partInfoDef, file)
     file.close()
 
@@ -84,69 +79,79 @@ except:
     |                  Helper Tools                 |
     +-----------------------------------------------+
 """
+
+
 def writeXml(text):
-    text = text.encode('unicode_escape').decode().replace('\\', '_x_m_l_')
+    text = text.encode("unicode_escape").decode().replace("\\", "_x_m_l_")
     return text
 
+
 def decodeXml(text):
-    text = text.replace('_x_m_l_', '\\').encode().decode('unicode_escape')
+    text = text.replace("_x_m_l_", "\\").encode().decode("unicode_escape")
     return text
+
 
 def infoDefault(part):
     # infoKeys.infoDefault(self)
 
-    #Values are being populated through the back door
-    #if the diaglog control is open and you click on autofill
-    #the dialog needs to be closed otherwise
-    #backdoor values will be overwritten when you press ok..
+    # Values are being populated through the back door
+    # if the diaglog control is open and you click on autofill
+    # the dialog needs to be closed otherwise
+    # backdoor values will be overwritten when you press ok..
 
-
-
-    file = open(ConfUserFilejson, 'r')
+    file = open(ConfUserFilejson, "r")
     infoKeysUser = json.load(file).copy()
     file.close()
 
-    #trying to understand this. Not positive that I'm correct here.
-    #This routine attempts to autopopulate the fields that are defined in infoKeys.py and also appear in the json file
-    #it appears that these fields are inserted into self or self.part by infoPartCmd.infoPartUI.makePartInfo
+    # trying to understand this. Not positive that I'm correct here.
+    # This routine attempts to autopopulate the fields that are defined in infoKeys.py and also appear in the json file
+    # it appears that these fields are inserted into self or self.part by infoPartCmd.infoPartUI.makePartInfo
 
     doc = part.Document
-    print (len(part.Group))
+    print(len(part.Group))
     part.Type
-    if part.Type =="Assembly" and part.TypeId == 'App::Part':
+    if part.Type == "Assembly" and part.TypeId == "App::Part":
 
-        print ("We have an assembly")
+        print("We have an assembly")
         try:
-            infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, None)
+            infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(
+                part, doc, None
+            )
         except NotImplementedError as e:
-            AssignValuesForAutofile(part, doc,None)
+            AssignValuesForAutofile(part, doc, None)
 
-    elif part.Type !='Assembly' and part.TypeId == 'App::Part':
-        #We are looking at the standard instance where we have a ASM4 which has a single
-        #PartDesign:: Body given that use case
+    elif part.Type != "Assembly" and part.TypeId == "App::Part":
+        # We are looking at the standard instance where we have a ASM4 which has a single
+        # PartDesign:: Body given that use case
         try:
             ObjSingleBody = check_single_body(part)
         except Exception as e:
-            print (str(e))
-            raise NotImplementedError(f"Logic only implement for Part with single body this exception was thrown: {str(e)}")
+            print(str(e))
+            raise NotImplementedError(
+                f"Logic only implement for Part with single body this exception was thrown: {str(e)}"
+            )
         # 'body' contains the single PartDesign::Body object
         print(f"Part contains a single PartDesign::Body: {ObjSingleBody.Name}")
-        #in JT use case The Fcstd file name contains the Part_id (a portion of it if it is a mult-level part
-        #Since this is not how everyone will want to do this.
-        #Also file name contains a revision
-        #Probably should be looking at a separate .py file that is customized to the users business rules.
+        # in JT use case The Fcstd file name contains the Part_id (a portion of it if it is a mult-level part
+        # Since this is not how everyone will want to do this.
+        # Also file name contains a revision
+        # Probably should be looking at a separate .py file that is customized to the users business rules.
         try:
-            infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, ObjSingleBody)
+            infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(
+                part, doc, ObjSingleBody
+            )
         except NotImplementedError as e:
-            print (str (e))
-            AssignValuesForAutofile(part, doc,ObjSingleBody)
+            print(str(e))
+            AssignValuesForAutofile(part, doc, ObjSingleBody)
 
     else:
         # There is no PartDesign::Body or more than one found in the 'part'
-        raise NotImplementedError("Need to develop logic for something that is neither a part or an assembly")
+        raise NotImplementedError(
+            "Need to develop logic for something that is neither a part or an assembly"
+        )
         print("Part does not contain a single PartDesign::Body.")
 
-    '''
+    """
         # This needs to be moved up into the for look
         try:
             self.LabelDoc(self, part, doc)
@@ -180,14 +185,15 @@ def infoDefault(part):
         except NameError:
             # print('ShapeVolume: there is no Shape in the Part ', part.FullName)
             pass
-        '''
+        """
+
 
 def check_single_body(part):
     num_bodies = 0
     objBody = None
 
     for obj in part.Group:
-        if obj.TypeId == 'PartDesign::Body':
+        if obj.TypeId == "PartDesign::Body":
             num_bodies += 1
             objBody = obj
 
@@ -201,23 +207,29 @@ def check_single_body(part):
         # More than one PartDesign::Body found in the group
         return None
 
+
 def AssignValuesForAutofile(part, doc, singleBodyOfPart):
-    #todo if part is not
+    # todo if part is not
     try:
 
-        infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, singleBodyOfPart)
+        infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(
+            part, doc, singleBodyOfPart
+        )
     except Exception as e:
-        print (f"Customization failed or is not setup : {str(e)}  Attempting to insert default values")
+        print(
+            f"Customization failed or is not setup : {str(e)}  Attempting to insert default values"
+        )
         try:
             try:
                 part.DrawingName
             except Exception as e:
                 # if we're here it means that there was no cust
-                #JT not sure at the moment if we should fix it here or just add logic upstream to prevent this from happening
-                raise Exception(f"{part.FullName} in {doc.FileName} is missing Part information fields. It needs to be reset in Edit Part Information- Configure fields .")
+                # JT not sure at the moment if we should fix it here or just add logic upstream to prevent this from happening
+                raise Exception(
+                    f"{part.FullName} in {doc.FileName} is missing Part information fields. It needs to be reset in Edit Part Information- Configure fields ."
+                )
 
-
-            part.DrawingName =os.path.basename(doc.FileName)
+            part.DrawingName = os.path.basename(doc.FileName)
             part.PartID = doc.Label
             if singleBodyOfPart != None:
                 part.PartDescription = singleBodyOfPart.Label
@@ -225,22 +237,27 @@ def AssignValuesForAutofile(part, doc, singleBodyOfPart):
             raise e
 
 
-
 """
     +-----------------------------------------------+
     |                Info Part Command              |
     +-----------------------------------------------+
 """
-class infoPartCmd():
+
+
+class infoPartCmd:
 
     def __init__(self):
         super(infoPartCmd, self).__init__()
 
     def GetResources(self):
-        tooltip  = "<p>Edit Part information</p>"
+        tooltip = "<p>Edit Part information</p>"
         tooltip += "<p>User-supplied information can be added to a part</p>"
-        iconFile = os.path.join(Asm4.iconPath, 'Asm4_PartInfo.svg')
-        return {"MenuText": "Edit Part Information", "ToolTip": tooltip, "Pixmap": iconFile}
+        iconFile = os.path.join(Asm4.iconPath, "Asm4_PartInfo.svg")
+        return {
+            "MenuText": "Edit Part Information",
+            "ToolTip": tooltip,
+            "Pixmap": iconFile,
+        }
 
     def IsActive(self):
         if App.ActiveDocument and Asm4.getSelectedContainer():
@@ -256,28 +273,34 @@ class infoPartCmd():
     |       UI and functions in the Task panel      |
     +-----------------------------------------------+
 """
-class infoPartUI():
+
+
+class infoPartUI:
 
     def __init__(self):
         self.base = QtGui.QWidget()
         self.form = self.base
-        iconFile = os.path.join(Asm4.iconPath, 'Asm4_PartInfo.svg')
+        iconFile = os.path.join(Asm4.iconPath, "Asm4_PartInfo.svg")
         self.form.setWindowIcon(QtGui.QIcon(iconFile))
         self.form.setWindowTitle("Edit Part Information")
         # has been checked before
         self.part = Asm4.getSelectedContainer()
         # Check and load if the configuration file exists
         try:
-            file = open(ConfUserFilejson, 'r')
+            file = open(ConfUserFilejson, "r")
             self.infoKeysUser = json.load(file).copy()
             file.close()
         except:
             self.infoKeysUser = dict()
             for prop in partInfo:
-                self.infoKeysUser.setdefault(prop, {'userData': prop, 'active': True, 'visible': True})
+                self.infoKeysUser.setdefault(
+                    prop, {"userData": prop, "active": True, "visible": True}
+                )
             for prop in partInfo_Invisible:
-                self.infoKeysUser.setdefault(prop, {'userData': prop, 'active': True, 'visible': False})
-        '''
+                self.infoKeysUser.setdefault(
+                    prop, {"userData": prop, "active": True, "visible": False}
+                )
+        """
             try:
                 os.mkdir(ConfUserDir)
             except:
@@ -290,100 +313,115 @@ class infoPartUI():
         file = open(ConfUserFilejson, 'r')
         self.infoKeysUser = json.load(file).copy()
         file.close()
-        '''
+        """
         self.makePartInfo(self, self.part)
         self.infoTable = []
         self.getPartInfo()
         self.drawUI()
 
-
     def getPartInfo(self):
         self.infoTable.clear()
         for propuser in self.infoKeysUser:
             for prop in self.part.PropertiesList:
-                if self.part.getGroupOfProperty(prop) == 'PartInfo':
-                    if self.part.getTypeIdOfProperty(prop) == 'App::PropertyString':
-                        if self.infoKeysUser.get(propuser).get('userData') == prop:
-                            if self.infoKeysUser.get(propuser).get('active') and self.infoKeysUser.get(propuser).get('visible'):
+                if self.part.getGroupOfProperty(prop) == "PartInfo":
+                    if self.part.getTypeIdOfProperty(prop) == "App::PropertyString":
+                        if self.infoKeysUser.get(propuser).get("userData") == prop:
+                            if self.infoKeysUser.get(propuser).get(
+                                "active"
+                            ) and self.infoKeysUser.get(propuser).get("visible"):
                                 value = self.part.getPropertyByName(prop)
                                 self.infoTable.append([prop, value])
-
 
     # Add the default part information
     def makePartInfo(self, object, reset=False):
         for propuser in self.infoKeysUser:
-            if self.infoKeysUser.get(propuser).get('active') and self.infoKeysUser.get(propuser).get('visible'):
+            if self.infoKeysUser.get(propuser).get("active") and self.infoKeysUser.get(
+                propuser
+            ).get("visible"):
                 try:
-                    #if object.part doesn't exist at the object Typeid is App::Part through it in there?
-                    #need to think on that one.
+                    # if object.part doesn't exist at the object Typeid is App::Part through it in there?
+                    # need to think on that one.
                     object.part
-                    if not hasattr(object.part, self.infoKeysUser.get(propuser).get('userData')):
-                        object.part.addProperty('App::PropertyString', self.infoKeysUser.get(propuser).get('userData'), 'PartInfo')
+                    if not hasattr(
+                        object.part, self.infoKeysUser.get(propuser).get("userData")
+                    ):
+                        object.part.addProperty(
+                            "App::PropertyString",
+                            self.infoKeysUser.get(propuser).get("userData"),
+                            "PartInfo",
+                        )
                 except AttributeError:
-                    if object.TypeId == 'App::Part':
-                        if not hasattr(object,self.infoKeysUser.get(propuser).get('userData')):
-                            object.addProperty('App::PropertyString', self.infoKeysUser.get(propuser).get('userData'), 'PartInfo')
-
-
+                    if object.TypeId == "App::Part":
+                        if not hasattr(
+                            object, self.infoKeysUser.get(propuser).get("userData")
+                        ):
+                            object.addProperty(
+                                "App::PropertyString",
+                                self.infoKeysUser.get(propuser).get("userData"),
+                                "PartInfo",
+                            )
 
     def addNew(self):
         for i, prop in enumerate(self.infoTable):
-            if self.part.getGroupOfProperty(prop[0]) == 'PartInfo':
-                if self.part.getTypeIdOfProperty(prop[0]) == 'App::PropertyString':
+            if self.part.getGroupOfProperty(prop[0]) == "PartInfo":
+                if self.part.getTypeIdOfProperty(prop[0]) == "App::PropertyString":
                     for propuser in self.infoKeysUser:
-                        if self.infoKeysUser.get(propuser).get('userData') == prop[0]:
-                            if self.infoKeysUser.get(propuser).get('active') and self.infoKeysUser.get(propuser).get('visible'):
+                        if self.infoKeysUser.get(propuser).get("userData") == prop[0]:
+                            if self.infoKeysUser.get(propuser).get(
+                                "active"
+                            ) and self.infoKeysUser.get(propuser).get("visible"):
                                 text = self.infos[i].text()
                                 setattr(self.part, prop[0], str(text))
-
 
     def editKeys(self):
         Gui.Control.closeDialog()
         Gui.Control.showDialog(infoPartConfUI())
-
 
     # Reset the list of properties
     def reInit(self):
         List = self.part.PropertiesList
         listpi = []
         for prop in List:
-            if self.part.getGroupOfProperty(prop) == 'PartInfo':
+            if self.part.getGroupOfProperty(prop) == "PartInfo":
                 listpi.append(prop)
-        for suppr in listpi: # delete all PartInfo properties
+        for suppr in listpi:  # delete all PartInfo properties
             self.part.removeProperty(suppr)
 
         # Recover initial json file since fasteners keys are being lost
         # JT Not sure about above being an accurate statement.
         partInfoDef = dict()
         for prop in partInfo:
-            partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': True})
+            partInfoDef.setdefault(
+                prop, {"userData": prop, "active": True, "visible": True}
+            )
         for prop in partInfo_Invisible:
-            partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': False})
+            partInfoDef.setdefault(
+                prop, {"userData": prop, "active": True, "visible": False}
+            )
         try:
             os.mkdir(ConfUserDir)
         except:
             pass
-        file = open(ConfUserFilejson, 'w')
+        file = open(ConfUserFilejson, "w")
         json.dump(partInfoDef, file)
         file.close()
 
-        '''
+        """
         mb = QtGui.QMessageBox()
         mb.setWindowTitle("Clear fileds")
         mb.setText("The Part Info field\nhas been cleared")
         mb.exec_()
-        '''
+        """
         Asm4.warningBox("The Part Info field has been cleared")
         self.finish()
-
 
     def infoDefault(self):
         # infoKeys.infoDefault(self)
 
-        #Values are being populated through the back door
-        #if the diaglog control is open and you click on autofill
-        #the dialog needs to be closed otherwise
-        #backdoor values will be overwritten when you press ok..
+        # Values are being populated through the back door
+        # if the diaglog control is open and you click on autofill
+        # the dialog needs to be closed otherwise
+        # backdoor values will be overwritten when you press ok..
         Gui.Control.closeDialog()
 
         try:
@@ -393,27 +431,21 @@ class infoPartUI():
             part = self.part
         infoDefault(part)
 
+    def SetPartInfoValue(self, fieldName, fieldvalue):
 
-    def SetPartInfoValue(self,fieldName, fieldvalue):
-
-
-        auto_info_field = self.infoKeysUser.get(fieldName).get('userData')
+        auto_info_field = self.infoKeysUser.get(fieldName).get("userData")
         try:
-            #This sets the value behind the curtain
-            self.infoKeysUser[auto_info_field][1]= fieldvalue
-            #if the Edit part information window is open and you press ok what ever is in that textbox will overwrite
-
-
+            # This sets the value behind the curtain
+            self.infoKeysUser[auto_info_field][1] = fieldvalue
+            # if the Edit part information window is open and you press ok what ever is in that textbox will overwrite
 
         except Exception as e:
-            #print (f" This expection was thrown: {str(e)})
+            # print (f" This expection was thrown: {str(e)})
             # Re throw the exception
             raise e
 
-
-
     def GetPartName(self, part):
-        auto_info_field = infoKeysUser.get('PartName').get('userData')
+        auto_info_field = infoKeysUser.get("PartName").get("userData")
         auto_info_fill = part.Label
         try:
             self.TypeId
@@ -426,7 +458,7 @@ class infoPartUI():
             except AttributeError:
                 self.infos[i].setText("-")
 
-    '''
+    """
     def PadLength(self, part, pad):
         auto_info_field = infoKeysUser.get('Pad_Length').get('userData')
         try:
@@ -477,8 +509,7 @@ class infoPartUI():
                         self.infos[i].setText(auto_info_fill)
             except AttributeError:
                 self.infos[i].setText("-")
-    '''
-
+    """
 
     def finish(self):
         Gui.Control.closeDialog()
@@ -501,13 +532,17 @@ class infoPartUI():
         self.infos = []
         for i, prop in enumerate(self.infoTable):
             for propuser in self.infoKeysUser:
-                if self.infoKeysUser.get(propuser).get('userData') == prop[0]:
-                    if self.infoKeysUser.get(propuser).get('active'): #and self.infoKeysUser.get(propuser).get('visible'):
+                if self.infoKeysUser.get(propuser).get("userData") == prop[0]:
+                    if self.infoKeysUser.get(propuser).get(
+                        "active"
+                    ):  # and self.infoKeysUser.get(propuser).get('visible'):
                         checkLayout = QtGui.QHBoxLayout()
                         propValue = QtGui.QLineEdit()
                         propValue.setText(prop[1])
                         checkLayout.addWidget(propValue)
-                        self.formLayout.addRow(QtGui.QLabel(decodeXml(prop[0])), checkLayout)
+                        self.formLayout.addRow(
+                            QtGui.QLabel(decodeXml(prop[0])), checkLayout
+                        )
                         self.infos.append(propValue)
 
         self.mainLayout.addLayout(self.formLayout)
@@ -515,12 +550,12 @@ class infoPartUI():
 
         # Buttons
         self.buttonsLayout = QtGui.QHBoxLayout()
-        self.confFields = QtGui.QPushButton('Configure fields')
-        self.confFields.setToolTip('Edit fields')
-        self.reinit = QtGui.QPushButton('Reset fields')
-        self.reinit.setToolTip('Reset fields')
-        self.autoFill = QtGui.QPushButton('Autofill data')
-        self.autoFill.setToolTip('Autofill fields')
+        self.confFields = QtGui.QPushButton("Configure fields")
+        self.confFields.setToolTip("Edit fields")
+        self.reinit = QtGui.QPushButton("Reset fields")
+        self.reinit.setToolTip("Reset fields")
+        self.autoFill = QtGui.QPushButton("Autofill data")
+        self.autoFill.setToolTip("Autofill fields")
         self.buttonsLayout.addWidget(self.confFields)
         self.buttonsLayout.addWidget(self.reinit)
         self.buttonsLayout.addWidget(self.autoFill)
@@ -532,7 +567,8 @@ class infoPartUI():
         self.reinit.clicked.connect(self.reInit)
         self.autoFill.clicked.connect(self.infoDefault)
 
-'''
+
+"""
 #JT This seems to be creating some issue Lets disable for the moment.'
         test = False
         try:
@@ -543,20 +579,21 @@ class infoPartUI():
         if test:
             self.infoDefault()
             self.addNew()
-'''
+"""
 
-class infoPartConfUI():
+
+class infoPartConfUI:
 
     def __init__(self):
         self.base = QtGui.QWidget()
         self.form = self.base
-        iconFile = os.path.join(Asm4.iconPath, 'Asm4_PartInfo.svg')
+        iconFile = os.path.join(Asm4.iconPath, "Asm4_PartInfo.svg")
         self.form.setWindowIcon(QtGui.QIcon(iconFile))
         self.form.setWindowTitle("Edit Part Information")
 
         self.infoKeysDefault = partInfo.copy()
         self.infoToolTip = infoToolTip.copy()
-        file = open(ConfUserFilejson, 'r')
+        file = open(ConfUserFilejson, "r")
         self.infoKeysUser = json.load(file).copy()
         file.close()
 
@@ -577,47 +614,60 @@ class infoPartConfUI():
     def accept(self):
         i = 0
         for prop in self.confTemplate:
-            if self.confTemplate.get(prop).get('visible'):
-                if self.infos[i].text() == '':
-                    '''
+            if self.confTemplate.get(prop).get("visible"):
+                if self.infos[i].text() == "":
+                    """
                     mb = QtGui.QMessageBox()
                     mb.setWindowTitle("BOM Configuration")
                     mb.setText("Fields Name cannot be blank\nYou must disable or delete it")
                     mb.exec_()
-                    '''
-                    Asm4.warningBox("Fields Name cannot be blank. You must disable or delete it")
+                    """
+                    Asm4.warningBox(
+                        "Fields Name cannot be blank. You must disable or delete it"
+                    )
                     return
                 i += 1
 
         # Restore file and appen new config
         partInfoDef = dict()
         for prop in infoPartCmd.partInfo:
-            partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': True})
+            partInfoDef.setdefault(
+                prop, {"userData": prop, "active": True, "visible": True}
+            )
         for prop in infoPartCmd.partInfo_Invisible:
-            partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': False})
+            partInfoDef.setdefault(
+                prop, {"userData": prop, "active": True, "visible": False}
+            )
 
         i = 0
         # config = dict()
         for prop in self.confTemplate:
-            if self.confTemplate.get(prop).get('visible'):
+            if self.confTemplate.get(prop).get("visible"):
                 uData = writeXml(self.infos[i].text())
-                partInfoDef.setdefault(prop, {'userData': uData.replace(" ", "_"), 'active': self.checker[i].isChecked(), 'visible': True})
+                partInfoDef.setdefault(
+                    prop,
+                    {
+                        "userData": uData.replace(" ", "_"),
+                        "active": self.checker[i].isChecked(),
+                        "visible": True,
+                    },
+                )
                 i += 1
 
-        file = open(ConfUserFilejson, 'w')
+        file = open(ConfUserFilejson, "w")
         json.dump(partInfoDef, file)
         file.close()
 
-        file = open(ConfUserFilejson, 'r')
+        file = open(ConfUserFilejson, "r")
         self.infoKeysUser = json.load(file).copy()
         file.close()
 
-        '''
+        """
         mb = QtGui.QMessageBox()
         mb.setWindowTitle("BOM Configuration")
         mb.setText("The configuration\nhas been saved")
         mb.exec_()
-        '''
+        """
 
         self.finish()
 
@@ -632,14 +682,16 @@ class infoPartConfUI():
         while fieldName in self.confTemplate:
             indexref += 1
             fieldName = baseName + "_" + str(indexref)
-        self.newOne.setText('')
+        self.newOne.setText("")
         self.addNewField(fieldName, fieldLabel)
 
     def addNewField(self, newRef, newField):
         """
         Write the new field in configuration template
         """
-        self.confTemplate.setdefault(newRef, {'userData': newField, 'active': True, 'visible': True})
+        self.confTemplate.setdefault(
+            newRef, {"userData": newField, "active": True, "visible": True}
+        )
 
         # Label
         newLab = QtGui.QLabel(newRef)
@@ -655,7 +707,7 @@ class infoPartConfUI():
         # Checkbox
         checkLayout = QtGui.QVBoxLayout()
         checked = QtGui.QCheckBox()
-        checked.setChecked(self.confTemplate.get(newRef).get('active'))
+        checked.setChecked(self.confTemplate.get(newRef).get("active"))
         self.gridLayout.addWidget(checked, self.i, 2)
         self.checker.append(checked)
 
@@ -673,8 +725,11 @@ class infoPartConfUI():
         fieldData = delField.split("-")[1].strip(" ")
         i = 0
         for prop in self.confTemplate:
-            if self.confTemplate.get(prop).get('visible'):
-                if str(prop) == fieldRef and self.confTemplate.get(prop).get('userData') == fieldData:
+            if self.confTemplate.get(prop).get("visible"):
+                if (
+                    str(prop) == fieldRef
+                    and self.confTemplate.get(prop).get("userData") == fieldData
+                ):
                     self.label[i].deleteLater()
                     self.label.remove(self.label[i])
                     self.infos[i].deleteLater()
@@ -730,33 +785,35 @@ class infoPartConfUI():
         self.gridLayoutUpdate = QtGui.QGridLayout()
 
         # 1st column holds the field names
-        default = QtGui.QLabel('Field')
+        default = QtGui.QLabel("Field")
         self.gridLayout.addWidget(default, 0, 0)
 
         i = 1
         for prop in self.confTemplate:
-            if self.confTemplate.get(prop).get('visible'):
+            if self.confTemplate.get(prop).get("visible"):
                 default = QtGui.QLabel(prop)
                 default.setToolTip(self.infoToolTip.get(prop))
                 self.gridLayout.addWidget(default, i, 0)
                 self.label.append(default)
                 i += 1
 
-        self.addnewLab = QtGui.QLabel('Field')
+        self.addnewLab = QtGui.QLabel("Field")
         self.gridLayoutButtons.addWidget(self.addnewLab, 0, 0)
 
-        self.suppLab = QtGui.QLabel('Field')
+        self.suppLab = QtGui.QLabel("Field")
         self.gridLayoutButtons.addWidget(self.suppLab, 1, 0)
 
         # 2nd column holds the data
-        user = QtGui.QLabel('Name')
+        user = QtGui.QLabel("Name")
         self.gridLayout.addWidget(user, 0, 1)
 
         i = 1
         for prop in self.confTemplate:
-            if self.confTemplate.get(prop).get('visible'):
+            if self.confTemplate.get(prop).get("visible"):
                 propValue = QtGui.QLineEdit()
-                propValue.setText(decodeXml(self.confTemplate.get(prop).get('userData')))
+                propValue.setText(
+                    decodeXml(self.confTemplate.get(prop).get("userData"))
+                )
                 self.gridLayout.addWidget(propValue, i, 1)
                 self.infos.append(propValue)
                 i += 1
@@ -765,33 +822,33 @@ class infoPartConfUI():
         self.i = i
         self.gridLayoutButtons.addWidget(self.newOne, 0, 1)
 
-        self.suppCombo =  QtGui.QComboBox()
+        self.suppCombo = QtGui.QComboBox()
         for prop in self.confTemplate:
-            if self.confTemplate.get(prop).get('visible'):
-                if prop[0:6] == 'Field_':
+            if self.confTemplate.get(prop).get("visible"):
+                if prop[0:6] == "Field_":
                     fieldRef = prop
-                    fieldData = decodeXml(self.confTemplate.get(prop).get('userData'))
+                    fieldData = decodeXml(self.confTemplate.get(prop).get("userData"))
                     self.suppCombo.addItem(fieldRef + " - " + fieldData)
 
         self.gridLayoutButtons.addWidget(self.suppCombo, 1, 1)
 
         # 3rd column has the Active checkbox
-        active = QtGui.QLabel('Active')
+        active = QtGui.QLabel("Active")
         self.gridLayout.addWidget(active, 0, 2)
 
         i = 1
         for prop in self.confTemplate:
-            if self.confTemplate.get(prop).get('visible'):
+            if self.confTemplate.get(prop).get("visible"):
                 checkLayout = QtGui.QVBoxLayout()
                 checked = QtGui.QCheckBox()
-                checked.setChecked(self.confTemplate.get(prop).get('active'))
+                checked.setChecked(self.confTemplate.get(prop).get("active"))
                 self.gridLayout.addWidget(checked, i, 2)
                 self.checker.append(checked)
                 i += 1
 
-        self.addnew = QtGui.QPushButton('Add')
+        self.addnew = QtGui.QPushButton("Add")
         self.gridLayoutButtons.addWidget(self.addnew, 0, 2)
-        self.suppBut = QtGui.QPushButton('Delete')
+        self.suppBut = QtGui.QPushButton("Delete")
         self.gridLayoutButtons.addWidget(self.suppBut, 1, 2)
 
         # Actions
@@ -804,14 +861,14 @@ class infoPartConfUI():
 
         # Show the update if any
         if self.updateAutoFieldlist() != None:
-            updateLab = QtGui.QLabel('Update automatic input field')
+            updateLab = QtGui.QLabel("Update automatic input field")
             self.gridLayoutUpdate.addWidget(updateLab, 0, 0)
             self.upCombo = QtGui.QComboBox()
             self.gridLayoutUpdate.addWidget(self.upCombo, 1, 0)
 
             for prop in self.updateAutoFieldlist():
                 self.upCombo.addItem(prop)
-            self.upBut = QtGui.QPushButton('Update')
+            self.upBut = QtGui.QPushButton("Update")
             self.gridLayoutUpdate.addWidget(self.upBut, 1, 1)
 
             # Actions
@@ -822,4 +879,4 @@ class infoPartConfUI():
 
 
 # Add the command in the workbench
-Gui.addCommand('Asm4_infoPart', infoPartCmd())
+Gui.addCommand("Asm4_infoPart", infoPartCmd())

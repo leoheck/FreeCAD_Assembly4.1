@@ -19,4 +19,3 @@ if hasattr(App, "Qt"):
     translate = App.Qt.translate
 else:
     print("Translations will not be available")
-    

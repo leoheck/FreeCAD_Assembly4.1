@@ -28,10 +28,10 @@ from .Asm4_objects import (
 
 class makeExpressionArray:
 
-    iconFileName = 'Asm4_ExpressionArray.svg'
-    menuText = 'Create an expression driven Array'
-    arrayType = 'Expression Array'
-    namePrefix = 'XArray_'
+    iconFileName = "Asm4_ExpressionArray.svg"
+    menuText = "Create an expression driven Array"
+    arrayType = "Expression Array"
+    namePrefix = "XArray_"
     tooltip = """Create an array of the selected object where the placement of each element is calculated using expressions and an Index property.<br>
         Select a source object to array and optionally an Axis that transformation will be related to.<br>
         Without axis the transformations relates to the source object internal Z axis.<br>
@@ -46,14 +46,14 @@ class makeExpressionArray:
     def GetResources(self):
         iconFile = os.path.join(Asm4.iconPath, self.iconFileName)
         return {
-            'MenuText': self.menuText,
-            'ToolTip': self.tooltip,
-            'Pixmap': iconFile,
+            "MenuText": self.menuText,
+            "ToolTip": self.tooltip,
+            "Pixmap": iconFile,
         }
 
     def _cacheSelectionInfo(self):
         """Check axis and caches useful data for selected items.
-           Selection must contain one or two objects."""
+        Selection must contain one or two objects."""
         sourceObj = None
         objParent = None
         axisObj = None
@@ -63,7 +63,7 @@ class makeExpressionArray:
         if len(selection) in (1, 2):
             sourceObj = selection[0].Object
             objParent = sourceObj.getParentGeoFeatureGroup()
-            if objParent.TypeId == 'PartDesign::Body':
+            if objParent.TypeId == "PartDesign::Body":
                 # Don't go there
                 objParent = sourceObj = None
             elif len(selection) == 2:
@@ -89,14 +89,14 @@ class makeExpressionArray:
         srcObj, objParent, axisObj, sub = self._selectionInfo
         if srcObj and objParent:
             obj = srcObj.Document.addObject(
-                'Part::FeaturePython',
+                "Part::FeaturePython",
                 self.namePrefix + srcObj.Name,
                 ExpressionArray(),
                 None,
                 True,
             )
             obj.ArrayType = self.arrayType
-            obj.setPropertyStatus('ArrayType', 'ReadOnly')
+            obj.setPropertyStatus("ArrayType", "ReadOnly")
             obj.Label = self.namePrefix + srcObj.Label
             if axisObj:
                 obj.Axis = axisObj, sub
@@ -124,16 +124,17 @@ class makeExpressionArray:
     +-----------------------------------------------+
 """
 
+
 class makeCircularArray(makeExpressionArray):
 
-    iconFileName = 'Asm4_PolarArray.svg'
-    menuText = 'Create a circular array'
-    arrayType = 'Circular Array'
-    namePrefix = 'Circular_'
+    iconFileName = "Asm4_PolarArray.svg"
+    menuText = "Create a circular array"
+    arrayType = "Circular Array"
+    namePrefix = "Circular_"
     tooltip = """<p>Create a circular (polar) array around an axis. 
                 Supported axis objects are axis or plane from an origin, datum line, LCS axes, straight line segments, arcs and circles</p>
                 <p><b>Usage</b>: Select an object and the axis (hold CTRL key to select second object)</p>"""
- 
+
     def IsActive(self):
         self._cacheSelectionInfo()
         return self._selectionInfo[2] is not None
@@ -141,13 +142,17 @@ class makeCircularArray(makeExpressionArray):
     # Special property setup for this array type.
     def _setupProperties(self, obj):
         obj.Count = 6
-        obj.addProperty('App::PropertyAngle', 'AngleStep', 'Array',
-                        'The angle between two subsequent elements.\n'
-                        'Expression to place the last element at 180°: <code>180/(Count-1)</code>')
-        obj.setExpression('AngleStep',              '360/Count')
-        obj.setExpression('.Placer.Rotation.Angle', 'AngleStep * Index')
-        obj.setPropertyStatus('Placer', 'Hidden')
-        obj.setPropertyStatus('Scaler', 'Hidden')
+        obj.addProperty(
+            "App::PropertyAngle",
+            "AngleStep",
+            "Array",
+            "The angle between two subsequent elements.\n"
+            "Expression to place the last element at 180°: <code>180/(Count-1)</code>",
+        )
+        obj.setExpression("AngleStep", "360/Count")
+        obj.setExpression(".Placer.Rotation.Angle", "AngleStep * Index")
+        obj.setPropertyStatus("Placer", "Hidden")
+        obj.setPropertyStatus("Scaler", "Hidden")
 
 
 """
@@ -156,12 +161,13 @@ class makeCircularArray(makeExpressionArray):
     +-----------------------------------------------+
 """
 
+
 class makeLinearArray(makeExpressionArray):
 
-    iconFileName = 'Asm4_LinearArray.svg'
-    menuText = 'Create a linear array'
-    arrayType = 'Linear Array'
-    namePrefix = 'Linear_'
+    iconFileName = "Asm4_LinearArray.svg"
+    menuText = "Create a linear array"
+    arrayType = "Linear Array"
+    namePrefix = "Linear_"
     tooltip = """<p>Create a linear array along an axis. 
                 Supported axis objects are axis or plane from an origin, datum line, LCS axes, straight line segments, arcs and circles</p>
                 <p><b>Usage</b>: Select an object and an axis for the direction (hold CTRL key to select second object)</p>"""
@@ -173,13 +179,17 @@ class makeLinearArray(makeExpressionArray):
     # Special property setup for this array type.
     def _setupProperties(self, obj):
         obj.Count = 6
-        obj.addProperty('App::PropertyDistance', 'LinearStep', 'Array',
-                        'The length between two subsequent elements.\n'
-                        'Expression to place the last element at 100 mm: 100mm/(Count-1)')
+        obj.addProperty(
+            "App::PropertyDistance",
+            "LinearStep",
+            "Array",
+            "The length between two subsequent elements.\n"
+            "Expression to place the last element at 100 mm: 100mm/(Count-1)",
+        )
         obj.LinearStep = 10.0
-        obj.setExpression('.Placer.Base.z', 'LinearStep * Index')
-        obj.setPropertyStatus('Placer', 'Hidden')
-        obj.setPropertyStatus('Scaler', 'Hidden')
+        obj.setExpression(".Placer.Base.z", "LinearStep * Index")
+        obj.setPropertyStatus("Placer", "Hidden")
+        obj.setPropertyStatus("Scaler", "Hidden")
 
 
 """
@@ -187,12 +197,14 @@ class makeLinearArray(makeExpressionArray):
     |     a mirror link array class and command     |
     +-----------------------------------------------+
 """
+
+
 class makeMirrorArray(makeExpressionArray):
 
-    iconFileName = 'Asm4_Mirror.svg'
-    menuText = 'Create mirror'
-    arrayType = 'Mirror Array'
-    namePrefix = 'Mirror_'
+    iconFileName = "Asm4_Mirror.svg"
+    menuText = "Create mirror"
+    arrayType = "Mirror Array"
+    namePrefix = "Mirror_"
     tooltip = """<p>Create a mirror of a part. 
                 Supported axis objects are axis or plane from an origin, datum line, LCS axes, straight line segments, arcs and circles</p>
                 <p><b>Usage</b>: Select a source object and a mirror plane or a normal to a plane (hold CTRL key to select second object)</p>"""
@@ -204,11 +216,14 @@ class makeMirrorArray(makeExpressionArray):
     # Special property setup for this array type.
     def _setupProperties(self, obj):
         obj.Count = 2
-        obj.setExpression('Scaler', '1 - 2 * (Index % 2)')
-        obj.setExpression('.Placer.Base', '.Placer.Rotation * minvert(.AxisPlacement) * .SourceObject.Placement.Base * -2 * (Index % 2)')
-        obj.setExpression('.Placer.Rotation.Angle', '180 * (Index % 2)')
-        obj.setPropertyStatus('Placer', 'Hidden')
-        obj.setPropertyStatus('Scaler', 'Hidden')
+        obj.setExpression("Scaler", "1 - 2 * (Index % 2)")
+        obj.setExpression(
+            ".Placer.Base",
+            ".Placer.Rotation * minvert(.AxisPlacement) * .SourceObject.Placement.Base * -2 * (Index % 2)",
+        )
+        obj.setExpression(".Placer.Rotation.Angle", "180 * (Index % 2)")
+        obj.setPropertyStatus("Placer", "Hidden")
+        obj.setPropertyStatus("Scaler", "Hidden")
         # https://github.com/Zolko-123/FreeCAD_Assembly4/issues/474
         Asm4.makeAsmProperties(obj)
 
@@ -217,7 +232,7 @@ class makeMirrorArray(makeExpressionArray):
 
 
 # add the commands to the workbench
-Gui.addCommand('Asm4_mirrorArray', makeMirrorArray())
-Gui.addCommand('Asm4_linearArray', makeLinearArray())
-Gui.addCommand('Asm4_circularArray', makeCircularArray())
-Gui.addCommand('Asm4_expressionArray', makeExpressionArray())
+Gui.addCommand("Asm4_mirrorArray", makeMirrorArray())
+Gui.addCommand("Asm4_linearArray", makeLinearArray())
+Gui.addCommand("Asm4_circularArray", makeCircularArray())
+Gui.addCommand("Asm4_expressionArray", makeExpressionArray())

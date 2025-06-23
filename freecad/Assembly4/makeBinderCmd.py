@@ -18,28 +18,34 @@ from FreeCAD import Console as FCC
 from . import Asm4_libs as Asm4
 
 
-
-
 """
     +-----------------------------------------------+
     |    a circular link array class and command    |
     +-----------------------------------------------+
 """
-class makeShapeBinder():
+
+
+class makeShapeBinder:
     def __init__(self):
         pass
 
     def GetResources(self):
-        tooltip  = "Create a reference to an external shape\n"
+        tooltip = "Create a reference to an external shape\n"
         tooltip += "This creates a SubShapeBinder of the selected shapes\n"
         tooltip += "(face, edge, point) in the root assembly\n"
-        tooltip += "Only shapes belonging to the same part can be imported in a single step"
-        iconFile = os.path.join( Asm4.iconPath, 'Asm4_shapeBinder.svg' )
-        return {"MenuText": "Create a shape binder", "ToolTip":  tooltip, "Pixmap": iconFile}
+        tooltip += (
+            "Only shapes belonging to the same part can be imported in a single step"
+        )
+        iconFile = os.path.join(Asm4.iconPath, "Asm4_shapeBinder.svg")
+        return {
+            "MenuText": "Create a shape binder",
+            "ToolTip": tooltip,
+            "Pixmap": iconFile,
+        }
 
     def IsActive(self):
         # only do this for assembly objects and all selected shapes must be in the same part
-        if Asm4.getAssembly() and len(Gui.Selection.getSelection())==1:
+        if Asm4.getAssembly() and len(Gui.Selection.getSelection()) == 1:
             return True
         else:
             return False
@@ -49,15 +55,15 @@ class makeShapeBinder():
         # get the selected objects
         selEx = Gui.Selection.getSelectionEx("", 0)[0].SubElementNames
         for sel in selEx:
-            (objName,dot,shape) = sel.partition('.')
+            (objName, dot, shape) = sel.partition(".")
             # the first element should be the name of a child in the assembly
-            if objName+'.' in rootAssembly.getSubObjects():
+            if objName + "." in rootAssembly.getSubObjects():
                 # get the object where the selected shapes are
                 obj = App.ActiveDocument.getObject(objName)
                 # this is a double-check, should always be true at this point
                 if obj:
-                    shape_name = '__'+objName+'__'+shape
-                    '''
+                    shape_name = "__" + objName + "__" + shape
+                    """
                     shape = (shape,)
                     # we must remove the first name in each selEx element
                     if len(selEx)>1:
@@ -66,15 +72,16 @@ class makeShapeBinder():
                             (objName,dot,shp) = sel.partition('.')
                             shape += (shp,)
                             shape_name += '__'+objName
-                    '''
+                    """
                     # now create the SubShapeBinder
-                    binder  = rootAssembly.newObject('PartDesign::SubShapeBinder', shape_name)
+                    binder = rootAssembly.newObject(
+                        "PartDesign::SubShapeBinder", shape_name
+                    )
                     binder.Label = shape_name
                     binder.Support = [(obj, (shape,))]
                     binder.MakeFace = False
-                    binder.ViewObject.LineColor = (0.,1.,0.)
-                    binder.recompute()                   
-
+                    binder.ViewObject.LineColor = (0.0, 1.0, 0.0)
+                    binder.recompute()
 
 
 """
@@ -88,7 +95,5 @@ support = [ (sel.Object, sel.SubElementNames) for sel in Gui.Selection.getSelect
 """
 
 
-
-
 # add the command to the workbench
-Gui.addCommand('Asm4_shapeBinder', makeShapeBinder())
+Gui.addCommand("Asm4_shapeBinder", makeShapeBinder())

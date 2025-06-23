@@ -32,21 +32,20 @@ from AnimationLib import animationProvider
 """
 
 
-class animationExporter():
+class animationExporter:
 
     def __init__(self, animProvider: animationProvider):
         self.animProvider = animProvider
 
-        self.imageList = None    # list of grabbed animation frames
+        self.imageList = None  # list of grabbed animation frames
         self.grabbedView = None  # single grabbed scene used for preview
-        self.bgImage = None      # rendered background for compositing
-        self.logo = None         # logo for compositing
-        self.shadow = None       # shadow for compositing
+        self.bgImage = None  # rendered background for compositing
+        self.logo = None  # logo for compositing
+        self.shadow = None  # shadow for compositing
 
         # Create the GUI and connect signals/slots
         self.expDiag = exportDialog(self)
         self.createGuiConnections()
-
 
     #
     # static image acquisition and manipulation functions
@@ -54,16 +53,15 @@ class animationExporter():
 
     # grab a single shot from the active scene
     @staticmethod
-    def getFrame(size=(1024, 768), mod='Current') -> Image.Image:
+    def getFrame(size=(1024, 768), mod="Current") -> Image.Image:
         tempDir = tempfile.TemporaryDirectory()
         fName = pathlib.Path(tempDir.name) / "temp.png"
         Gui.ActiveDocument.ActiveView.saveImage(str(fName), size[0], size[1], mod)
         img = Image.open(str(fName))
-        if img.mode != 'RGBA':
+        if img.mode != "RGBA":
             img.putalpha(255)
         img.load()
         return img
-
 
     # create a background for the animation based on the given image
     # and/or color
@@ -72,17 +70,18 @@ class animationExporter():
         cmpImg = Image.new("RGBA", size, bgColor)
         if imgFilename and os.path.isfile(imgFilename):
             bgImg = Image.open(imgFilename)
-            if bgImg.mode != 'RGBA':
+            if bgImg.mode != "RGBA":
                 bgImg.putalpha(255)
             bgImg = bgImg.resize(size)
             cmpImg = Image.alpha_composite(cmpImg, bgImg)
         return cmpImg
 
-
     # create an artistic shadow from a grabbed 2d image with the given
     # tint and fuzziness ("dropshadow")
     @staticmethod
-    def createShadow(img, shColor, blur, scale, offset, mode=Image.BICUBIC) -> Image.Image:
+    def createShadow(
+        img, shColor, blur, scale, offset, mode=Image.BICUBIC
+    ) -> Image.Image:
         # Create artistic drop shadow by coloring everything in the wanted shadow-color and
         # squashing the image to the lower half of the resulting frame
         shadowColored = Image.new("RGBA", img.size, shColor)
@@ -101,18 +100,22 @@ class animationExporter():
 
     # renders a logo-image to composite at the given position
     @staticmethod
-    def createLogo(imgFilename, frameSize, scale=(1, 1), position=(0, 0), mode=Image.BICUBIC) -> Image.Image:
+    def createLogo(
+        imgFilename, frameSize, scale=(1, 1), position=(0, 0), mode=Image.BICUBIC
+    ) -> Image.Image:
         cmpImg = Image.new("RGBA", frameSize, (0, 0, 0, 0))
         if imgFilename and os.path.isfile(imgFilename):
             logo = Image.open(imgFilename)
-            if logo.mode != 'RGBA':
+            if logo.mode != "RGBA":
                 logo.putalpha(255)
             logoSize = (int(logo.size[0] * scale[0]), int(logo.size[1] * scale[1]))
             logo = logo.resize(logoSize, mode)
-            pPos = (int(position[0] * (frameSize[0]-logoSize[0])), int(position[1] * (frameSize[1]-logoSize[1])))
+            pPos = (
+                int(position[0] * (frameSize[0] - logoSize[0])),
+                int(position[1] * (frameSize[1] - logoSize[1])),
+            )
             cmpImg.paste(logo, pPos, logo)
         return cmpImg
-
 
     # Clean up alpha channel of the given image. FCs export puts alpha based on the topmost object, i.e.
     # image will not be fully opaque even when a non-transparent object is shown behind a transparent one.
@@ -124,13 +127,12 @@ class animationExporter():
         img = Image.merge(img.mode, imgBands)
         return img
 
-
     #
     # instance bound image acquisition and exporting functions
     #
 
     # render and grab all frames as per the animation configuration
-    def grabFrames(self, size=(1024, 768), mod='Current'):
+    def grabFrames(self, size=(1024, 768), mod="Current"):
         frames = []
         firstFrame = True
         endOfCycle = False
@@ -143,7 +145,6 @@ class animationExporter():
 
         self.imageList = frames
 
-
     # export all frames to animated gif
     def writeGif(self, filename):
         # append reversed list if pendulum is wanted
@@ -152,16 +153,22 @@ class animationExporter():
 
         # Use dithering for all frames
         for i, img in enumerate(self.imageList):
-            tmp = img.convert(mode='P', palette=Image.ADAPTIVE, colors=256)
-            img = img.convert('RGB')
-            #self.imageList[i] = img.quantize(256, Image.FASTOCTREE, 0, tmp, Image.FLOYDSTEINBERG)
+            tmp = img.convert(mode="P", palette=Image.ADAPTIVE, colors=256)
+            img = img.convert("RGB")
+            # self.imageList[i] = img.quantize(256, Image.FASTOCTREE, 0, tmp, Image.FLOYDSTEINBERG)
             self.imageList[i] = tmp
 
         # export as animated gif
-        loops = self.expDiag.sbOutLoops.value()-1
-        frameMSec = int(1000/self.expDiag.sbOutFPS.value())
-        self.imageList[0].save(filename, save_all=True, append_images=self.imageList[1:], optimize=True, duration=frameMSec, loop=loops)
-
+        loops = self.expDiag.sbOutLoops.value() - 1
+        frameMSec = int(1000 / self.expDiag.sbOutFPS.value())
+        self.imageList[0].save(
+            filename,
+            save_all=True,
+            append_images=self.imageList[1:],
+            optimize=True,
+            duration=frameMSec,
+            loop=loops,
+        )
 
     # export an mp4 from the rendered framed
     def writeVideo(self, filename):
@@ -176,7 +183,7 @@ class animationExporter():
         # create video
         fps = self.expDiag.sbOutFPS.value()
         loops = self.expDiag.sbOutLoops.value()
-        fourccs = ['mp4v', 'avc1', 'X264', 'XVID']
+        fourccs = ["mp4v", "avc1", "X264", "XVID"]
         # codec = -1  # auto/select
         exported = False
         for fcc in fourccs:
@@ -185,7 +192,7 @@ class animationExporter():
 
             for i in range(0, loops):
                 for img in self.imageList:
-                    img = img.convert('RGB')
+                    img = img.convert("RGB")
                     video.write(cv2.cvtColor(numpy.array(img), cv2.COLOR_RGB2BGR))
 
             # write file
@@ -194,7 +201,11 @@ class animationExporter():
                 exported = True
                 break
         if not exported:
-            App.Console.PrintError("Export failed for \"" + filename + "\". Using another container type can help.\n")
+            App.Console.PrintError(
+                'Export failed for "'
+                + filename
+                + '". Using another container type can help.\n'
+            )
 
     # export each grabbed frame to a separate image
     def writeFrames(self, filename):
@@ -204,13 +215,16 @@ class animationExporter():
             fname = filename[:-4] + number + filename[-4:]
             img.save(fname)
 
-
     # alpha composite all precalculated images
     def compositStack(self, outputSize, frameImg=None, shadowImg=None):
         # composite the final image from full-size bg-colored image, shadow, original (alpha-cleaned) image, etc
         frame = frameImg if frameImg else self.grabbedView
 
-        cmpImg = self.bgImage if self.bgImage else Image.new("RGBA", frame.size, (0, 0, 0, 0))
+        cmpImg = (
+            self.bgImage
+            if self.bgImage
+            else Image.new("RGBA", frame.size, (0, 0, 0, 0))
+        )
 
         shadow = shadowImg if shadowImg else self.shadow
         if shadow:
@@ -225,8 +239,6 @@ class animationExporter():
 
         return cmpImg
 
-
-
     # progress dialog creation helper
     def createProgressDlg(self):
         pDlg = QtGui.QProgressDialog("Capturing and Exporting...", "Cancel", 0, 100)
@@ -236,7 +248,6 @@ class animationExporter():
         pDlg.setValue(0)
         pDlg.setValue(1)
         return pDlg
-
 
     # the main working function
     # grabs all the frames as per the current animation configuration
@@ -259,12 +270,12 @@ class animationExporter():
             return
 
         # do calculations for all grabbed frames
-        pDlg.setMaximum(len(self.imageList)+5)
+        pDlg.setMaximum(len(self.imageList) + 5)
         for i, img in enumerate(self.imageList):
             img = self.alphaSanitize(img)
             shadow = self.shadowFromInputFields(img)
             self.imageList[i] = self.compositStack(rSize, img, shadow)
-            pDlg.setValue(i+1)
+            pDlg.setValue(i + 1)
             if pDlg.wasCanceled():
                 return
 
@@ -276,7 +287,6 @@ class animationExporter():
         elif fname.lower().endswith(".png"):
             self.writeFrames(fname)
         pDlg.setValue(pDlg.maximum())
-
 
     #
     # GUI-bound image/layer calculations
@@ -299,7 +309,6 @@ class animationExporter():
             self.updateBackground()
             self.updateLogo()
 
-
     # calculate a new background image layer
     # make sure to force update other layers, if needed
     def updateBackground(self):
@@ -317,30 +326,43 @@ class animationExporter():
             if needNewGrab:
                 self.updatePreview()
 
-        #self.expDiag.gpbShadow.setChecked(useBg and self.expDiag.gpbShadow.isChecked())
-        #self.expDiag.gpbShadow.setEnabled(useBg)
-
+        # self.expDiag.gpbShadow.setChecked(useBg and self.expDiag.gpbShadow.isChecked())
+        # self.expDiag.gpbShadow.setEnabled(useBg)
 
     # calculate a new shadow layer
     def shadowFromInputFields(self, img):
-        useShadow = False # self.expDiag.gpbShadow.isChecked()
+        useShadow = False  # self.expDiag.gpbShadow.isChecked()
         if useShadow:
             color = self.expDiag.shadowColSel.color()
-            scale = (self.expDiag.sbShadowWidth.value() / 100.0, self.expDiag.sbShadowHeight.value() / 100.0)
-            offset = (self.expDiag.sbShadowX.value() / 100.0, self.expDiag.sbShadowY.value() / 100.0)
+            scale = (
+                self.expDiag.sbShadowWidth.value() / 100.0,
+                self.expDiag.sbShadowHeight.value() / 100.0,
+            )
+            offset = (
+                self.expDiag.sbShadowX.value() / 100.0,
+                self.expDiag.sbShadowY.value() / 100.0,
+            )
             blur = self.expDiag.sbShadowBlur.value()
             return self.createShadow(img, color, blur, scale, offset)
         else:
             return None
 
-
     # calculate a new logo overlay layer
     def updateLogo(self):
         fname = self.expDiag.logoFileSel.filename()
-        scale = (self.expDiag.sbLogoWidth.value()/100.0, self.expDiag.sbLogoHeight.value()/100.0)
-        offset = (self.expDiag.sbLogoX.value()/100.0, self.expDiag.sbLogoY.value()/100.0)
-        self.logo = self.createLogo(fname, self.grabbedView.size, scale, offset) if fname else None
-
+        scale = (
+            self.expDiag.sbLogoWidth.value() / 100.0,
+            self.expDiag.sbLogoHeight.value() / 100.0,
+        )
+        offset = (
+            self.expDiag.sbLogoX.value() / 100.0,
+            self.expDiag.sbLogoY.value() / 100.0,
+        )
+        self.logo = (
+            self.createLogo(fname, self.grabbedView.size, scale, offset)
+            if fname
+            else None
+        )
 
     #
     # Minor Gui based helpers and slots
@@ -356,47 +378,38 @@ class animationExporter():
         sFac = self.expDiag.sbSmoothFactor.value() + 1
         return (s[0] * sFac, s[1] * sFac)
 
-
     def onUpdatePreview(self):
         self.updatePreview()
         self.compositAndPreview()
-
 
     def onUpdateBackground(self):
         self.updateBackground()
         self.compositAndPreview()
 
-
     def updateShadow(self):
         self.shadow = self.shadowFromInputFields(self.grabbedView)
-
 
     def onUpdateShadow(self):
         self.updateShadow()
         self.compositAndPreview()
 
-
     def onUpdateLogo(self):
         self.updateLogo()
         self.compositAndPreview()
 
-
     def compositAndPreview(self):
         rSize = self.getResultSize()
         img = self.compositStack(rSize)
-        scale = self.expDiag.sbPreviewScale.value()/100.0
+        scale = self.expDiag.sbPreviewScale.value() / 100.0
         self.expDiag.setImage(img, scale)
-
 
     def openUI(self):
         self.onUpdatePreview()
         self.expDiag.show()
 
-
     def onClose(self):
         self.expDiag.setImage(None)
         self.imageList = []
-
 
     #
     # Signal/Slot-Connections for the Dialog
@@ -413,13 +426,13 @@ class animationExporter():
         self.expDiag.bgImgFileSel.fileChanged.connect(self.onUpdateBackground)
         self.expDiag.bgColorSel.colorChanged.connect(self.onUpdateBackground)
 
-        #self.expDiag.gpbShadow.toggled.connect(self.onUpdateShadow)
-        #self.expDiag.shadowColSel.colorChanged.connect(self.onUpdateShadow)
-        #self.expDiag.sbShadowX.valueChanged.connect(self.onUpdateShadow)
-        #self.expDiag.sbShadowY.valueChanged.connect(self.onUpdateShadow)
-        #self.expDiag.sbShadowWidth.valueChanged.connect(self.onUpdateShadow)
-        #self.expDiag.sbShadowHeight.valueChanged.connect(self.onUpdateShadow)
-        #self.expDiag.sbShadowBlur.valueChanged.connect(self.onUpdateShadow)
+        # self.expDiag.gpbShadow.toggled.connect(self.onUpdateShadow)
+        # self.expDiag.shadowColSel.colorChanged.connect(self.onUpdateShadow)
+        # self.expDiag.sbShadowX.valueChanged.connect(self.onUpdateShadow)
+        # self.expDiag.sbShadowY.valueChanged.connect(self.onUpdateShadow)
+        # self.expDiag.sbShadowWidth.valueChanged.connect(self.onUpdateShadow)
+        # self.expDiag.sbShadowHeight.valueChanged.connect(self.onUpdateShadow)
+        # self.expDiag.sbShadowBlur.valueChanged.connect(self.onUpdateShadow)
 
         self.expDiag.gpbLogo.toggled.connect(self.onUpdateLogo)
         self.expDiag.logoFileSel.fileChanged.connect(self.onUpdateLogo)
@@ -433,12 +446,12 @@ class animationExporter():
         self.expDiag.pbClose.clicked.connect(self.expDiag.close)
 
 
-
 """
     +-----------------------------------------------+
     |               Export Dialog UI                |
     +-----------------------------------------------+
 """
+
 
 class exportDialog(QtGui.QDialog):
     def __init__(self, owner: animationExporter, parentWidget=None):
@@ -448,8 +461,8 @@ class exportDialog(QtGui.QDialog):
         self.pilImage = None
 
         # The Gui-related things
-        self.setWindowTitle('Animation Export Preview')
-        self.setWindowIcon(QtGui.QIcon(os.path.join(Asm4.iconPath, 'FreeCad.svg')))
+        self.setWindowTitle("Animation Export Preview")
+        self.setWindowIcon(QtGui.QIcon(os.path.join(Asm4.iconPath, "FreeCad.svg")))
         self.setMinimumWidth(640)
         self.setMinimumHeight(480)
         self.setModal(False)
@@ -458,11 +471,11 @@ class exportDialog(QtGui.QDialog):
         # add and layout widgets
         # upper part
         self.gpbPreview = QtGui.QGroupBox("Preview", self)
-        self.lblPreview = QtGui.QLabel('TheImageLabel', self.gpbPreview)
+        self.lblPreview = QtGui.QLabel("TheImageLabel", self.gpbPreview)
         self.sbPreviewScale = QtGui.QSpinBox()
         self.sbPreviewScale.setRange(1, 100)
         self.sbPreviewScale.setValue(70)
-        self.sbPreviewScale.setSuffix('%')
+        self.sbPreviewScale.setSuffix("%")
         self.sbPreviewScale.setKeyboardTracking(False)
 
         self.prevHL = QtGui.QHBoxLayout()
@@ -481,8 +494,8 @@ class exportDialog(QtGui.QDialog):
         self.outputVLayout = QtGui.QVBoxLayout()
         self.gpbOutput = QtGui.QGroupBox("Output", self)
         self.outputFileSel = fileSelectorWidget("save", self.gpbOutput)
-        tt = 'Choose a file\n'
-        tt+= 'Supported extensions are *.gif *.mp4 *.avi *.mov *.mkv'
+        tt = "Choose a file\n"
+        tt += "Supported extensions are *.gif *.mp4 *.avi *.mov *.mkv"
         self.outputFileSel.setToolTip(tt)
 
         self.sbOutWidth = QtGui.QSpinBox()
@@ -534,8 +547,8 @@ class exportDialog(QtGui.QDialog):
         self.gpbBG.setCheckable(True)
         self.gpbBG.setChecked(False)
         self.bgImgFileSel = fileSelectorWidget("read", self.gpbBG)
-        tt = 'Choose an image file\n'
-        tt+= 'Supported extensions are *.png *.jpg *.jpeg *.gif'
+        tt = "Choose an image file\n"
+        tt += "Supported extensions are *.png *.jpg *.jpeg *.gif"
         self.bgImgFileSel.setToolTip(tt)
         self.bgColorSel = colorSelectorWidget((255, 255, 255, 255), self.gpbBG)
 
@@ -548,9 +561,9 @@ class exportDialog(QtGui.QDialog):
         # # # Logo Group Box # # #
         self.gpbLogo = QtGui.QGroupBox("Logo", self)
         self.logoFileSel = fileSelectorWidget("read", self.gpbLogo)
-        self.logoFileSel.setFile(os.path.join(Asm4.iconPath, 'FreeCad.png'))
-        tt = 'Choose an image file\n'
-        tt+= 'Supported extensions are *.png *.jpg *.jpeg *.gif'
+        self.logoFileSel.setFile(os.path.join(Asm4.iconPath, "FreeCad.png"))
+        tt = "Choose an image file\n"
+        tt += "Supported extensions are *.png *.jpg *.jpeg *.gif"
         self.logoFileSel.setToolTip(tt)
 
         self.sbLogoWidth = QtGui.QSpinBox()
@@ -594,12 +607,11 @@ class exportDialog(QtGui.QDialog):
 
         self.gpbLogo.setLayout(self.LogoVLayout)
 
-
-    # # # RH Side Groupbox-Layout # # #
+        # # # RH Side Groupbox-Layout # # #
         self.upperRHVLayout = QtGui.QVBoxLayout()
         self.upperRHVLayout.addWidget(self.gpbOutput)
         self.upperRHVLayout.addWidget(self.gpbBG)
-        #self.upperRHVLayout.addWidget(self.gpbShadow)
+        # self.upperRHVLayout.addWidget(self.gpbShadow)
         self.upperRHVLayout.addWidget(self.gpbLogo)
         self.upperRHVLayout.addStretch()
 
@@ -607,14 +619,13 @@ class exportDialog(QtGui.QDialog):
         self.upperHLayout.addWidget(self.gpbPreview)
         self.upperHLayout.addLayout(self.upperRHVLayout)
 
-    # # # buttons incl. lower layout # # #
+        # # # buttons incl. lower layout # # #
         self.pbClose = QtGui.QPushButton("Close")
         self.pbRefreshPreview = QtGui.QPushButton("Refresh Preview")
         self.pbCreateAndSave = QtGui.QPushButton("Create and Save")
         self.pbDummy = QtGui.QPushButton("Dummy")
         self.pbDummy.setDefault(True)
         self.pbDummy.setVisible(False)
-
 
         self.lowerButtonHLayout = QtGui.QHBoxLayout()
         self.lowerButtonHLayout.addWidget(self.pbClose)
@@ -628,11 +639,9 @@ class exportDialog(QtGui.QDialog):
         self.mainVLayout.addLayout(self.lowerButtonHLayout)
         self.setLayout(self.mainVLayout)
 
-
-
     # update the main qlabel with the supplied image to preview rendering
     def setImage(self, img: Image.Image, scale=1.0):
-        size = ( int(img.size[0]*scale), int(img.size[1]*scale) ) if img else None
+        size = (int(img.size[0] * scale), int(img.size[1] * scale)) if img else None
         self.pilImage = img.resize(size, Image.BICUBIC) if img else None
         qtImg = ImageQt(self.pilImage) if img else ImageQt(Image.new("RGBA", (1, 1)))
         qtPix = QtGui.QPixmap.fromImage(qtImg)
@@ -647,7 +656,6 @@ class exportDialog(QtGui.QDialog):
         self.lblPreview.setMinimumSize(self.pilImage.size[0], self.pilImage.size[1])
         self.lblPreview.adjustSize()
         self.adjustSize()
-
 
     # grab the close-event and ensure cleanup
     def closeEvent(self, event):
@@ -664,6 +672,7 @@ class exportDialog(QtGui.QDialog):
     +-----------------------------------------------+
 """
 
+
 class fileSelectorWidget(QtGui.QWidget):
 
     fileChanged = QtCore.Signal()
@@ -674,8 +683,8 @@ class fileSelectorWidget(QtGui.QWidget):
         self.label = QtGui.QLabel("File:", parent)
         self.leFilename = QtGui.QLineEdit(parent)
         self.pbSelectFile = QtGui.QPushButton("Select", parent)
-        #self.pbSelectFile.resize(50, self.pbSelectFile.height())
-        #self.pbSelectFile.setFixedWidth(50)
+        # self.pbSelectFile.resize(50, self.pbSelectFile.height())
+        # self.pbSelectFile.setFixedWidth(50)
 
         self.lowerButtonHLayout = QtGui.QHBoxLayout()
         self.lowerButtonHLayout.addWidget(self.label)
@@ -685,13 +694,21 @@ class fileSelectorWidget(QtGui.QWidget):
 
         self.type = type
         self.title = "Select File"
-        self.filter = "Image Files (*.png *.jpg *.jpeg *.gif)" if self.type=="read" else "Supported Files (*.mp4 *.avi *.mov *.mkv *.gif *.png)"
+        self.filter = (
+            "Image Files (*.png *.jpg *.jpeg *.gif)"
+            if self.type == "read"
+            else "Supported Files (*.mp4 *.avi *.mov *.mkv *.gif *.png)"
+        )
 
         self.pbSelectFile.clicked.connect(self.selectFile)
 
     # Call the OS-fileselector and record selected file
     def selectFile(self):
-        file = QtGui.QFileDialog.getOpenFileName(self, self.title, '', self.filter) if self.type=="read" else QtGui.QFileDialog.getSaveFileName(self, self.title, '', self.filter)
+        file = (
+            QtGui.QFileDialog.getOpenFileName(self, self.title, "", self.filter)
+            if self.type == "read"
+            else QtGui.QFileDialog.getSaveFileName(self, self.title, "", self.filter)
+        )
         return self.setFile(file[0])
 
     # Set the currently selected file
@@ -708,7 +725,6 @@ class fileSelectorWidget(QtGui.QWidget):
         return ret
 
 
-
 """
     +-----------------------------------------------+
     |               Custom ColorSelector            |
@@ -717,6 +733,7 @@ class fileSelectorWidget(QtGui.QWidget):
     | color-dialog.                                 |
     +-----------------------------------------------+
 """
+
 
 class colorSelectorWidget(QtGui.QWidget):
 
@@ -729,8 +746,8 @@ class colorSelectorWidget(QtGui.QWidget):
         self.leColor = QtGui.QLineEdit(parent)
         self.leColor.setReadOnly(True)
         self.pbSelect = QtGui.QPushButton("Select", parent)
-        #self.pbSelect.resize(50, self.pbSelect.height())
-        #self.pbSelect.setFixedWidth(50)
+        # self.pbSelect.resize(50, self.pbSelect.height())
+        # self.pbSelect.setFixedWidth(50)
 
         self.lowerButtonHLayout = QtGui.QHBoxLayout()
         self.lowerButtonHLayout.addWidget(self.label)
@@ -742,10 +759,12 @@ class colorSelectorWidget(QtGui.QWidget):
 
         self.pbSelect.clicked.connect(self.selectColor)
 
-
     def selectColor(self):
         c = self.selectedColor
-        color = QtGui.QColorDialog.getColor(initial=QtGui.QColor(c[0], c[1], c[2], c[3]), options=QtGui.QColorDialog.ShowAlphaChannel)
+        color = QtGui.QColorDialog.getColor(
+            initial=QtGui.QColor(c[0], c[1], c[2], c[3]),
+            options=QtGui.QColorDialog.ShowAlphaChannel,
+        )
         return self.setColor(color.getRgb())
 
     def setColor(self, color):
@@ -768,5 +787,6 @@ class colorSelectorWidget(QtGui.QWidget):
 
     @staticmethod
     def rgb2hex(color):
-        return "#{:02x}{:02x}{:02x}{:02x}".format(color[0], color[1], color[2], color[3])
-
+        return "#{:02x}{:02x}{:02x}{:02x}".format(
+            color[0], color[1], color[2], color[3]
+        )

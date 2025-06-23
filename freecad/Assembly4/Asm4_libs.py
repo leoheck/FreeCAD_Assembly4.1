@@ -7,11 +7,10 @@
 # Copyright HUBERT Zoltán
 
 
-
 """
-    +-----------------------------------------------+
-    |          shouldn't these be DEFINE's ?        |
-    +-----------------------------------------------+
++-----------------------------------------------+
+|          shouldn't these be DEFINE's ?        |
++-----------------------------------------------+
 """
 
 import os
@@ -22,23 +21,23 @@ import FreeCAD as App
 from FreeCAD import Console as FCC
 
 from . import Asm4_locator
+
 Asm4_path = os.path.join(os.path.dirname(Asm4_locator.__file__))
 iconPath = os.path.join(Asm4_path, "Resources", "icons")
 
 
 # Types of datum objects
-datumTypes = [  'PartDesign::CoordinateSystem', \
-                'PartDesign::Plane',            \
-                'PartDesign::Line',             \
-                'PartDesign::Point']
+datumTypes = [
+    "PartDesign::CoordinateSystem",
+    "PartDesign::Plane",
+    "PartDesign::Line",
+    "PartDesign::Point",
+]
 
 
-partInfo =[     'PartID',                       \
-                'PartName',                     \
-                'PartDescription',              \
-                'PartSupplier']
+partInfo = ["PartID", "PartName", "PartDescription", "PartSupplier"]
 
-containerTypes = [  'App::Part', 'PartDesign::Body' ]
+containerTypes = ["App::Part", "PartDesign::Body"]
 
 
 VEC_0 = App.Vector(0, 0, 0)
@@ -48,33 +47,32 @@ VEC_Z = App.Vector(0, 0, 1)
 VEC_T = App.Vector(1, 1, 1)
 
 
-rotX = App.Placement( VEC_0, App.Rotation( VEC_X, 90) )
-rotY = App.Placement( VEC_0, App.Rotation( VEC_Y, 90) )
-rotZ = App.Placement( VEC_0, App.Rotation( VEC_Z, 90) )
+rotX = App.Placement(VEC_0, App.Rotation(VEC_X, 90))
+rotY = App.Placement(VEC_0, App.Rotation(VEC_Y, 90))
+rotZ = App.Placement(VEC_0, App.Rotation(VEC_Z, 90))
 
 
-
-def findObjectLink(obj, doc = App.ActiveDocument):
+def findObjectLink(obj, doc=App.ActiveDocument):
     for o in doc.Objects:
-        if hasattr(o, 'LinkedObject'):
+        if hasattr(o, "LinkedObject"):
             if o.LinkedObject == obj:
                 return o
-    return(None)
+    return None
 
 
 def getSelectionPath(docName, objName, subObjName):
-        val = []
-        if (docName is None) or (docName == ''):
-            docName = App.ActiveDocument.Name
-        val.append(docName)
-        if objName and (objName != ''):
-            val.append(objName)
-            if subObjName and (subObjName != ''):
-                for son in subObjName.split('.'):
-                    if son and (son != ''):
-                        val.append(son)
+    val = []
+    if (docName is None) or (docName == ""):
+        docName = App.ActiveDocument.Name
+    val.append(docName)
+    if objName and (objName != ""):
+        val.append(objName)
+        if subObjName and (subObjName != ""):
+            for son in subObjName.split("."):
+                if son and (son != ""):
+                    val.append(son)
 
-        return val
+    return val
 
 
 """
@@ -83,45 +81,48 @@ def getSelectionPath(docName, objName, subObjName):
     +-----------------------------------------------+
 """
 
+
 def cloneObject(obj):
     container = obj.getParentGeoFeatureGroup()
     result = None
     if obj.Document and container:
-        #result = obj.Document.copyObject(obj, False)
-        result = obj.Document.addObject('App::Link', obj.Name)
+        # result = obj.Document.copyObject(obj, False)
+        result = obj.Document.addObject("App::Link", obj.Name)
         result.LinkedObject = obj
         result.Label = obj.Label
         container.addObject(result)
         result.recompute()
-        #container = result.getParentGeoFeatureGroup()
-        #if container:
+        # container = result.getParentGeoFeatureGroup()
+        # if container:
         container.recompute()
-        #if result.Document:
+        # if result.Document:
         result.Document.recompute()
     return result
 
+
 def newLCS(parent, objType, objName, attSupport):
     result = parent.newObject(objType, objName)
-    if hasattr(result, 'AttachmentSupport'):
+    if hasattr(result, "AttachmentSupport"):
         result.AttachmentSupport = attSupport
     else:
         result.Support = attSupport
     return result
 
-def placeObjectToLCS( attObj, attLink, attDoc, attLCS ):
-    expr = makeExpressionDatum( attLink, attDoc, attLCS )
+
+def placeObjectToLCS(attObj, attLink, attDoc, attLCS):
+    expr = makeExpressionDatum(attLink, attDoc, attLCS)
     # FCC.PrintMessage('expression = '+expr)
     # indicate the this fastener has been placed with the Assembly4 workbench
-    if not hasattr(attObj,'SolverId'):
+    if not hasattr(attObj, "SolverId"):
         makeAsmProperties(attObj)
     # the fastener is attached by its Origin, no extra LCS
-    attObj.AttachedBy = 'Origin'
+    attObj.AttachedBy = "Origin"
     # store the part where we're attached to in the constraints object
-    attObj.AttachedTo = attLink+'#'+attLCS
+    attObj.AttachedTo = attLink + "#" + attLCS
     # load the built expression into the Expression field of the constraint
-    attObj.setExpression( 'Placement', expr )
+    attObj.setExpression("Placement", expr)
     # Which solver is used
-    attObj.SolverId = 'Asm4EE'
+    attObj.SolverId = "Asm4EE"
     # recompute the object to apply the placement:
     attObj.recompute()
     container = attObj.getParentGeoFeatureGroup()
@@ -131,33 +132,33 @@ def placeObjectToLCS( attObj, attLink, attDoc, attLCS ):
         attObj.Document.recompute()
 
 
-
-
 """
     +-----------------------------------------------+
     |      Create default Assembly4 properties      |
     +-----------------------------------------------+
 """
-def makeAsmProperties( obj, reset=False ):
+
+
+def makeAsmProperties(obj, reset=False):
     # property AttachedBy
-    if not hasattr(obj,'AttachedBy'):
-        obj.addProperty( 'App::PropertyString', 'AttachedBy', 'Assembly' )
-    obj.setPropertyStatus('AttachedBy'  ,'ReadOnly')
+    if not hasattr(obj, "AttachedBy"):
+        obj.addProperty("App::PropertyString", "AttachedBy", "Assembly")
+    obj.setPropertyStatus("AttachedBy", "ReadOnly")
     # property AttachedTo
-    if not hasattr(obj,'AttachedTo'):
-        obj.addProperty( 'App::PropertyString', 'AttachedTo', 'Assembly' )
-    obj.setPropertyStatus('AttachedTo'  ,'ReadOnly')
+    if not hasattr(obj, "AttachedTo"):
+        obj.addProperty("App::PropertyString", "AttachedTo", "Assembly")
+    obj.setPropertyStatus("AttachedTo", "ReadOnly")
     # property AttachmentOffset
-    if not hasattr(obj,'AttachmentOffset'):
-        obj.addProperty( 'App::PropertyPlacement', 'AttachmentOffset', 'Assembly' )
+    if not hasattr(obj, "AttachmentOffset"):
+        obj.addProperty("App::PropertyPlacement", "AttachmentOffset", "Assembly")
     # property SolverId
-    if not hasattr(obj,'SolverId'):
-        obj.addProperty( 'App::PropertyString', 'SolverId', 'Assembly' )
+    if not hasattr(obj, "SolverId"):
+        obj.addProperty("App::PropertyString", "SolverId", "Assembly")
     if reset:
-        obj.AttachedBy = ''
-        obj.AttachedTo = ''
+        obj.AttachedBy = ""
+        obj.AttachedTo = ""
         obj.AttachmentOffset = App.Placement()
-        obj.SolverId = ''
+        obj.SolverId = ""
     return
 
 
@@ -165,12 +166,12 @@ def makeAsmProperties( obj, reset=False ):
 def getVarContainer():
     retval = None
     # check whether there already is a Variables object
-    variables = App.ActiveDocument.getObject('Variables')
-    if variables and variables.TypeId=='App::FeaturePython':
-            # signature of a PropertyContainer
-            if hasattr(variables,'Type') :
-                if variables.Type == 'App::PropertyContainer':
-                    retval = variables
+    variables = App.ActiveDocument.getObject("Variables")
+    if variables and variables.TypeId == "App::FeaturePython":
+        # signature of a PropertyContainer
+        if hasattr(variables, "Type"):
+            if variables.Type == "App::PropertyContainer":
+                retval = variables
     return retval
 
 
@@ -178,28 +179,28 @@ def getVarContainer():
 def makeVarContainer():
     retval = None
     # check whether there already is a Variables object
-    variables = App.ActiveDocument.getObject('Variables')
-    if variables :
-        if variables.TypeId=='App::FeaturePython':
+    variables = App.ActiveDocument.getObject("Variables")
+    if variables:
+        if variables.TypeId == "App::FeaturePython":
             # signature of a PropertyContainer
-            if hasattr(variables,'Type') :
-                if variables.Type == 'App::PropertyContainer':
+            if hasattr(variables, "Type"):
+                if variables.Type == "App::PropertyContainer":
                     retval = variables
             # for compatibility
-            else: 
-                variables.addProperty('App::PropertyString', 'Type')
-                variables.Type = 'App::PropertyContainer'            
+            else:
+                variables.addProperty("App::PropertyString", "Type")
+                variables.Type = "App::PropertyContainer"
                 retval = variables
         else:
-            FCC.PrintWarning('This Part contains an incompatible \"Variables\" object, ')
-            FCC.PrintWarning('this could lead to unexpected results\n')
+            FCC.PrintWarning('This Part contains an incompatible "Variables" object, ')
+            FCC.PrintWarning("this could lead to unexpected results\n")
     # there is none, so we create it
     else:
-        variables = App.ActiveDocument.addObject('App::FeaturePython','Variables')
-        variables.ViewObject.Proxy = setCustomIcon(object,'Asm4_Variables.svg')
+        variables = App.ActiveDocument.addObject("App::FeaturePython", "Variables")
+        variables.ViewObject.Proxy = setCustomIcon(object, "Asm4_Variables.svg")
         # signature or a PropertyContainer
-        variables.addProperty('App::PropertyString', 'Type')
-        variables.Type = 'App::PropertyContainer'
+        variables.addProperty("App::PropertyString", "Type")
+        variables.Type = "App::PropertyContainer"
         retval = variables
     return retval
 
@@ -217,15 +218,13 @@ def makeVarContainer():
 # object = App.ActiveDocument.addObject('App::FeaturePython','objName')
 # object = model.newObject('App::FeaturePython','objName')
 # object.ViewObject.Proxy = Asm4.setCustomIcon(object,'Asm4_Variables.svg')
-class setCustomIcon():
-    def __init__( self, obj, iconFile):
-        #obj.Proxy = self
-        self.customIcon = os.path.join( iconPath, iconFile )
+class setCustomIcon:
+    def __init__(self, obj, iconFile):
+        # obj.Proxy = self
+        self.customIcon = os.path.join(iconPath, iconFile)
 
-    def getIcon(self):                                              # GetIcon
+    def getIcon(self):  # GetIcon
         return self.customIcon
-
-
 
 
 """
@@ -233,7 +232,9 @@ class setCustomIcon():
     |         check whether a workbench exists      |
     +-----------------------------------------------+
 """
-def checkWorkbench( workbench ):
+
+
+def checkWorkbench(workbench):
     # checks whether the specified workbench is installed
     listWB = Gui.listWorkbenches()
     hasWB = False
@@ -242,28 +243,38 @@ def checkWorkbench( workbench ):
             hasWB = True
     return hasWB
 
+
 # since Asm4 v0.20 an assembly is called "Assembly" again
 def getAssembly():
     # return checkModel()
     retval = None
     if App.ActiveDocument:
         # the current (as per v0.90) assembly container
-        assy = App.ActiveDocument.getObject('Assembly')
-        if assy and assy.TypeId == 'App::Part'  \
-                and assy.Type   == 'Assembly'   \
-                and assy.getParentGeoFeatureGroup() is None:
+        assy = App.ActiveDocument.getObject("Assembly")
+        if (
+            assy
+            and assy.TypeId == "App::Part"
+            and assy.Type == "Assembly"
+            and assy.getParentGeoFeatureGroup() is None
+        ):
             retval = assy
         else:
             # former Asm4 Model compatibility check:
-            model = App.ActiveDocument.getObject('Model')
-            if model and model.TypeId == 'App::Part'  \
-                    and model.Type    == 'Assembly'   \
-                    and model.getParentGeoFeatureGroup() is None:
+            model = App.ActiveDocument.getObject("Model")
+            if (
+                model
+                and model.TypeId == "App::Part"
+                and model.Type == "Assembly"
+                and model.getParentGeoFeatureGroup() is None
+            ):
                 retval = model
             else:
                 # last chance, very old Asm4 Model
-                if model and model.TypeId=='App::Part'  \
-                        and model.getParentGeoFeatureGroup() is None:
+                if (
+                    model
+                    and model.TypeId == "App::Part"
+                    and model.getParentGeoFeatureGroup() is None
+                ):
                     retval = model
     return retval
 
@@ -281,12 +292,12 @@ def checkModel():
 # usage:
 # ( obj, tree ) = Asm4.getSelectionTree(index=0)
 def getSelectionTree(index=0):
-    retval = (None,None)
+    retval = (None, None)
     # we obviously need something selected
     # if len(Gui.Selection.getSelection()) >= index:
     if len(Gui.Selection.getSelection()) > index:
         selObj = Gui.Selection.getSelection()[index]
-        retval = ( selObj, None )
+        retval = (selObj, None)
         # objects at the document root don't have a selection tree
         if len(Gui.Selection.getSelectionEx("", 0)[0].SubElementNames) >= index:
             # we only treat the first selected object
@@ -296,39 +307,39 @@ def getSelectionTree(index=0):
             selList = Gui.Selection.getSelectionEx("", 0)[0].SubElementNames[index]
             # this is the final tree table
             # this first element will be overwritten later
-            selTree = ['root part']
+            selTree = ["root part"]
             # parse the list to find all objects
             rest = selList
             while rest:
-                (parent, dot, rest) = rest.partition('.')
+                (parent, dot, rest) = rest.partition(".")
                 # FCC.PrintMessage('found '+parent+'\n')
                 selTree.append(parent)
             # if we did find things
-            if len(selTree)>1:
+            if len(selTree) > 1:
                 # if the last one is not the selected object, it might be a sub-element of it
-                if selTree[-1]!=selObj.Name:
+                if selTree[-1] != selObj.Name:
                     selTree = selTree[0:-1]
                 # the last one should the selected object
-                if selTree[-1]==selObj.Name:
+                if selTree[-1] == selObj.Name:
                     topObj = App.ActiveDocument.getObject(selTree[1])
                     rootObj = topObj.getParentGeoFeatureGroup()
                     selTree[0] = rootObj.Name
                     # all went well, we return the selected object and its tree
-                    retval = ( selObj, selTree )
+                    retval = (selObj, selTree)
     return retval
 
 
 # get all datums in a part
-def getPartLCS( part ):
-    partLCS = [ ]
+def getPartLCS(part):
+    partLCS = []
     # parse all objects in the part (they return strings)
     for objName in part.getSubObjects(1):
         # get the proper objects
         # all object names end with a "." , this needs to be removed
-        obj = part.getObject( objName[0:-1] )
+        obj = part.getObject(objName[0:-1])
         if obj.TypeId in datumTypes:
-            partLCS.append( obj )
-        elif obj.TypeId == 'App::DocumentObjectGroup':
+            partLCS.append(obj)
+        elif obj.TypeId == "App::DocumentObjectGroup":
             datums = getPartLCS(obj)
             for datum in datums:
                 partLCS.append(datum)
@@ -339,8 +350,8 @@ def getPartLCS( part ):
 # (if it exists, else return None
 def getPartsGroup():
     retval = None
-    partsGroup = App.ActiveDocument.getObject('Parts')
-    if partsGroup and partsGroup.TypeId=='App::DocumentObjectGroup':
+    partsGroup = App.ActiveDocument.getObject("Parts")
+    if partsGroup and partsGroup.TypeId == "App::DocumentObjectGroup":
         retval = partsGroup
     return retval
 
@@ -352,25 +363,25 @@ def getPartsGroup():
 # The Window that pops up and shows are affected Objects, calls it
 # The Dependencies
 # Objects within Compounds and Bodys and also Linked Objects are left out.
-# 
+#
 # NOTE: Theoretically we could use the App.ActiveDocument.DependencyGraph function,
 # to get really every Object behind a selection.
-def getDependenciesList( CompleteSelection ):
-    deDendenciesList = [ ]
+def getDependenciesList(CompleteSelection):
+    deDendenciesList = []
     for Selection in CompleteSelection:
         # A possible container for more Sub-Objects
-        SubObjects = [ ]
+        SubObjects = []
         # If an Object has more objects to offer, get them
-        if hasattr(Selection,'getSubObjects'):
-            SubObjNames=Selection.getSubObjects()
+        if hasattr(Selection, "getSubObjects"):
+            SubObjNames = Selection.getSubObjects()
             # Some Objects return None Objects,
             # even if it has the 'getSubObjects' attribute
             # 'getSubObjects' delivers unique Names with a trailing .
-            for SubObjName in SubObjNames:              
+            for SubObjName in SubObjNames:
                 SubObjects.append(App.ActiveDocument.getObject(SubObjName[0:-1]))
         # If they are more Sub-Objects within that particular selection,
         # go get them. It doesn't matter If it is a Group or Part or Link.
-        if SubObjects is not None:            
+        if SubObjects is not None:
             SubObjects = getDependenciesList(SubObjects)
             # Adding the Sub-Objects in that way, prevents nested Objects in Objects
             for SubObject in SubObjects:
@@ -386,7 +397,9 @@ def getDependenciesList( CompleteSelection ):
     |           get the next instance's name        |
     +-----------------------------------------------+
 """
-def nextInstance( name, startAtOne=False ):
+
+
+def nextInstance(name, startAtOne=False):
     # if there is no such name, return the original
     if not App.ActiveDocument.getObject(name) and not startAtOne:
         return name
@@ -396,10 +409,9 @@ def nextInstance( name, startAtOne=False ):
             instanceNum = 1
         else:
             instanceNum = 2
-        while App.ActiveDocument.getObject( name+'_'+str(instanceNum) ):
+        while App.ActiveDocument.getObject(name + "_" + str(instanceNum)):
             instanceNum += 1
-        return name+'_'+str(instanceNum)
-
+        return name + "_" + str(instanceNum)
 
 
 """
@@ -408,16 +420,16 @@ def nextInstance( name, startAtOne=False ):
     |           of the Placement property           |
     +-----------------------------------------------+
 """
-def placementEE( EE ):
+
+
+def placementEE(EE):
     if not EE:
         return None
     else:
         for expr in EE:
-            if expr[0] == 'Placement':
+            if expr[0] == "Placement":
                 return expr[1]
     return None
-
-
 
 
 """
@@ -425,41 +437,58 @@ def placementEE( EE ):
     |              some geometry tests              |
     +-----------------------------------------------+
 """
-def isVector( vect ):
-    if isinstance(vect,App.Vector):
+
+
+def isVector(vect):
+    if isinstance(vect, App.Vector):
         return True
     return False
+
 
 def isCircle(shape):
-    if shape.isValid()  and hasattr(shape,'Curve') \
-                        and shape.Curve.TypeId=='Part::GeomCircle' \
-                        and hasattr(shape.Curve,'Center') \
-                        and hasattr(shape.Curve,'Radius'):
+    if (
+        shape.isValid()
+        and hasattr(shape, "Curve")
+        and shape.Curve.TypeId == "Part::GeomCircle"
+        and hasattr(shape.Curve, "Center")
+        and hasattr(shape.Curve, "Radius")
+    ):
         return True
     return False
+
 
 def isLine(shape):
-    if shape.isValid()  and hasattr(shape,'Curve') \
-                        and shape.Curve.TypeId=='Part::GeomLine' \
-                        and hasattr(shape,'Placement'):
+    if (
+        shape.isValid()
+        and hasattr(shape, "Curve")
+        and shape.Curve.TypeId == "Part::GeomLine"
+        and hasattr(shape, "Placement")
+    ):
         return True
     return False
 
+
 def isSegment(shape):
-    if shape.isValid()  and hasattr(shape,'Curve') \
-                        and shape.Curve.TypeId=='Part::GeomLine' \
-                        and hasattr(shape,'Length') \
-                        and hasattr(shape,'Vertexes') \
-                        and len(shape.Vertexes)==2:
+    if (
+        shape.isValid()
+        and hasattr(shape, "Curve")
+        and shape.Curve.TypeId == "Part::GeomLine"
+        and hasattr(shape, "Length")
+        and hasattr(shape, "Vertexes")
+        and len(shape.Vertexes) == 2
+    ):
         return True
     return False
 
 
 def isFlatFace(shape):
-    if shape.isValid()  and hasattr(shape,'Area')   \
-                        and shape.Area > 1.0e-6     \
-                        and hasattr(shape,'Volume') \
-                        and shape.Volume < 1.0e-9:
+    if (
+        shape.isValid()
+        and hasattr(shape, "Area")
+        and shape.Area > 1.0e-6
+        and hasattr(shape, "Volume")
+        and shape.Volume < 1.0e-9
+    ):
         return True
     return False
 
@@ -467,8 +496,8 @@ def isFlatFace(shape):
 def isHoleAxis(obj):
     if not obj:
         return False
-    if hasattr(obj, 'AttacherType'):
-        if obj.AttacherType == 'Attacher::AttachEngineLine':
+    if hasattr(obj, "AttacherType"):
+        if obj.AttacherType == "Attacher::AttachEngineLine":
             return True
     return False
 
@@ -476,8 +505,8 @@ def isHoleAxis(obj):
 def isPart(obj):
     if not obj:
         return False
-    if hasattr(obj, 'TypeId'):
-        if obj.TypeId == 'App::Part':
+    if hasattr(obj, "TypeId"):
+        if obj.TypeId == "App::Part":
             return True
     return False
 
@@ -485,7 +514,7 @@ def isPart(obj):
 def isAppLink(obj):
     if not obj:
         return False
-    if hasattr(obj, 'TypeId') and obj.TypeId == 'App::Link':
+    if hasattr(obj, "TypeId") and obj.TypeId == "App::Link":
         return True
     return False
 
@@ -493,8 +522,10 @@ def isAppLink(obj):
 def isLinkToPart(obj):
     if not obj:
         return False
-    if obj.TypeId == 'App::Link' and hasattr(obj.LinkedObject,'isDerivedFrom'):
-        if  obj.LinkedObject.isDerivedFrom('App::Part') or obj.LinkedObject.isDerivedFrom('PartDesign::Body'):
+    if obj.TypeId == "App::Link" and hasattr(obj.LinkedObject, "isDerivedFrom"):
+        if obj.LinkedObject.isDerivedFrom(
+            "App::Part"
+        ) or obj.LinkedObject.isDerivedFrom("PartDesign::Body"):
             return True
     return False
 
@@ -503,16 +534,22 @@ def isAsm4EE(obj):
     if not obj:
         return False
     # we only need to check for the SolverId
-    if hasattr(obj,'SolverId') :
-        if obj.SolverId=='Asm4EE' or obj.SolverId=='Placement::ExpressionEngine' or obj.SolverId=='' :
+    if hasattr(obj, "SolverId"):
+        if (
+            obj.SolverId == "Asm4EE"
+            or obj.SolverId == "Placement::ExpressionEngine"
+            or obj.SolverId == ""
+        ):
             return True
     # legacy check
     # DEPRECATED, to be removed
-    elif hasattr(obj,'AssemblyType') :
-        if obj.AssemblyType == 'Asm4EE' or obj.AssemblyType == '' :
-            FCC.PrintMessage('Found legacy AssemblyType property, adding new empty SolverId property\n')
+    elif hasattr(obj, "AssemblyType"):
+        if obj.AssemblyType == "Asm4EE" or obj.AssemblyType == "":
+            FCC.PrintMessage(
+                "Found legacy AssemblyType property, adding new empty SolverId property\n"
+            )
             # add the new property to convert legacy object
-            obj.addProperty( 'App::PropertyString', 'SolverId', 'Assembly' )
+            obj.addProperty("App::PropertyString", "SolverId", "Assembly")
             return True
     return False
 
@@ -520,8 +557,8 @@ def isAsm4EE(obj):
 def isAssembly(obj):
     if not obj:
         return False
-    if obj.TypeId=='App::Part' and obj.Name=='Assembly':
-        if hasattr(obj,'Type') and obj.Type=='Assembly':
+    if obj.TypeId == "App::Part" and obj.Name == "Assembly":
+        if hasattr(obj, "Type") and obj.Type == "Assembly":
             return True
     return False
 
@@ -535,23 +572,25 @@ def isAsm4Model(obj):
     |           Shows a Warning message box         |
     +-----------------------------------------------+
 """
-def warningBox( text ):
+
+
+def warningBox(text):
     msgBox = QtGui.QMessageBox()
-    msgBox.setWindowTitle( 'FreeCAD Warning' )
-    msgBox.setIcon( QtGui.QMessageBox.Critical )
-    msgBox.setWindowFlags( QtCore.Qt.WindowStaysOnTopHint )
-    msgBox.setText( text )
+    msgBox.setWindowTitle("FreeCAD Warning")
+    msgBox.setIcon(QtGui.QMessageBox.Critical)
+    msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+    msgBox.setText(text)
     msgBox.exec_()
     return
 
 
-def confirmBox( text ):
+def confirmBox(text):
     msgBox = QtGui.QMessageBox()
-    msgBox.setWindowTitle('FreeCAD Warning')
+    msgBox.setWindowTitle("FreeCAD Warning")
     msgBox.setIcon(QtGui.QMessageBox.Warning)
-    msgBox.setWindowFlags( QtCore.Qt.WindowStaysOnTopHint )
+    msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
     msgBox.setText(text)
-    msgBox.setInformativeText('Are you sure you want to proceed ?')
+    msgBox.setInformativeText("Are you sure you want to proceed ?")
     msgBox.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
     msgBox.setEscapeButton(QtGui.QMessageBox.Cancel)
     msgBox.setDefaultButton(QtGui.QMessageBox.Ok)
@@ -570,9 +609,11 @@ def confirmBox( text ):
     |        Drop-down menu to group buttons        |
     +-----------------------------------------------+
 """
+
+
 # from https://github.com/HakanSeven12/FreeCAD-Geomatics-Workbench/commit/d82d27b47fcf794bf6f9825405eacc284de18996
 class dropDownCmd:
-    def __init__(self, cmdlist, menu, tooltip = None, icon = None):
+    def __init__(self, cmdlist, menu, tooltip=None, icon=None):
         self.cmdlist = cmdlist
         self.menu = menu
         if tooltip is None:
@@ -584,9 +625,7 @@ class dropDownCmd:
         return tuple(self.cmdlist)
 
     def GetResources(self):
-        return { 'MenuText': self.menu, 'ToolTip': self.tooltip }
-
-
+        return {"MenuText": self.menu, "ToolTip": self.tooltip}
 
 
 """
@@ -597,16 +636,15 @@ class dropDownCmd:
 
 
 # Label (Name)
-def labelName( obj ):
+def labelName(obj):
     if obj:
         if obj.Name == obj.Label:
             txt = obj.Label
         else:
-            txt = obj.Label +' ('+obj.Name+')'
+            txt = obj.Label + " (" + obj.Name + ")"
         return txt
     else:
         return None
-
 
 
 """
@@ -614,7 +652,9 @@ def labelName( obj ):
     |         populate the ExpressionEngine         |
     +-----------------------------------------------+
 """
-def makeExpressionPart( attLink, attDoc, attLCS, linkedDoc, linkLCS ):
+
+
+def makeExpressionPart(attLink, attDoc, attLCS, linkedDoc, linkLCS):
     # if everything is defined
     if attLink and attLCS and linkedDoc and linkLCS:
         # this is where all the magic is, see:
@@ -627,28 +667,33 @@ def makeExpressionPart( attLink, attDoc, attLCS, linkedDoc, linkLCS ):
         # expr = LCS_in_the_assembly.Placement * constr_LinkName.AttachmentOffset * LinkedPart#LCS.Placement ^ -1
         # the AttachmentOffset is now a property of the App::Link
         # expr = LCS_in_the_assembly.Placement * AttachmentOffset * LinkedPart#LCS.Placement ^ -1
-        expr = attLCS+'.Placement * AttachmentOffset * '+linkedDoc+'#'+linkLCS+'.Placement ^ -1'
+        expr = (
+            attLCS
+            + ".Placement * AttachmentOffset * "
+            + linkedDoc
+            + "#"
+            + linkLCS
+            + ".Placement ^ -1"
+        )
         # if we're attached to another sister part (and not the Parent Assembly)
         # we need to take into account the Placement of that Part.
         if attDoc:
-            expr = attLink+'.Placement * '+attDoc+'#'+expr
+            expr = attLink + ".Placement * " + attDoc + "#" + expr
     else:
         expr = False
     return expr
 
 
-def makeExpressionDatum( attLink, attPart, attLCS ):
+def makeExpressionDatum(attLink, attPart, attLCS):
     # check that everything is defined
     if attLCS:
         # expr = Link.Placement * LinkedPart#LCS.Placement
-        expr = attLCS +'.Placement * AttachmentOffset'
+        expr = attLCS + ".Placement * AttachmentOffset"
         if attLink and attPart:
-            expr = attLink+'.Placement * '+attPart+'#'+expr
+            expr = attLink + ".Placement * " + attPart + "#" + expr
     else:
         expr = None
     return expr
-
-
 
 
 """
@@ -659,15 +704,14 @@ def makeExpressionDatum( attLink, attPart, attLCS ):
 # is in the FastenersLib.py file
 
 
-
 # checks whether an App::Part is selected, and that it's at the root of the document
 def getSelectedRootPart():
     retval = None
     selection = Gui.Selection.getSelection()
-    if len(selection)==1:
+    if len(selection) == 1:
         selObj = selection[0]
         # only consider App::Parts at the root of the document
-        if selObj.TypeId=='App::Part' and selObj.getParentGeoFeatureGroup() is None:
+        if selObj.TypeId == "App::Part" and selObj.getParentGeoFeatureGroup() is None:
             retval = selObj
     return retval
 
@@ -675,7 +719,7 @@ def getSelectedRootPart():
 def getSelectedContainer():
     retval = None
     selection = Gui.Selection.getSelection()
-    if len(selection)==1:
+    if len(selection) == 1:
         selObj = selection[0]
         if selObj.TypeId in containerTypes:
             retval = selObj
@@ -686,10 +730,14 @@ def getSelectedContainer():
 def getSelectedLink():
     retval = None
     selection = Gui.Selection.getSelection()
-    if len(selection)==1:
+    if len(selection) == 1:
         selObj = selection[0]
         # it's an App::Link
-        if selObj.isDerivedFrom('App::Link') and selObj.LinkedObject is not None and selObj.LinkedObject.TypeId in containerTypes:
+        if (
+            selObj.isDerivedFrom("App::Link")
+            and selObj.LinkedObject is not None
+            and selObj.LinkedObject.TypeId in containerTypes
+        ):
             retval = selObj
     return retval
 
@@ -698,11 +746,11 @@ def getSelectedLink():
 def getSelectedVarLink():
     retval = None
     selection = Gui.Selection.getSelection()
-    if len(selection)==1:
+    if len(selection) == 1:
         selObj = selection[0]
         # it's an App::Link
-        if selObj.TypeId=='Part::FeaturePython':
-            if hasattr(selObj,'Type') and selObj.Type=='Asm4::VariantLink':
+        if selObj.TypeId == "Part::FeaturePython":
+            if hasattr(selObj, "Type") and selObj.Type == "Asm4::VariantLink":
                 retval = selObj
     return retval
 
@@ -710,7 +758,7 @@ def getSelectedVarLink():
 def getSelectedDatum():
     selectedObj = None
     # check that something is selected
-    if len(Gui.Selection.getSelection())==1:
+    if len(Gui.Selection.getSelection()) == 1:
         selection = Gui.Selection.getSelection()[0]
         # check that it's a datum
         if selection.TypeId in datumTypes:
@@ -728,14 +776,13 @@ usage:
 
 self.YtranslSpinBox = QtGui.QDoubleSpinBox() → self.YtranslSpinBox = Asm4.QUnitSpinBox()
 """
+
+
 class QUnitSpinBox(QtGui.QDoubleSpinBox):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)        
-        _, self.length_divisor, self.default_unit = (
-            App.Units.schemaTranslate(
-                App.Units.Quantity("1 mm"),
-                App.Units.getSchema()
-            )
+        super().__init__(*args, **kwargs)
+        _, self.length_divisor, self.default_unit = App.Units.schemaTranslate(
+            App.Units.Quantity("1 mm"), App.Units.getSchema()
         )
         self.setSuffix(" " + self.default_unit)
 
@@ -744,8 +791,7 @@ class QUnitSpinBox(QtGui.QDoubleSpinBox):
         return super().value() * self.length_divisor
 
     def setValue(self, distance: float):
-        """sets the value in mm"""        
+        """sets the value in mm"""
         return super().setValue(
             distance / self.length_divisor,
-        ) 
-        
+        )
