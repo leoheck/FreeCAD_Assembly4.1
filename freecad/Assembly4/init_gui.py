@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 ###################################################################################
 #
 #  InitGui.py
@@ -46,9 +47,9 @@ if os.path.isfile(git_head_filepath):
 
 
 """
-    +-----------------------------------------------+
-    |            Initialize the workbench           |
-    +-----------------------------------------------+
++-----------------------------------------------+
+|           Initialize the workbench            |
++-----------------------------------------------+
 """
 
 
@@ -88,11 +89,11 @@ class Assembly4Workbench(Gui.Workbench):
         # this function is mandatory if this is a full python workbench
         return "Gui::PythonWorkbench"
 
-        """
+    """
     +-----------------------------------------------+
-    |        This is where all is defined           |
+    |         This is where all is defined          |
     +-----------------------------------------------+
-        """
+    """
 
     def Initialize(self):
 
@@ -150,79 +151,38 @@ class Assembly4Workbench(Gui.Workbench):
         )
 
         Gui.updateGui()
-        # import all stuff
+
         from . import newAssemblyCmd  # created an App::Part container called 'Assembly'
-
         from . import newDatumCmd  # creates a new LCS in 'Model'
-
         from . import newPartCmd  # creates a new App::Part container called 'Model'
-
         from . import infoPartCmd  # edits part information for BoM
-
         from . import insertLinkCmd  # inserts an App::Link to a 'Model' in another file
-
-        from . import (
-            placeLinkCmd,
-        )  # places a linked part by snapping LCS (in the Part and in the Assembly)
-
-        from . import (
-            importDatumCmd,
-        )  # creates an LCS in assembly and attaches it to an LCS relative to an external file
-
-        from . import (
-            releaseAttachmentCmd,
-        )  # creates an LCS in assembly and attaches it to an LCS relative to an external file
-
-        from . import (
-            makeBinderCmd,
-        )  # creates an LCS in assembly and attaches it to an LCS relative to an external file
-
-        from . import (
-            VariablesLib,
-        )  # creates an LCS in assembly and attaches it to an LCS relative to an external file
-
-        from . import (
-            AnimationLib,
-        )  # creates an LCS in assembly and attaches it to an LCS relative to an external file
-
-        from . import (
-            updateAssemblyCmd,
-        )  # updates all parts and constraints in the assembly
-
+        from . import placeLinkCmd # places a linked part by snapping LCS (in the Part and in the Assembly)
+        from . import importDatumCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import releaseAttachmentCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import makeBinderCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import VariablesLib # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import AnimationLib # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import updateAssemblyCmd # updates all parts and constraints in the assembly
         from . import makeArrayCmd  # creates a new array of App::Link
-
         from . import variantLinkCmd  # creates a variant link
-
         from . import gotoDocumentCmd  # opens the documentof the selected App::Link
-
         from . import Asm4_Measure  # Measure tool in the Task panel
-
-        from . import makeBomCmd  # creates the parts list
-
-        from . import (
-            checkInterference,
-        )  # check interferences btween parts inside the Assembly
-
-        from . import (
-            exportFiles,
-        )  # creates a hierarchical tree listing of files in an assembly
-
+        #from . import makeBomCmd  # creates the parts list
+        #from . import checkInterference # check interferences btween parts inside the Assembly
+        from . import exportFiles # creates a hierarchical tree listing of files in an assembly
         from . import HelpCmd  # shows a basic help window
-
         from . import showHideLcsCmd  # shows/hides all the LCSs
-
         from . import configurationEngine  # save/restore configuration
 
         # Fasteners
         if self.checkWorkbench("FastenersWorkbench"):
             # a library to handle fasteners he FastenersWorkbench
             from . import FastenersLib
-
             self.FastenersCmd = "Asm4_Fasteners"
         else:
             # a dummy library if the FastenersWorkbench is not installed
             from . import FastenersDummy
-
             self.FastenersCmd = "Asm4_insertScrew"
 
         # Define Menus
@@ -248,11 +208,12 @@ class Assembly4Workbench(Gui.Workbench):
         # self.appendToolbar("Geometry",["Asm4_newPart"])
 
         App.Console.PrintMessage("done\n")
-        """
+
+    """
     +-----------------------------------------------+
-    |           Initialisation finished             |
+    |            Initialisation finished            |
     +-----------------------------------------------+
-        """
+    """
 
     """
     +-----------------------------------------------+
@@ -282,10 +243,10 @@ class Assembly4Workbench(Gui.Workbench):
             "Asm4_shapeBinder",
             "Separator",
             "Asm4_infoPart",
-            "Asm4_makeLocalBOM",
-            "Asm4_makeBOM",
+            #"Asm4_makeLocalBOM",
+            #"Asm4_makeBOM",
             "Asm4_listLinkedFiles",
-            "Asm4_checkInterference",
+            #"Asm4_checkInterference",
             "Asm4_Measure",
             "Asm4_showLcs",
             "Asm4_hideLcs",
@@ -334,18 +295,18 @@ class Assembly4Workbench(Gui.Workbench):
             "Separator",
             "Asm4_Animate",
             "Asm4_Measure",
-            "Asm4_makeBOM",
+            #"Asm4_makeBOM",
             "Asm4_listLinkedFiles",
             "Asm4_showLcs",
             "Asm4_hideLcs",
-            "Asm4_checkInterference",
+            #"Asm4_checkInterference",
             "Asm4_openConfigurations",
         ]
         return commandList
 
     """
     +-----------------------------------------------+
-    |                 Selection Toolbar             |
+    |               Selection Toolbar               |
     +-----------------------------------------------+
     """
 
@@ -362,7 +323,7 @@ class Assembly4Workbench(Gui.Workbench):
 
     """
     +-----------------------------------------------+
-    |                Contextual Menus               |
+    |               Contextual Menus                |
     +-----------------------------------------------+
     """
 
@@ -407,7 +368,7 @@ class Assembly4Workbench(Gui.Workbench):
 
     """
     +-----------------------------------------------+
-    |               helper functions                |
+    |               Helper functions                |
     +-----------------------------------------------+
     """
 
@@ -425,11 +386,11 @@ class Assembly4Workbench(Gui.Workbench):
         App.Console.PrintMessage(".")
         Gui.updateGui()
 
+"""
++-----------------------------------------------+
+|          Actually make the workbench          |
++-----------------------------------------------+
+"""
 
-"""
-    +-----------------------------------------------+
-    |          actually make the workbench          |
-    +-----------------------------------------------+
-"""
 wb = Assembly4Workbench()
 Gui.addWorkbench(wb)
