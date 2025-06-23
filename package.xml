@@ -8,7 +8,7 @@
   <license file="LICENSE">LGPL-2.1-only</license>
   <url type="repository" branch="master">https://github.com/leoheck/FreeCAD_Assembly4</url>
   <url type="documentation">https://wiki.freecadweb.org/Assembly4_Workbench</url>
-  <url type="readme">https://github.com/leoheck/FreeCAD_Assembly4/blob/master/README.md</url>
+  <url type="readme">https://github.com/leoheck/FreeCAD_Assembly4/blob/main/README.md</url>
   <content>
     <workbench>
       <classname>Assembly4Workbench</classname>
