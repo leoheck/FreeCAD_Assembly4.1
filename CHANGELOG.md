@@ -4,7 +4,7 @@
 
 * 2025.03.11 (**0.50.18**):
 Removed NumPy dependency on Measurements and Animation (not in AnimationExporter though)
-Some improvements in insertLink,newBody, newDatum__
+Some improvements in insertLink, newBody, newDatum__
 
 * 2025.02.9 (**0.50.17**):
 Re-enabled _Parts_ folder for Assemblies by default (should be an option in the preferences)
