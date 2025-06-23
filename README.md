@@ -63,15 +63,10 @@ Release notes can be found in the [CHANGELOG.md](CHANGELOG.md) file.
 Assembly4 is released under the open-source license LGPLv2.1 (see [LICENSE](LICENSE))
 
 
-## Support
-This tool is an external addon to FreeCAD and is not related in any way to the FreeCAD organisation. You can provide your financial support for the continuing development of this open-source workbench :
-
+<!-- ## Support -->
+<!-- This tool is an external addon to FreeCAD and is not related in any way to the FreeCAD organisation. You can provide your financial support for the continuing development of this open-source workbench: -->
+<!-- 
 <a href="https://www.paypal.com/donate/?hosted_button_id=LBA6ZAV9QSQT8" target="_blank"><img src="Resources/media/PayPal_Donate.svg" height="36" alt="PayPal Donate"/></a>
 <a href="https://liberapay.com/Zolko/donate" target="_blank"><img src="Resources/media/LiberaPay_donate.svg" height="36" alt="LiberaPay Donate"></a>
 <a href="https://www.patreon.com/c/Zolko_123" target="_blank"><img src="Resources/media/Patreon_Donate.svg" height="36" alt="Patreon Donate"></a>
-
-
-
-
-
-
+ -->
