@@ -59,7 +59,7 @@ Linked parts are placed to each-other by matching their Datum Coordinate Systems
 To actually include some geometry, a body needs to be created, and designed using the PartDesign workbench. To be linked with the previously created model, this body needs to be inside the `App::Part container` called 'Model'.
 
 The result is the following:
-![](Resources/media/Asm4_Bielle_tree_arrows.png)
+![](freecad/Assembly4/Resources/media/Asm4_Bielle_tree_arrows.png)
 
 * the part _Bielle_ is placed in the assembly by attaching it's _LCS_0_ to the _LCS_0_ of the parent assembly.
 * the part _Cuve_ is placed in the assembly by placing its _LCS_0_ on the _LCS_1_ of the part _Bielle_
@@ -72,7 +72,7 @@ Assembly4 uses a special and very useful feature of FreeCAD, the **ExpressionEng
 
 In normal use, the ExpressionEngine of an _`App::Link`_ object is hidden, it must be shown as in the following screenshot:
 
-![](Resources/media/asm_EE.png)
+![](freecad/Assembly4/Resources/media/asm_EE.png)
 
 ### Syntax
 
@@ -100,11 +100,11 @@ To each part inserted into an assembly is associated an `App::FeaturePython` obj
 
 **Note:** These constraints are not really constraints in the traditional CAD sense, but since `App::FeaturePython` objects are very versatile, they could be expanded to contain real constraints in some (distant) future.
 
-![](Resources/media/Asm4_wb5.png)
+![](freecad/Assembly4/Resources/media/Asm4_wb5.png)
 
 _Taking a closer look at the fields contained in an `App::FeaturePython` object associated with the part 'Bague'. The small button under the cursor opens the dialog that allows to edit the parameters of the Attachment Offset_
 
-![](Resources/media/Asm4_AttachmentOffset.png)
+![](freecad/Assembly4/Resources/media/Asm4_AttachmentOffset.png)
 
 _Dialog that opens when clicking the previous small button, and permitting to edit the parameters of the_ `App::Placement` _called_ 'AttachmentOffset' _in the constraint associated with a link, and allowing relative placement of the link -vs- the attachment LCS_
 

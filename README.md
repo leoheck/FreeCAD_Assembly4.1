@@ -11,7 +11,7 @@ An Assembly4 _Assembly_ is a standard FreeCAD `App::Part` container, therefore i
 Parts are placed relative to each-other by matching features inside them. Specifically, in Assembly4, these _features_ are virtual objects called LCS (for Local Coordinate System, also called datum coordinate system) and are attached using FreeCAD's built-in `Part::Attacher` and `ExpressionEngine`. No geometry is used to place and constrain parts relative to each other, thus avoiding a lot of the topological naming problems. These built-in tools are also very fast, efficient and stable allowing very large assemblies with many levels of nested sub-assemblies.
 
 
-![](Resources/media/LaserCutter.png)
+![](freecad/Assembly4/Resources/media/LaserCutter.png)
 
 **Please Note:** only _Part_ and _Body_ containers at the root of a document can be inserted. Objects nested inside containers cannot be used directly by Assembly4.
 
@@ -64,6 +64,6 @@ Assembly4 is released under the open-source license LGPLv2.1 (see [LICENSE](LICE
 <!-- ## Support -->
 <!-- This tool is an external addon to FreeCAD and is not related in any way to the FreeCAD organisation. You can provide your financial support for the continuing development of this open-source workbench : -->
 <!--  -->
-<!-- <a href="https://www.paypal.com/donate/?hosted_button_id=LBA6ZAV9QSQT8" target="_blank"><img src="Resources/media/PayPal_Donate.svg" height="36" alt="PayPal Donate"/></a> -->
-<!-- <a href="https://liberapay.com/Zolko/donate" target="_blank"><img src="Resources/media/LiberaPay_donate.svg" height="36" alt="LiberaPay Donate"></a> -->
-<!-- <a href="https://www.patreon.com/c/Zolko_123" target="_blank"><img src="Resources/media/Patreon_Donate.svg" height="36" alt="Patreon Donate"></a> -->
+<!-- <a href="https://www.paypal.com/donate/?hosted_button_id=LBA6ZAV9QSQT8" target="_blank"><img src="freecad/Assembly4/Resources/media/PayPal_Donate.svg" height="36" alt="PayPal Donate"/></a> -->
+<!-- <a href="https://liberapay.com/Zolko/donate" target="_blank"><img src="freecad/Assembly4/Resources/media/LiberaPay_donate.svg" height="36" alt="LiberaPay Donate"></a> -->
+<!-- <a href="https://www.patreon.com/c/Zolko_123" target="_blank"><img src="freecad/Assembly4/Resources/media/Patreon_Donate.svg" height="36" alt="Patreon Donate"></a> -->
