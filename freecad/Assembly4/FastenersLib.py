@@ -15,7 +15,7 @@ from ScrewMaker import screwTables
 import FastenersCmd as FS
 
 from freecad.Assembly4 import Asm4_libs as Asm4
-from .Asm4_Translate import translate
+from freecad.Assembly4.Asm4_Translate import translate
 
 
 # icon to show in the Menu, toolbar and widget window

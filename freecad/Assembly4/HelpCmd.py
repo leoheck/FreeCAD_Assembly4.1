@@ -11,7 +11,7 @@ import os, webbrowser
 import FreeCADGui as Gui
 
 from freecad.Assembly4 import Asm4_libs as Asm4
-from .Asm4_Translate import translate
+from freecad.Assembly4.Asm4_Translate import translate
 
 
 """

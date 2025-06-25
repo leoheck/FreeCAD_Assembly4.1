@@ -124,7 +124,7 @@ class Assembly4Workbench(Gui.Workbench):
                 )
 
         # Translations
-        # from .Asm4_Translate import Qtranslate
+        # from freecad.Assembly4.Asm4_Translate import Qtranslate
         Gui.addLanguagePath(Asm4_trans)
         Gui.updateLocale()
 

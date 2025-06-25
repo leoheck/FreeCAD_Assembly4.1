@@ -12,7 +12,7 @@ import FreeCAD as App
 from FreeCAD import Console as FCC
 
 from freecad.Assembly4 import Asm4_libs as Asm4
-from .Asm4_objects import (
+from freecad.Assembly4.Asm4_objects import (
     ViewProviderArray,
     ExpressionArray,
     findAxisPlacement,
