@@ -636,7 +636,13 @@ class ExpressionArray(LinkArray):
         # Resetting Index to 1 because we get more useful preview results
         # in the expression editor
         obj.Index = 1
-        obj.SourceObject.ViewObject.Lighting = "Two side" # Fix lighting when mirroing objects
+
+        # Fix lighting when mirroing Bodies
+        if hasattr(obj.SourceObject, "ViewObject"):
+            vo = obj.SourceObject.ViewObject
+            if hasattr(vo, "Lighting"):
+                vo.Lighting = "Two side"
+
         if obj.ShowElement:
             for i in range(obj.Count):
                 el = obj.ElementList[i]
