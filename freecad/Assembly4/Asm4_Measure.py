@@ -39,8 +39,8 @@ from FreeCAD import Console as FCC
 import Part
 
 # only needed for icons
-from . import Asm4_libs as Asm4
-from . import selectionFilter
+from freecad.Assembly4 import Asm4_libs as Asm4
+from freecad.Assembly4 import selectionFilter
 
 
 """

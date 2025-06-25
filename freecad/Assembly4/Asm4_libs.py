@@ -20,7 +20,7 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-from . import Asm4_locator
+from freecad.Assembly4 import Asm4_locator
 
 Asm4_path = os.path.join(os.path.dirname(Asm4_locator.__file__))
 iconPath = os.path.join(Asm4_path, "Resources", "icons")

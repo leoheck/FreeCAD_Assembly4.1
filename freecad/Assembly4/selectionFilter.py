@@ -11,7 +11,7 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-from . import Asm4_libs as Asm4
+from freecad.Assembly4 import Asm4_libs as Asm4
 
 
 global Asm4_3DselObserver

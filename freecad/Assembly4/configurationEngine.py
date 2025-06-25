@@ -13,7 +13,7 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-from . import Asm4_libs as Asm4
+from freecad.Assembly4 import Asm4_libs as Asm4
 
 ASM4_CONFIG_TYPE = "Asm4::ConfigurationTable"
 HEADER_CELL = "A1"

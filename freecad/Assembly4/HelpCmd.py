@@ -10,7 +10,7 @@ import os, webbrowser
 
 import FreeCADGui as Gui
 
-from . import Asm4_libs as Asm4
+from freecad.Assembly4 import Asm4_libs as Asm4
 from .Asm4_Translate import translate
 
 

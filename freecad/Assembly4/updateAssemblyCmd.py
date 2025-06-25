@@ -11,7 +11,7 @@ import FreeCADGui as Gui
 import FreeCAD as App
 import Part
 
-from . import Asm4_libs as Asm4
+from freecad.Assembly4 import Asm4_libs as Asm4
 
 
 class updateAssembly:

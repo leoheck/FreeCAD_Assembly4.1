@@ -16,7 +16,7 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-from . import Asm4_libs as Asm4
+from freecad.Assembly4 import Asm4_libs as Asm4
 
 
 """
@@ -278,7 +278,7 @@ class ViewProviderVariant(object):
     +-----------------------------------------------+
     |           a general link array class          |
     +-----------------------------------------------+
-    see: 
+    see:
     https://github.com/realthunder/FreeCAD_assembly3/wiki/Link#app-namespace
 
 from .Asm4_objects import LinkArray
@@ -442,7 +442,7 @@ class CircularArray(LinkArray):
         parent = sObj.getParentGeoFeatureGroup()
         if not parent:
             return
-        # get the datum axis 
+        # get the datum axis
         axisObj = parent.getObject(obj.Axis)
         if axisObj:
             axisPlacement = axisObj.Placement
@@ -460,7 +460,7 @@ class CircularArray(LinkArray):
                     axisPlacement = lcsObj.Placement
             else:
                 FCC.PrintMessage('Axis not found\n')
-                return    
+                return
         # calculate the number of instances
         if obj.ArraySteps=='Interval':
             fullAngle = (obj.Count-1) * obj.IntervalAngle

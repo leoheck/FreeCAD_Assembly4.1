@@ -27,8 +27,8 @@ import os
 import FreeCADGui as Gui
 import FreeCAD as App
 
-from . import Asm4_locator
-from . import selectionFilter
+from freecad.Assembly4 import Asm4_locator
+from freecad.Assembly4 import selectionFilter
 
 global Asm4_icon, Asm4_path, Asm4_trans
 Asm4_path = os.path.join(os.path.dirname(Asm4_locator.__file__))
@@ -151,37 +151,37 @@ class Assembly4Workbench(Gui.Workbench):
 
         Gui.updateGui()
 
-        from . import newAssemblyCmd  # created an App::Part container called 'Assembly'
-        from . import newDatumCmd  # creates a new LCS in 'Model'
-        from . import newPartCmd  # creates a new App::Part container called 'Model'
-        # from . import infoPartCmd  # edits part information for BoM
-        from . import insertLinkCmd  # inserts an App::Link to a 'Model' in another file
-        from . import placeLinkCmd # places a linked part by snapping LCS (in the Part and in the Assembly)
-        from . import importDatumCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
-        from . import releaseAttachmentCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
-        from . import makeBinderCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
-        from . import VariablesLib # creates an LCS in assembly and attaches it to an LCS relative to an external file
-        from . import AnimationLib # creates an LCS in assembly and attaches it to an LCS relative to an external file
-        from . import updateAssemblyCmd # updates all parts and constraints in the assembly
-        from . import makeArrayCmd  # creates a new array of App::Link
-        from . import variantLinkCmd  # creates a variant link
-        from . import gotoDocumentCmd  # opens the documentof the selected App::Link
-        from . import Asm4_Measure  # Measure tool in the Task panel
-        #from . import makeBomCmd  # creates the parts list
-        #from . import checkInterference # check interferences btween parts inside the Assembly
-        from . import exportFiles # creates a hierarchical tree listing of files in an assembly
-        from . import HelpCmd  # shows a basic help window
-        from . import showHideLcsCmd  # shows/hides all the LCSs
-        from . import configurationEngine  # save/restore configuration
+        from freecad.Assembly4 import newAssemblyCmd  # created an App::Part container called 'Assembly'
+        from freecad.Assembly4 import newDatumCmd  # creates a new LCS in 'Model'
+        from freecad.Assembly4 import newPartCmd  # creates a new App::Part container called 'Model'
+        # from freecad.Assembly4 import infoPartCmd  # edits part information for BoM
+        from freecad.Assembly4 import insertLinkCmd  # inserts an App::Link to a 'Model' in another file
+        from freecad.Assembly4 import placeLinkCmd # places a linked part by snapping LCS (in the Part and in the Assembly)
+        from freecad.Assembly4 import importDatumCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from freecad.Assembly4 import releaseAttachmentCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from freecad.Assembly4 import makeBinderCmd # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from freecad.Assembly4 import VariablesLib # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from freecad.Assembly4 import AnimationLib # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from freecad.Assembly4 import updateAssemblyCmd # updates all parts and constraints in the assembly
+        from freecad.Assembly4 import makeArrayCmd  # creates a new array of App::Link
+        from freecad.Assembly4 import variantLinkCmd  # creates a variant link
+        from freecad.Assembly4 import gotoDocumentCmd  # opens the documentof the selected App::Link
+        from freecad.Assembly4 import Asm4_Measure  # Measure tool in the Task panel
+        #from freecad.Assembly4 import makeBomCmd  # creates the parts list
+        #from freecad.Assembly4 import checkInterference # check interferences btween parts inside the Assembly
+        from freecad.Assembly4 import exportFiles # creates a hierarchical tree listing of files in an assembly
+        from freecad.Assembly4 import HelpCmd  # shows a basic help window
+        from freecad.Assembly4 import showHideLcsCmd  # shows/hides all the LCSs
+        from freecad.Assembly4 import configurationEngine  # save/restore configuration
 
         # Fasteners
         if self.checkWorkbench("FastenersWorkbench"):
             # a library to handle fasteners he FastenersWorkbench
-            from . import FastenersLib
+            from freecad.Assembly4 import FastenersLib
             self.FastenersCmd = "Asm4_Fasteners"
         else:
             # a dummy library if the FastenersWorkbench is not installed
-            from . import FastenersDummy
+            from freecad.Assembly4 import FastenersDummy
             self.FastenersCmd = "Asm4_insertScrew"
 
         # Define Menus

@@ -14,10 +14,10 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-from . import Asm4_libs as Asm4
+from freecad.Assembly4 import Asm4_libs as Asm4
 from .placeLinkUI import placeLinkUI
 from .placePartUI import placePartUI
-from . import selectionFilter
+from freecad.Assembly4 import selectionFilter
 
 
 """
