@@ -28,6 +28,8 @@ Assembly 4 is available through the FreeCAD Addon Manager (menu **Tools > Addon 
 
 **Important Note:** Assembly4 recommends to use the stable FreeCAD v0.21 branch
 
+**Important Note:** Assembly4 has been removed from the Mocrosoft-owned and USA-based GitHub forge, and is now located on the non-profit [codeberg.org forge](https://codeberg.org/), located in Europe (Germany)
+
 
 
 ### Manual Installation
@@ -54,11 +56,11 @@ Please offer feedback or connect with the developers in the [Discussions](https:
 
 
 ## Addon Repository
-This addon is hosted on a [GitHub repository](https://github.com/Zolko-123/FreeCAD_Assembly4).
+This addon is hosted on a [codeberg repository](https://codeberg.org/Zolko/Assembly4).
 
 
 ## Release notes
-Release notes can be found in the [CHANGELOG.md](CHANGELOG.md) file.
+Release notes can be found in the [CHANGELOG](CHANGELOG.md) file.
 
 
 ## License
