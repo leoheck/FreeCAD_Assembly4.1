@@ -39,9 +39,12 @@ It is possible to install this workbench manually into FreeCAD's local workbench
 
 Assembly4 uses extensively FreeCAD's built-in `Part::Attacher`, and you can find documentation [following this link](https://wiki.freecad.org/Part_EditAttachment). It is recommended to be familiar with this function to get best usage of this workbebch.
 
-You can get more information in the [user instructions](INSTRUCTIONS.md), the [technical manual](TECHMANUAL.md), and you can use the provided [example assemblies](https://github.com/Zolko-123/FreeCAD_Examples) to experiment with this workbench's features. There are also online tutorials :
+## Documentation
 
-* [a quick assembly from scratch](https://github.com/Zolko-123/FreeCAD_Examples/blob/master/Asm4_Tutorial1/README.md)
+* Assembly4 documentation has its own repository: [https://codeberg.org/Zolko/Asm4_documentation](https://codeberg.org/Zolko/Asm4_documentation)
+* Please read the [User Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/USER_MANUAL.md), 
+* Or the more in-depth [Technical Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TECHNICAL_MANUAL.md)
+* You are invited to follow a tutorial for [a quick assembly from scratch](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_1.md)
 * [a cinematic assembly in one file, using a master sketch](https://github.com/Zolko-123/FreeCAD_Examples/blob/master/Asm4_Tutorial2/README.md)
 * [a Lego assembly](https://github.com/Zolko-123/FreeCAD_Examples/blob/master/Asm4_Tutorial3/README.md)
 * [Some examples to play with](https://github.com/Zolko-123/FreeCAD_Examples)
