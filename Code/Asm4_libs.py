@@ -22,7 +22,7 @@ import FreeCAD as App
 from FreeCAD import Console as FCC
 
 codePath   = os.path.dirname(__file__)
-iconPath = os.path.join( codePath, 'icons' )
+iconPath = os.path.join( codePath, '../Resources/icons' )
 
 
 
