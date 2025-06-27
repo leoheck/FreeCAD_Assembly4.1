@@ -28,7 +28,7 @@ Assembly 4 is available through the FreeCAD Addon Manager (menu **Tools > Addon 
 
 **Important Note:** Assembly4 recommends to use the stable FreeCAD v0.21 branch
 
-**Important Note:** Assembly4 has been removed from the Mocrosoft-owned and USA-based GitHub forge, and is now located on the non-profit [codeberg.org forge](https://codeberg.org/), located in Europe (Germany)
+**Important Note:** Assembly4 has been removed from the Mocrosoft-owned and USA-based GitHub forge, and is now located on the non-profit [codeberg.org](https://codeberg.org/) forge, located in Europe (Germany)
 
 
 
