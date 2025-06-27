@@ -45,7 +45,7 @@ Assembly4 uses extensively FreeCAD's built-in `Part::Attacher`, and you can find
 
 * Assembly4 documentation has its own repository: [https://codeberg.org/Zolko/Asm4_documentation](https://codeberg.org/Zolko/Asm4_documentation)
 * Please read the [User Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/USER_MANUAL.md), 
-* Or the more in-depth [Technical Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TECHNICAL_MANUAL.md)
+* Or the more in-depth [Technical Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TECH_MANUAL.md)
 * You are invited to follow a tutorial for [a quick assembly from scratch](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_1.md)
 * You can learn about the use of a master sketch and animation of assemblies by building [a cinematic assembly in one file](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_2.md)
 * For advanced user, you can read how to use variant links with the tutorial of the [Theo Jansen sandwalker](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_3.md)
