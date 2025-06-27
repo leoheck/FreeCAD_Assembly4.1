@@ -22,14 +22,17 @@
 ###################################################################################
 
 
-import os
+import os, sys
 
 import Asm4_locator
-global Asm4_icon, Asm4_path, Asm4_trans
-Asm4_path = os.path.dirname( Asm4_locator.__file__ )
-Asm4_icon = os.path.join( Asm4_path , 'Resources/icons/Assembly4.svg' )
+global Asm4_path, Asm4_icon, Asm4_code, Asm4_trans
+Asm4_path  = os.path.dirname( Asm4_locator.__file__ )
+Asm4_code  = os.path.join(Asm4_path, "Code")
+Asm4_icon  = os.path.join(Asm4_path, 'Resources/icons/Assembly4.svg' )
 Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
 
+# insert python search path
+sys.path.insert(1, Asm4_code)
 
 # I don't like this being here
 import selectionFilter
@@ -42,7 +45,7 @@ import selectionFilter
 """
 class Assembly4Workbench(Workbench):
 
-    global Asm4_icon
+    global Asm4_path, Asm4_icon, Asm4_code, Asm4_trans
     global selectionFilter
     MenuText = "Assembly 4"
     ToolTip = "Assembly 4 workbench"
@@ -82,7 +85,6 @@ class Assembly4Workbench(Workbench):
     +-----------------------------------------------+
         """
     def Initialize(self):
-
         # check for FreeCAD version
         FCver = FreeCAD.Version()
         # print("This is FreeCAD version "+FCver[0]+"."+FCver[1]+"."+FCver[2]+"-"+FCver[3])
@@ -159,8 +161,8 @@ class Assembly4Workbench(Workbench):
         self.dot()
         import exportFiles         # creates a hierarchical tree listing of files in an assembly
         self.dot()
-        import HelpCmd             # shows a basic help window
-        self.dot()
+        # import HelpCmd             # shows a basic help window
+        # self.dot()
         import showHideLcsCmd      # shows/hides all the LCSs
         self.dot()
         import configurationEngine # save/restore configuration
@@ -188,11 +190,6 @@ class Assembly4Workbench(Workbench):
         self.dot()
 
         # self.appendMenu("&Geometry",["Asm4_newPart"])
-
-        # additional entry in the Help menu
-        # self.appendMenu(Qtranslate("Workbench", "&Help"), ["Asm4_Help"])
-        self.appendMenu( "&Help", ["Asm4_Help"])
-        self.dot()
 
         # Define Toolbars
         # commands to appear in the Assembly4 toolbar

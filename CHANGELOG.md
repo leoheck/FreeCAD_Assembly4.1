@@ -2,6 +2,14 @@
 
 ## Release notes
 
+* 2025.06.25 (**0.60.0**) :  
+Moved to a new hosting provider : codeberg.org, located in Germany  
+Moved all code into its subdirectory "Code" for cleanup  
+Moved icons into "Code/icons"  
+Removed obsolete libAsm4.py  
+Included the 3 first tutorials  
+This should be functionally identical to previous version 0.50.18  
+
 * 2025.03.11 (**0.50.18**) :  
 Removed NumPy dependency on Measurements and Animation (not in AnimationExporter though)  
 Some improvements in insertLink,newBody, newDatum__

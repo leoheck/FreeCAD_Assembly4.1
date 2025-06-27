@@ -1,6 +1,6 @@
-# FreeCAD Assembly 4 workbench
+# Assembly4 workbench for FreeCAD
 
-Current version 0.50.18
+Current version 0.60.0
 
 
 ## Overview
@@ -28,6 +28,8 @@ Assembly 4 is available through the FreeCAD Addon Manager (menu **Tools > Addon 
 
 **Important Note:** Assembly4 recommends to use the stable FreeCAD v0.21 branch
 
+**Important Note:** Assembly4 has been removed from the Mocrosoft-owned and USA-based GitHub forge, and is now located on the non-profit [codeberg.org](https://codeberg.org/) forge, located in Europe (Germany)
+
 
 
 ### Manual Installation
@@ -39,12 +41,14 @@ It is possible to install this workbench manually into FreeCAD's local workbench
 
 Assembly4 uses extensively FreeCAD's built-in `Part::Attacher`, and you can find documentation [following this link](https://wiki.freecad.org/Part_EditAttachment). It is recommended to be familiar with this function to get best usage of this workbebch.
 
-You can get more information in the [user instructions](INSTRUCTIONS.md), the [technical manual](TECHMANUAL.md), and you can use the provided [example assemblies](https://github.com/Zolko-123/FreeCAD_Examples) to experiment with this workbench's features. There are also online tutorials :
+## Documentation
 
-* [a quick assembly from scratch](https://github.com/Zolko-123/FreeCAD_Examples/blob/master/Asm4_Tutorial1/README.md)
-* [a cinematic assembly in one file, using a master sketch](https://github.com/Zolko-123/FreeCAD_Examples/blob/master/Asm4_Tutorial2/README.md)
-* [a Lego assembly](https://github.com/Zolko-123/FreeCAD_Examples/blob/master/Asm4_Tutorial3/README.md)
-* [Some examples to play with](https://github.com/Zolko-123/FreeCAD_Examples)
+* Assembly4 documentation has its own repository: [https://codeberg.org/Zolko/Asm4_documentation](https://codeberg.org/Zolko/Asm4_documentation)
+* Please read the [User Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/USER_MANUAL.md), 
+* Or the more in-depth [Technical Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TECHNICAL_MANUAL.md)
+* You are invited to follow a tutorial for [a quick assembly from scratch](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_1.md)
+* You can learn about the use of a master sketch and animation of assemblies by building [a cinematic assembly in one file](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_2.md)
+* For advanced user, you can read how to use variant links with the tutorial of the [Theo Jansen sandwalker](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_3.md)
 
 
 ## Discussion
@@ -52,11 +56,11 @@ Please offer feedback or connect with the developers in the [Discussions](https:
 
 
 ## Addon Repository
-This addon is hosted on a [GitHub repository](https://github.com/Zolko-123/FreeCAD_Assembly4).
+This addon is hosted on a [codeberg repository](https://codeberg.org/Zolko/Assembly4).
 
 
 ## Release notes
-Release notes can be found in the [CHANGELOG.md](CHANGELOG.md) file.
+Release notes can be found in the [CHANGELOG](CHANGELOG.md) file.
 
 
 ## License

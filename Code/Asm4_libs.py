@@ -15,14 +15,14 @@
 """
 
 import os
-wbPath   = os.path.dirname(__file__)
-iconPath = os.path.join( wbPath, 'Resources/icons' )
-libPath  = os.path.join( wbPath, 'Resources/library' )
 
 from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
+
+codePath   = os.path.dirname(__file__)
+iconPath = os.path.join( codePath, '../Resources/icons' )
 
 
 
