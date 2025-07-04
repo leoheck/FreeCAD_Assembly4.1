@@ -2,6 +2,9 @@
 
 ## Release notes
 
+* 2025.07.04 (**0.60.1**) :  
+Announced new FreeCAD v0.21 hosting provider : codeberg.org, located in Germany  
+
 * 2025.06.25 (**0.60.0**) :  
 Moved to a new hosting provider : codeberg.org, located in Germany  
 Moved all code into its subdirectory "Code" for cleanup  

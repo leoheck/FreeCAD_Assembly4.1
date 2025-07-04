@@ -1,6 +1,12 @@
 # Assembly4 workbench for FreeCAD
 
-Current version 0.60.0
+Current version 0.60.1
+
+## New FreeCAD hosting
+
+We are pleased to announce that FreeCAD version 0.21 is maintained again, and is hosted at European git hosting provider [CodeBerg](https://codeberg.org/). Please visit us and don't hesitate to contribute:
+
+[https://codeberg.org/xCAD/FreeCAD21](https://codeberg.org/xCAD/FreeCAD21)
 
 
 ## Overview
