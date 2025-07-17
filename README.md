@@ -58,7 +58,7 @@ Assembly4 uses extensively FreeCAD's built-in `Part::Attacher`, and you can find
 
 
 ## Discussion
-Please offer feedback or connect with the developers in the [Discussions](https://github.com/Zolko-123/FreeCAD_Assembly4/discussions) section.
+Please offer feedback or connect with the developers in the [issues section](https://codeberg.org/Zolko/Assembly4/issues) section.
 
 
 ## Addon Repository
