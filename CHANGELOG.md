@@ -2,6 +2,9 @@
 
 ## Release notes
 
+* 2025.mm.dd (**0.60.2**) :  
+Moved all Python code (including the init files) to the Code subdirectory  
+
 * 2025.07.04 (**0.60.1**) :  
 Announced new FreeCAD v0.21 hosting provider : codeberg.org, located in Germany  
 
