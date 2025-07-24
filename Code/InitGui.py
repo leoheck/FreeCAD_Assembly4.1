@@ -27,9 +27,9 @@ import os, sys
 import Asm4_locator
 global Asm4_path, Asm4_icon, Asm4_code, Asm4_trans
 Asm4_path  = os.path.dirname( Asm4_locator.__file__ )
-Asm4_code  = os.path.join(Asm4_path, "Code")
-Asm4_icon  = os.path.join(Asm4_path, 'Resources/icons/Assembly4.svg' )
-Asm4_trans = os.path.join(Asm4_path, "Resources/translations")
+Asm4_code  = os.path.join(Asm4_path, "../Code")
+Asm4_icon  = os.path.join(Asm4_path, '../Resources/icons/Assembly4.svg' )
+Asm4_trans = os.path.join(Asm4_path, "../Resources/translations")
 
 # insert python search path
 sys.path.insert(1, Asm4_code)
@@ -105,14 +105,14 @@ class Assembly4Workbench(Workbench):
 
         # Assembly4 version info
         # with file package.xml (FreeCAD ≥0.21)
-        packageFile  = os.path.join( Asm4_path, 'package.xml' )
+        packageFile  = os.path.join( Asm4_path, '../package.xml' )
         try:
             metadata     = FreeCAD.Metadata(packageFile)
             Asm4_date    = metadata.Date
             Asm4_version = metadata.Version
         # with file VERSION (FreeCAD ≤0.20)
         except:
-            versionPath  = os.path.join( Asm4_path, 'VERSION' )
+            versionPath  = os.path.join( Asm4_path, '../VERSION' )
             versionFile  = open(versionPath,"r")
             # read second line
             version = versionFile.readlines()[1]
