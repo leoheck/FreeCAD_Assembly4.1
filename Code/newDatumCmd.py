@@ -167,13 +167,13 @@ class newDatum:
 
 """
     +-----------------------------------------------+
-    |      a class to create an LCS on a hole       |
+    |      a class to create an LCS on a circle     |
     +-----------------------------------------------+
 """
 class newHole:
     def GetResources(self):
-        return {"MenuText": "New Hole Axis",
-                "ToolTip": "Create a Datum Axis attached to a hole",
+        return {"MenuText": "New Circle Axis",
+                "ToolTip": "Create a Datum Axis attached to a circle",
                 "Pixmap" : os.path.join( Asm4.iconPath , 'Asm4_Hole.svg')
                 }
 
@@ -224,13 +224,13 @@ class newHole:
                 if parentPart and (parentPart.TypeId=='App::Part' or parentPart.TypeId=='PartDesign::Body'):
                     # check whether there is already a similar datum, and increment the instance number 
                     instanceNum = 1
-                    while parentDoc.getObject( 'HoleAxis_'+str(instanceNum) ):
+                    while parentDoc.getObject( 'CircleAxis_'+str(instanceNum) ):
                         instanceNum += 1
-                    axis = Asm4.newLCS(parentPart, 'PartDesign::Line', 'HoleAxis_'+str(instanceNum), [( selectedObj, (edgeName,) )])
+                    axis = Asm4.newLCS(parentPart, 'PartDesign::Line', 'CircleAxis_'+str(instanceNum), [( selectedObj, (edgeName,) )])
                     axis.MapMode     = 'AxisOfCurvature'
                     axis.MapReversed = False
                     axis.ResizeMode  = 'Manual'
-                    axis.Length      = edgeObj.BoundBox.DiagonalLength
+                    axis.Length      = 2 * edgeObj.BoundBox.DiagonalLength
                     axis.ViewObject.ShapeColor = (0.0,0.0,1.0)
                     axis.ViewObject.Transparency = 50
                     axis.recompute()
