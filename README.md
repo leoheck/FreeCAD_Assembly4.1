@@ -1,6 +1,6 @@
 # Assembly4 workbench for FreeCAD
 
-Current version 0.60.1
+Current version 0.60.2
 
 ## New FreeCAD hosting
 
@@ -34,13 +34,13 @@ Assembly 4 is available through the FreeCAD Addon Manager (menu **Tools > Addon 
 
 **Important Note:** Assembly4 recommends to use the stable FreeCAD v0.21 branch
 
-**Important Note:** Assembly4 has been removed from the Mocrosoft-owned and USA-based GitHub forge, and is now located on the non-profit [codeberg.org](https://codeberg.org/) forge, located in Europe (Germany)
+**Important Note:** Assembly4 has been removed from the Microsoft-owned and USA-based GitHub forge, and is now located on the non-profit [codeberg.org](https://codeberg.org/) forge, located in Europe (Germany)
 
 
 
 ### Manual Installation
 
-It is possible to install this workbench manually into FreeCAD's local workbench directory. See [user instructions](INSTRUCTIONS.md)
+It is possible to install this workbench manually into FreeCAD's local workbench directory. See the [user manual](USER_MANUAL.md)
 
 
 ## Getting Started
@@ -49,12 +49,11 @@ Assembly4 uses extensively FreeCAD's built-in `Part::Attacher`, and you can find
 
 ## Documentation
 
-* Assembly4 documentation has its own repository: [https://codeberg.org/Zolko/Asm4_documentation](https://codeberg.org/Zolko/Asm4_documentation)
-* Please read the [User Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/USER_MANUAL.md), 
-* Or the more in-depth [Technical Manual](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TECH_MANUAL.md)
-* You are invited to follow a tutorial for [a quick assembly from scratch](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_1.md)
-* You can learn about the use of a master sketch and animation of assemblies by building [a cinematic assembly in one file](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_2.md)
-* For advanced user, you can read how to use variant links with the tutorial of the [Theo Jansen sandwalker](https://codeberg.org/Zolko/Asm4_documentation/src/branch/main/TUTORIAL_3.md)
+* Please read the [User Manual](USER_MANUAL.md), 
+* Or the more in-depth [Technical Manual](TECH_MANUAL.md)
+* You are invited to follow a tutorial for [a quick assembly from scratch](TUTORIAL_1.md)
+* You can learn about the use of a master sketch and animation of assemblies by building [a cinematic assembly in one file](TUTORIAL_2.md)
+* For advanced user, you can read how to use variant links with the tutorial of the [Theo Jansen sandwalker](TUTORIAL_3.md)
 
 
 ## Discussion
