@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <package format="1">
-  <name>Assembly4</name>
+  <name>Assembly 4.1</name>
   <description>This assembly workbench use lets you put FreeCAD parts (Part and Body) together inside a standard assembly container.</description>
   <version>0.50.18</version>
   <date>2025.03.11</date>
