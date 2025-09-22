@@ -1,3 +1,10 @@
+
+# FreeCAD Assembly4.1 Workbench
+
+* 2025.09.21 (**0.1**) :  
+Initial release organizing sources and avoiding conflicts with the Assembly4. Both workbenches can now be installed together.
+
+
 # FreeCAD Assembly4 Workbench
 
 ## Release notes
