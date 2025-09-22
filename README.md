@@ -37,8 +37,8 @@ _Assembly 4.1_ uses extensively FreeCAD's built-in `Part::Attacher`, and you can
 * Start by reading the [User Manual](docs/USER_MANUAL.md), or
 * See the more in-depth [Technical Manual](docs/TECH_MANUAL.md)
 * Try the tutorial to create a [quick assembly from scratch](docs/Tutorial1/TUTORIAL_1.md)
-* How to use a master sketch and animate assemblies by building a [cinematic assembly](docs/Tutorial1/TUTORIAL_2.md)
-* For advanced users, you can learn how to use variant links with the [Theo Jansen sandwalker](docs/Tutorial1/TUTORIAL_3.md)
+* How to use a master sketch and animate assemblies by building a [cinematic assembly](docs/Tutorial2/TUTORIAL_2.md)
+* For advanced users, you can learn how to use variant links with the [Theo Jansen sandwalker](docs/Tutorial3/TUTORIAL_3.md)
 
 ## Release notes
 
