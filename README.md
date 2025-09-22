@@ -13,7 +13,7 @@ A document can contain only one Assembly. Native FreeCAD Part and Body container
 Parts are positioned relative to each other by aligning features within them. In Assembly4, these features are virtual objects called LCS (Local Coordinate Systems, also known as datum coordinate systems) and are attached using FreeCAD's built-in Part::Attacher and ExpressionEngine. No geometry is used to position or constrain parts relative to each other, which helps avoid many topological naming issues. These built-in tools are fast, efficient, and stable, enabling the creation of very large assemblies with multiple levels of nested sub-assemblies.
 
 
-![](freecad/Resources/media/LaserCutter.png)
+![](docs/media/LaserCutter.png)
 
 **Note:** Only _Part_ and _Body_ containers at the root of a document can be inserted. Objects nested inside containers cannot be used directly in _Assembly4.1_.
 
