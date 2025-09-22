@@ -183,8 +183,8 @@ class Assembly4p1Workbench(Gui.Workbench):
         # self.appendMenu("&Geometry",["Asm4_newPart"])
 
         # Define Toolbars
-        # commands to appear in the Assembly4 toolbar
-        self.appendToolbar("Assembly", self.assemblyToolbarItems())
+        # commands to appear in the Assembly4.1 toolbar
+        self.appendToolbar("Assembly4.1", self.assemblyToolbarItems())
         self.dot()
 
         # build the selection toolbar
@@ -330,7 +330,7 @@ class Assembly4p1Workbench(Gui.Workbench):
 
         self.appendContextMenu("", "Separator")
         self.appendContextMenu("", contextMenu)  # add commands to the context menu
-        self.appendContextMenu("Assembly", assemblySubMenu)  # add commands to the context menu
+        self.appendContextMenu("Assembly4.1", assemblySubMenu)  # add commands to the context menu
         self.appendContextMenu("Create", createSubMenu)  # add commands to the context menu
         self.appendContextMenu("", "Separator")
 
