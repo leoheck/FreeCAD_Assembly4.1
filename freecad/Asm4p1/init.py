@@ -23,37 +23,27 @@
 #  
 ###################################################################################
 
-import os
+# import os
 
-import FreeCAD as App
+# import FreeCAD as App
 
-from . import asm4_locator
+# from . import asm4_locator
 
-Asm4_path = os.path.dirname( asm4_locator.__file__ )
-# Assembly4 version info
-# with file package.xml
-packageFile  = os.path.join( Asm4_path, '../../package.xml' )
-try:
-    metadata     = App.Metadata(packageFile)
-    Asm4_date    = metadata.Date
-    Asm4_version = metadata.Version
-# with file VERSION
-except:
-    versionPath = os.path.join( Asm4_path, '../../VERSION' )
-    versionFile = open(versionPath,"r")
-    # read second line
-    version = versionFile.readlines()[1]
-    versionFile.close()
-    # remove trailing newline
-    Asm4_version = version[:-1]
+# Asm4_path = os.path.dirname( asm4_locator.__file__ )
+# packageFile  = os.path.join( Asm4_path, '../../package.xml' )
 
-# check for FreeCAD version
-FCver = App.Version()
-if FCver[0]=='0' and FCver[1]=='22':
-    git = int(FCver[3][0:5])
-    if isinstance(git, int) and git>35594 :
-        pass
-        # print("This version of FreeCAD ("+FCver[0]+"."+FCver[1]+"-"+str(git)+") is not compatible with Assembly4, you may encounter erors")
+# try:
+#     metadata = FreeCAD.Metadata(packageFile)
+#     Asm4_date = metadata.Date
+#     Asm4_version = metadata.Version
 
-
-# print("Assembly4 workbench ("+Asm4_version+") loaded")
+# except:
+#     import re
+#     with open(packageFile, "r") as f:
+#         xml = f.read()  # single string with the entire file content
+#     match_version = re.search(r"<version>(.*?)</version>", xml)
+#     match_date = re.search(r"<date>(.*?)</date>", xml)
+#     if match_version:
+#         Asm4_version = match_version.group(1)
+#     if match_date:
+#         Asm4_date = match_version.group(1)

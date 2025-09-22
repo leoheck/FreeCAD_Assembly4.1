@@ -89,18 +89,6 @@ class Assembly4p1Workbench(Gui.Workbench):
     +-----------------------------------------------+
         """
     def Initialize(self):
-        # check for FreeCAD version
-        FCver = App.Version()
-        # print("This is FreeCAD version "+FCver[0]+"."+FCver[1]+"."+FCver[2]+"-"+FCver[3])
-        if FCver[0]=='0' and FCver[1]=='22':
-            try:
-                git = int(FCver[3][0:5])
-            except:
-                git=666
-            if isinstance(git, int) and git>35594 :
-                App.Console.PrintWarning("This version of FreeCAD ("+FCver[0]+"."+FCver[1]+"."+FCver[2]+"-"+str(git)+") ")
-                App.Console.PrintWarning("is not backward compatible with FreeCAD v0.21 and earlier\n")
-                App.Console.PrintWarning("It is rather suggested to use the stable FreeCAD v0.21 branch\n")
 
         # Translations
         # from Asm4_Translate import Qtranslate
@@ -110,19 +98,24 @@ class Assembly4p1Workbench(Gui.Workbench):
         # Assembly4 version info
         # with file package.xml (FreeCAD ≥0.21)
         packageFile  = os.path.join( Asm4_path, '../../package.xml' )
+
+        # with file VERSION (FreeCAD > 0.20)
         try:
             metadata     = App.Metadata(packageFile)
             Asm4_date    = metadata.Date
             Asm4_version = metadata.Version
-        # with file VERSION (FreeCAD ≤0.20)
+
+        # with file VERSION (FreeCAD ≤ 0.20)
         except:
-            versionPath  = os.path.join( Asm4_path, '../../VERSION' )
-            versionFile  = open(versionPath,"r")
-            # read second line
-            version = versionFile.readlines()[1]
-            versionFile.close()
-            # remove trailing newline
-            Asm4_version = version[:-1]    
+            import re
+            with open(packageFile, "r") as f:
+                xml = f.read()  # single string with the entire file content
+            match_version = re.search(r"<version>(.*?)</version>", xml)
+            match_date = re.search(r"<date>(.*?)</date>", xml)
+            if match_version:
+                Asm4_version = match_version.group(1)
+            if match_date:
+                Asm4_date = match_version.group(1)
         
         App.Console.PrintMessage("Initializing Assembly4.1 workbench"+ ' ('+Asm4_version+') .')
         Gui.updateGui()
