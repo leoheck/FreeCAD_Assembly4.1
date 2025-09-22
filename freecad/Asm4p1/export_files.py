@@ -28,7 +28,7 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-import asm4_libs as Asm4
+from . import asm4_libs as Asm4
 
 '''
 has_anytree = False

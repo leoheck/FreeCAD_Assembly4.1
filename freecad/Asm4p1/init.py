@@ -23,20 +23,23 @@
 #  
 ###################################################################################
 
-import FreeCAD
+import os
 
-import asm4_locator
+import FreeCAD as App
+
+from . import asm4_locator
+
 Asm4_path = os.path.dirname( asm4_locator.__file__ )
 # Assembly4 version info
 # with file package.xml
-packageFile  = os.path.join( Asm4_path, '../package.xml' )
+packageFile  = os.path.join( Asm4_path, '../../package.xml' )
 try:
-    metadata     = FreeCAD.Metadata(packageFile)
+    metadata     = App.Metadata(packageFile)
     Asm4_date    = metadata.Date
     Asm4_version = metadata.Version
 # with file VERSION
 except:
-    versionPath = os.path.join( Asm4_path, '../VERSION' )
+    versionPath = os.path.join( Asm4_path, '../../VERSION' )
     versionFile = open(versionPath,"r")
     # read second line
     version = versionFile.readlines()[1]
@@ -45,7 +48,7 @@ except:
     Asm4_version = version[:-1]
 
 # check for FreeCAD version
-FCver = FreeCAD.Version()
+FCver = App.Version()
 if FCver[0]=='0' and FCver[1]=='22':
     git = int(FCver[3][0:5])
     if isinstance(git, int) and git>35594 :

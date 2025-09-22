@@ -14,7 +14,7 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-import asm4_libs as Asm4
+from . import asm4_libs as Asm4
 
 
 
@@ -217,4 +217,4 @@ class importDatumCmd():
     |       add the command to the workbench        |
     +-----------------------------------------------+
 """
-Gui.addCommand( 'Asm4_importDatum', import_datum_cmd() )
+Gui.addCommand( 'Asm4_importDatum', importDatumCmd() )

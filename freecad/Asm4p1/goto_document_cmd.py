@@ -14,8 +14,8 @@ from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
 
-import asm4_libs as Asm4
-from asm4_translate import translate
+from . import asm4_libs as Asm4
+from .asm4_translate import translate
 
 
 
@@ -89,4 +89,4 @@ class gotoDocumentCmd:
     |       add the command to the workbench        |
     +-----------------------------------------------+
 """
-Gui.addCommand( 'Asm4_gotoDocument', goto_document_cmd() )
+Gui.addCommand( 'Asm4_gotoDocument', gotoDocumentCmd() )

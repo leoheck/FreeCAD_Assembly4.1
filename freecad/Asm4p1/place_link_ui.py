@@ -14,9 +14,9 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-import asm4_libs as Asm4
-from place_part_ui import placePartUI
-import selection_filter
+from . import asm4_libs as Asm4
+from .place_part_ui import placePartUI
+from . import selection_filter
 
 
 

@@ -24,10 +24,14 @@
 
 import os, sys
 
-import asm4_locator
+import FreeCAD as App
+import FreeCADGui as Gui
+
+from . import asm4_locator
+
 global Asm4_path, Asm4_icon, Asm4_code, Asm4_trans
 Asm4_path  = os.path.dirname( asm4_locator.__file__ )
-Asm4_code  = os.path.join(Asm4_path, "../Code")
+Asm4_code  = os.path.join(Asm4_path, "./")
 Asm4_icon  = os.path.join(Asm4_path, '../Resources/icons/Assembly4.svg' )
 Asm4_trans = os.path.join(Asm4_path, "../Resources/translations")
 
@@ -35,7 +39,7 @@ Asm4_trans = os.path.join(Asm4_path, "../Resources/translations")
 sys.path.insert(1, Asm4_code)
 
 # I don't like this being here
-import selection_filter
+from . import selection_filter
 
 
 """
@@ -43,12 +47,12 @@ import selection_filter
     |            Initialize the workbench           |
     +-----------------------------------------------+
 """
-class Assembly4Workbench(Workbench):
+class Assembly4p1Workbench(Gui.Workbench):
 
     global Asm4_path, Asm4_icon, Asm4_code, Asm4_trans
     global selectionFilter
-    MenuText = "Assembly 4"
-    ToolTip = "Assembly 4 workbench"
+    MenuText = "Assembly 4.1"
+    ToolTip = "Assembly 4.1 workbench"
     Icon = Asm4_icon
 
     def __init__(self):
@@ -86,7 +90,7 @@ class Assembly4Workbench(Workbench):
         """
     def Initialize(self):
         # check for FreeCAD version
-        FCver = FreeCAD.Version()
+        FCver = App.Version()
         # print("This is FreeCAD version "+FCver[0]+"."+FCver[1]+"."+FCver[2]+"-"+FCver[3])
         if FCver[0]=='0' and FCver[1]=='22':
             try:
@@ -94,25 +98,25 @@ class Assembly4Workbench(Workbench):
             except:
                 git=666
             if isinstance(git, int) and git>35594 :
-                FreeCAD.Console.PrintWarning("This version of FreeCAD ("+FCver[0]+"."+FCver[1]+"."+FCver[2]+"-"+str(git)+") ")
-                FreeCAD.Console.PrintWarning("is not backward compatible with FreeCAD v0.21 and earlier\n")
-                FreeCAD.Console.PrintWarning("It is rather suggested to use the stable FreeCAD v0.21 branch\n")
+                App.Console.PrintWarning("This version of FreeCAD ("+FCver[0]+"."+FCver[1]+"."+FCver[2]+"-"+str(git)+") ")
+                App.Console.PrintWarning("is not backward compatible with FreeCAD v0.21 and earlier\n")
+                App.Console.PrintWarning("It is rather suggested to use the stable FreeCAD v0.21 branch\n")
 
         # Translations
         # from Asm4_Translate import Qtranslate
-        FreeCADGui.addLanguagePath(Asm4_trans)
-        FreeCADGui.updateLocale()
+        Gui.addLanguagePath(Asm4_trans)
+        Gui.updateLocale()
 
         # Assembly4 version info
         # with file package.xml (FreeCAD ≥0.21)
-        packageFile  = os.path.join( Asm4_path, '../package.xml' )
+        packageFile  = os.path.join( Asm4_path, '../../package.xml' )
         try:
-            metadata     = FreeCAD.Metadata(packageFile)
+            metadata     = App.Metadata(packageFile)
             Asm4_date    = metadata.Date
             Asm4_version = metadata.Version
         # with file VERSION (FreeCAD ≤0.20)
         except:
-            versionPath  = os.path.join( Asm4_path, '../VERSION' )
+            versionPath  = os.path.join( Asm4_path, '../../VERSION' )
             versionFile  = open(versionPath,"r")
             # read second line
             version = versionFile.readlines()[1]
@@ -120,62 +124,62 @@ class Assembly4Workbench(Workbench):
             # remove trailing newline
             Asm4_version = version[:-1]    
         
-        FreeCAD.Console.PrintMessage("Initializing Assembly4 workbench"+ ' ('+Asm4_version+') .')
-        FreeCADGui.updateGui()
+        App.Console.PrintMessage("Initializing Assembly4.1 workbench"+ ' ('+Asm4_version+') .')
+        Gui.updateGui()
         # import all stuff
-        import new_assembly_cmd    # created an App::Part container called 'Assembly'
+        from . import new_assembly_cmd    # created an App::Part container called 'Assembly'
         self.dot()
-        import new_datum_cmd         # creates a new LCS in 'Model'
+        from . import new_datum_cmd         # creates a new LCS in 'Model'
         self.dot()
-        import new_part_cmd          # creates a new App::Part container called 'Model'
+        from . import new_part_cmd          # creates a new App::Part container called 'Model'
         self.dot()
-        import info_part_cmd         # edits part information for BoM
+        from . import info_part_cmd         # edits part information for BoM
         self.dot()
-        import insert_link_cmd       # inserts an App::Link to a 'Model' in another file
+        from . import insert_link_cmd       # inserts an App::Link to a 'Model' in another file
         self.dot()
-        import place_link_cmd        # places a linked part by snapping LCS (in the Part and in the Assembly)
+        from . import place_link_cmd        # places a linked part by snapping LCS (in the Part and in the Assembly)
         self.dot()
-        import import_datum_cmd      # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import import_datum_cmd      # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import release_attachment_cmd# creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import release_attachment_cmd# creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import make_binder_cmd       # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import make_binder_cmd       # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import variables_lib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import variables_lib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import animation_lib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        from . import animation_lib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import update_assembly_cmd   # updates all parts and constraints in the assembly
+        from . import update_assembly_cmd   # updates all parts and constraints in the assembly
         self.dot()
-        import make_array_cmd        # creates a new array of App::Link
+        from . import make_array_cmd        # creates a new array of App::Link
         self.dot()
-        import variant_link_cmd      # creates a variant link
+        from . import variant_link_cmd      # creates a variant link
         self.dot()
-        import goto_document_cmd     # opens the documentof the selected App::Link
+        from . import goto_document_cmd     # opens the documentof the selected App::Link
         self.dot()
-        import asm4_measure        # Measure tool in the Task panel
+        from . import asm4_measure        # Measure tool in the Task panel
         self.dot()
-        import make_bom_cmd          # creates the parts list
+        from . import make_bom_cmd          # creates the parts list
         self.dot()
-        import check_interference   # check interferences btween parts inside the Assembly
+        from . import check_interference   # check interferences btween parts inside the Assembly
         self.dot()
-        import export_files         # creates a hierarchical tree listing of files in an assembly
+        from . import export_files         # creates a hierarchical tree listing of files in an assembly
         self.dot()
         # import HelpCmd             # shows a basic help window
         # self.dot()
-        import show_hide_lcs_cmd      # shows/hides all the LCSs
+        from . import show_hide_lcs_cmd      # shows/hides all the LCSs
         self.dot()
-        import configuration_engine # save/restore configuration
+        from . import configuration_engine # save/restore configuration
         self.dot()
 
         # Fasteners
         if self.checkWorkbench('FastenersWorkbench'):
             # a library to handle fasteners from the FastenersWorkbench
-            import fasteners_lib
+            from . import fasteners_lib
             self.FastenersCmd = 'Asm4_Fasteners'
         else:
             # a dummy library if the FastenersWorkbench is not installed
-            import fasteners_dummy
+            from . import fasteners_dummy
             self.FastenersCmd = 'Asm4_insertScrew'
         self.dot()
 
@@ -202,7 +206,7 @@ class Assembly4Workbench(Workbench):
 
         # self.appendToolbar("Geometry",["Asm4_newPart"])
 
-        FreeCAD.Console.PrintMessage(" " + "done" + ".\n")
+        App.Console.PrintMessage(" " + "done" + ".\n")
         """
     +-----------------------------------------------+
     |           Initialisation finished             |
@@ -368,8 +372,8 @@ class Assembly4Workbench(Workbench):
 
     # prints a dot in the consome window to show progress
     def dot(self):
-        FreeCAD.Console.PrintMessage(".")
-        FreeCADGui.updateGui()
+        App.Console.PrintMessage(".")
+        Gui.updateGui()
 
 
 
@@ -380,5 +384,5 @@ class Assembly4Workbench(Workbench):
     |          actually make the workbench          |
     +-----------------------------------------------+
 """
-wb = Assembly4Workbench()
+wb = Assembly4p1Workbench()
 Gui.addWorkbench(wb)

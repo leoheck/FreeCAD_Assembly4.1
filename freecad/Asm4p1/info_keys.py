@@ -8,7 +8,7 @@
 
 
 import os, json
-import asm4_libs as Asm4
+from . import asm4_libs as Asm4
 import FreeCAD as App
 
 

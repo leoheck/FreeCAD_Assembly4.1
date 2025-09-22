@@ -16,8 +16,8 @@ from FastenerBase import FSBaseObject
 from ScrewMaker import screwTables
 import FastenersCmd as FS
 
-import asm4_libs as Asm4
-from asm4_translate import translate
+from . import asm4_libs as Asm4
+from .asm4_translate import translate
 
 
 
@@ -34,7 +34,7 @@ iconFile = os.path.join( Asm4.iconPath , 'Asm4_mvFastener.svg')
     +-----------------------------------------------+
 
 Gui.activateWorkbench('FastenersWorkbench')
-Gui.activateWorkbench('Assembly4Workbench')
+Gui.activateWorkbench('Assembly4p1Workbench')
 import FastenersCmd as FS
 fs = App.ActiveDocument.addObject("Part::FeaturePython",'Screw')
 FS.FSScrewObject( fs, 'ISO4762', None )
@@ -104,7 +104,7 @@ class insertFastener:
         # check that the Fasteners WB has been loaded before:
         if not 'Fasteners_ChangeParameters' in Gui.listCommands():
             Gui.activateWorkbench('FastenersWorkbench')
-            Gui.activateWorkbench('Assembly4Workbench')
+            Gui.activateWorkbench('Assembly4p1Workbench')
         # if something is selected
         container = None
         attLink   = ''
@@ -236,7 +236,7 @@ class changeFSparametersCmd():
         # check that the Fasteners WB has been loaded before:
         if not 'Fasteners_ChangeParameters' in Gui.listCommands():
             Gui.activateWorkbench('FastenersWorkbench')
-            Gui.activateWorkbench('Assembly4Workbench')
+            Gui.activateWorkbench('Assembly4p1Workbench')
         # check that we have selected a Fastener from the Fastener WB
         selection = getSelectionFS()
         if selection:

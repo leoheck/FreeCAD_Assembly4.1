@@ -13,8 +13,8 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-import asm4_libs as Asm4
-import info_keys
+from . import asm4_libs as Asm4
+from . import info_keys
 
 #This is partcoded part information.
 partInfo = [
@@ -35,7 +35,7 @@ infoToolTip = {
 
 # Remaining fields that can be customized
 try:
-    import info_keys
+    from . import info_keys
     partInfo += info_keys.partInfoUserAdded
     infoToolTip.update(info_keys.infoToolTipUserAdded)
 except ImportError:
@@ -591,9 +591,9 @@ class infoPartConfUI():
 
         # Restore file and appen new config
         partInfoDef = dict()
-        for prop in info_part_cmd.partInfo:
+        for prop in infoPartCmd.partInfo:
             partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': True})
-        for prop in info_part_cmd.partInfo_Invisible:
+        for prop in infoPartCmd.partInfo_Invisible:
             partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': False})
 
         i = 0
@@ -822,4 +822,4 @@ class infoPartConfUI():
 
 
 # Add the command in the workbench
-Gui.addCommand('Asm4_infoPart', info_part_cmd())
+Gui.addCommand('Asm4_infoPart', infoPartCmd())

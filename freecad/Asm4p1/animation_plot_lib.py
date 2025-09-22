@@ -14,9 +14,9 @@ from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
 
-import asm4_libs as Asm4
+from . import asm4_libs as Asm4
 
-from animation_lib import animationProvider
+from .animation_lib import animationProvider
 
 
 
