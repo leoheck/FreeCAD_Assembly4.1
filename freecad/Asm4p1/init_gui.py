@@ -126,8 +126,6 @@ class Assembly4p1Workbench(Gui.Workbench):
         self.dot()
         from . import new_part_cmd          # creates a new App::Part container called 'Model'
         self.dot()
-        from . import info_part_cmd         # edits part information for BoM
-        self.dot()
         from . import insert_link_cmd       # inserts an App::Link to a 'Model' in another file
         self.dot()
         from . import place_link_cmd        # places a linked part by snapping LCS (in the Part and in the Assembly)
@@ -151,10 +149,6 @@ class Assembly4p1Workbench(Gui.Workbench):
         from . import goto_document_cmd     # opens the documentof the selected App::Link
         self.dot()
         from . import asm4_measure        # Measure tool in the Task panel
-        self.dot()
-        from . import make_bom_cmd          # creates the parts list
-        self.dot()
-        from . import check_interference   # check interferences btween parts inside the Assembly
         self.dot()
         from . import export_files         # creates a hierarchical tree listing of files in an assembly
         self.dot()
@@ -233,11 +227,7 @@ class Assembly4p1Workbench(Gui.Workbench):
                         "Asm4_importDatum",
                         "Asm4_shapeBinder",
                         "Separator",
-                        "Asm4_infoPart",
-                        "Asm4_makeLocalBOM",
-                        "Asm4_makeBOM",
                         "Asm4_listLinkedFiles",
-                        "Asm4_checkInterference",
                         "Asm4_Measure",
                         'Asm4_showLcs',
                         'Asm4_hideLcs',
@@ -262,7 +252,6 @@ class Assembly4p1Workbench(Gui.Workbench):
                         "Asm4_newPart",
                         "Asm4_newBody",
                         "Asm4_newGroup",
-                        "Asm4_infoPart",
                         "Asm4_insertLink",
                         "Asm4_variantLink",
                         self.FastenersCmd,
@@ -284,11 +273,9 @@ class Assembly4p1Workbench(Gui.Workbench):
                         "Separator",
                         "Asm4_Animate",
                         "Asm4_Measure",
-                        "Asm4_makeBOM",
                         "Asm4_listLinkedFiles",
                         'Asm4_showLcs',
                         'Asm4_hideLcs',
-                        "Asm4_checkInterference",
                         "Asm4_openConfigurations"
                         ]
         return commandList
