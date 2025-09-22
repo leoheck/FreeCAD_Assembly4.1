@@ -19,8 +19,8 @@ from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
 
-import Asm4_libs as Asm4
-import showHideLcsCmd as lcs
+import asm4_libs as Asm4
+import show_hide_lcs_cmd as lcs
 import Part
 
 class checkInterference:
@@ -642,4 +642,4 @@ class checkInterference:
 
 
 # Add the command in the workbench
-Gui.addCommand('Asm4_checkInterference',  checkInterference())
+Gui.addCommand('Asm4_checkInterference',  check_interference())

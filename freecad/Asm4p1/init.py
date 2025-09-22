@@ -25,8 +25,8 @@
 
 import FreeCAD
 
-import Asm4_locator
-Asm4_path = os.path.dirname( Asm4_locator.__file__ )
+import asm4_locator
+Asm4_path = os.path.dirname( asm4_locator.__file__ )
 # Assembly4 version info
 # with file package.xml
 packageFile  = os.path.join( Asm4_path, '../package.xml' )

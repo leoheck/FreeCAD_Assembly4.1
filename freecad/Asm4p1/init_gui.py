@@ -24,9 +24,9 @@
 
 import os, sys
 
-import Asm4_locator
+import asm4_locator
 global Asm4_path, Asm4_icon, Asm4_code, Asm4_trans
-Asm4_path  = os.path.dirname( Asm4_locator.__file__ )
+Asm4_path  = os.path.dirname( asm4_locator.__file__ )
 Asm4_code  = os.path.join(Asm4_path, "../Code")
 Asm4_icon  = os.path.join(Asm4_path, '../Resources/icons/Assembly4.svg' )
 Asm4_trans = os.path.join(Asm4_path, "../Resources/translations")
@@ -35,7 +35,7 @@ Asm4_trans = os.path.join(Asm4_path, "../Resources/translations")
 sys.path.insert(1, Asm4_code)
 
 # I don't like this being here
-import selectionFilter
+import selection_filter
 
 
 """
@@ -71,7 +71,7 @@ class Assembly4Workbench(Workbench):
 
     def Deactivated(self):
         "This function is executed when the workbench is deactivated"
-        selectionFilter.observerDisable()
+        selection_filter.observerDisable()
         return
 
     def GetClassName(self):
@@ -123,59 +123,59 @@ class Assembly4Workbench(Workbench):
         FreeCAD.Console.PrintMessage("Initializing Assembly4 workbench"+ ' ('+Asm4_version+') .')
         FreeCADGui.updateGui()
         # import all stuff
-        import newAssemblyCmd    # created an App::Part container called 'Assembly'
+        import new_assembly_cmd    # created an App::Part container called 'Assembly'
         self.dot()
-        import newDatumCmd         # creates a new LCS in 'Model'
+        import new_datum_cmd         # creates a new LCS in 'Model'
         self.dot()
-        import newPartCmd          # creates a new App::Part container called 'Model'
+        import new_part_cmd          # creates a new App::Part container called 'Model'
         self.dot()
-        import infoPartCmd         # edits part information for BoM
+        import info_part_cmd         # edits part information for BoM
         self.dot()
-        import insertLinkCmd       # inserts an App::Link to a 'Model' in another file
+        import insert_link_cmd       # inserts an App::Link to a 'Model' in another file
         self.dot()
-        import placeLinkCmd        # places a linked part by snapping LCS (in the Part and in the Assembly)
+        import place_link_cmd        # places a linked part by snapping LCS (in the Part and in the Assembly)
         self.dot()
-        import importDatumCmd      # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        import import_datum_cmd      # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import releaseAttachmentCmd# creates an LCS in assembly and attaches it to an LCS relative to an external file
+        import release_attachment_cmd# creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import makeBinderCmd       # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        import make_binder_cmd       # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import VariablesLib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        import variables_lib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import AnimationLib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
+        import animation_lib        # creates an LCS in assembly and attaches it to an LCS relative to an external file
         self.dot()
-        import updateAssemblyCmd   # updates all parts and constraints in the assembly
+        import update_assembly_cmd   # updates all parts and constraints in the assembly
         self.dot()
-        import makeArrayCmd        # creates a new array of App::Link
+        import make_array_cmd        # creates a new array of App::Link
         self.dot()
-        import variantLinkCmd      # creates a variant link
+        import variant_link_cmd      # creates a variant link
         self.dot()
-        import gotoDocumentCmd     # opens the documentof the selected App::Link
+        import goto_document_cmd     # opens the documentof the selected App::Link
         self.dot()
-        import Asm4_Measure        # Measure tool in the Task panel
+        import asm4_measure        # Measure tool in the Task panel
         self.dot()
-        import makeBomCmd          # creates the parts list
+        import make_bom_cmd          # creates the parts list
         self.dot()
-        import checkInterference   # check interferences btween parts inside the Assembly
+        import check_interference   # check interferences btween parts inside the Assembly
         self.dot()
-        import exportFiles         # creates a hierarchical tree listing of files in an assembly
+        import export_files         # creates a hierarchical tree listing of files in an assembly
         self.dot()
         # import HelpCmd             # shows a basic help window
         # self.dot()
-        import showHideLcsCmd      # shows/hides all the LCSs
+        import show_hide_lcs_cmd      # shows/hides all the LCSs
         self.dot()
-        import configurationEngine # save/restore configuration
+        import configuration_engine # save/restore configuration
         self.dot()
 
         # Fasteners
         if self.checkWorkbench('FastenersWorkbench'):
             # a library to handle fasteners from the FastenersWorkbench
-            import FastenersLib
+            import fasteners_lib
             self.FastenersCmd = 'Asm4_Fasteners'
         else:
             # a dummy library if the FastenersWorkbench is not installed
-            import FastenersDummy
+            import fasteners_dummy
             self.FastenersCmd = 'Asm4_insertScrew'
         self.dot()
 

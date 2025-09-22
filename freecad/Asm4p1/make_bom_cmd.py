@@ -13,14 +13,14 @@ from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
 
-import Asm4_libs as Asm4
-import infoPartCmd
+import asm4_libs as Asm4
+import info_part_cmd
 #import infoKeys
 #All infor from infoKeys is process by infoPartCmd shouldn't need to
 
 
-crea = infoPartCmd.infoPartUI.makePartInfo
-fill = infoPartCmd.infoPartUI.infoDefault
+crea = info_part_cmd.infoPartUI.makePartInfo
+fill = info_part_cmd.infoPartUI.infoDefault
 
 ConfUserDir = os.path.join(App.getUserAppDataDir(),'Templates')
 ConfUserFilename = "Asm4_infoPartConf.json"
@@ -170,7 +170,7 @@ class makeBOM:
                     #This is the first time a Part or assembly has been called.
                     #We need to apply the magic
 
-                    infoPartCmd.infoPartUI.infoDefault(obj)
+                    info_part_cmd.infoPartUI.infoDefault(obj)
                     self.BomKeyForAutoFillList[BomKeyAF] = {'BomKeyAF': BomKeyAF, 'Qty.': 1}
 
 
@@ -452,7 +452,7 @@ class makeBOM:
         def wrow(drow: [str], row: int):
             for i, d in enumerate(drow):
                 if row == 0:
-                    spreadsheet.set(str(chr(ord('a') + i)).upper() + str(row + 1), infoPartCmd.decodeXml(str(d)))
+                    spreadsheet.set(str(chr(ord('a') + i)).upper() + str(row + 1), info_part_cmd.decodeXml(str(d)))
                 else:
                     spreadsheet.set(str(chr(ord('a') + i)).upper() + str(row + 1), str(d))
 

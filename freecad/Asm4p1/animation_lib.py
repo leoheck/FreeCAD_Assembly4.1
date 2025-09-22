@@ -15,7 +15,7 @@ from enum import Enum
 import FreeCADGui as Gui
 import FreeCAD as App
 
-import Asm4_libs as Asm4
+import asm4_libs as Asm4
 
 
 
@@ -477,8 +477,8 @@ class animateVariable(animationProvider):
         # check whether a plotter window has been created before
         if not self.plotter:
             # Only import the export-lib if requested. Helps to keep WB loading times in check.
-            import AnimationPlotLib
-            self.plotter = AnimationPlotLib.animationPlotter(self)
+            import animation_plot_lib
+            self.plotter = animation_plot_lib.animationPlotter(self)
         self.plotter.openUI()
 
 
@@ -492,8 +492,8 @@ class animateVariable(animationProvider):
             return
         if not self.exporter:
             # Only import the export-lib if requested. Helps to keep WB loading times in check.
-            import AnimationExportLib
-            self.exporter = AnimationExportLib.animationExporter(self)
+            import animation_export_lib
+            self.exporter = animation_export_lib.animationExporter(self)
         self.exporter.openUI()
 
 

@@ -14,9 +14,9 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-import Asm4_libs as Asm4
-from placePartUI import placePartUI
-import selectionFilter
+import asm4_libs as Asm4
+from place_part_ui import placePartUI
+import selection_filter
 
 
 
@@ -45,8 +45,8 @@ class placeLinkUI():
 
     def __init__(self):
         # remove selectionFilter
-        self.selectionFilterStatus = selectionFilter.observerStatus()
-        selectionFilter.observerDisable()
+        self.selectionFilterStatus = selection_filter.observerStatus()
+        selection_filter.observerDisable()
 
         # get the current active document to avoid errors if user changes tab
         self.activeDoc = App.ActiveDocument
@@ -213,7 +213,7 @@ class placeLinkUI():
         Gui.Selection.addSelection( self.activeDoc.Name, self.rootAssembly.Name, self.selectedObj.Name+'.' )
         # restore previous selection filter (if any)
         if self.selectionFilterStatus:
-            selectionFilter.observerEnable()
+            selection_filter.observerEnable()
         Gui.Control.closeDialog()
 
 

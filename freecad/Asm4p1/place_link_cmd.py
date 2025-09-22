@@ -14,10 +14,10 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-import Asm4_libs as Asm4
-from placeLinkUI import placeLinkUI
-from placePartUI import placePartUI
-import selectionFilter
+import asm4_libs as Asm4
+from place_link_ui import placeLinkUI
+from place_part_ui import placePartUI
+import selection_filter
 
 
 
@@ -69,7 +69,7 @@ class placeLinkCmd():
                         Asm4.warningBox("This Part has the Attachment extension, it can only be placed manually")
                     else:
                         # launch the UI in the task panel
-                        ui = placeLinkUI()
+                        ui = place_link_ui()
                         Gui.Control.showDialog(ui)
                 # else try to convert it
                 else:
@@ -77,7 +77,7 @@ class placeLinkCmd():
                     if convert:
                         Asm4.makeAsmProperties( selection, reset=True )
                         # launch the UI in the task panel
-                        ui = placeLinkUI()
+                        ui = place_link_ui()
                         Gui.Control.showDialog(ui)
             else:
                 Asm4.warningBox('Please select a link in the assembly Model.')
@@ -101,7 +101,7 @@ class placeLinkCmd():
                             # if it's a valid assembly and part
                             if Asm4.isAsm4EE(selection):
                                 # launch the UI in the task panel
-                                ui = placePartUI()
+                                ui = place_part_ui()
                                 Gui.Control.showDialog(ui)
                             # else try to convert it
                             else:
@@ -109,7 +109,7 @@ class placeLinkCmd():
                                 if convert:
                                     Asm4.makeAsmProperties( selection, reset=True )
                                     # launch the UI in the task panel
-                                    ui = placePartUI()
+                                    ui = place_part_ui()
                                     Gui.Control.showDialog(ui)
                         # the selected object doesn't belong to the root assembly
                         else:
@@ -122,4 +122,4 @@ class placeLinkCmd():
     |       add the command to the workbench        |
     +-----------------------------------------------+
 """
-Gui.addCommand( 'Asm4_placeLink', placeLinkCmd() )
+Gui.addCommand( 'Asm4_placeLink', place_link_cmd() )

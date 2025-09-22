@@ -13,8 +13,8 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-import Asm4_libs as Asm4
-import infoKeys
+import asm4_libs as Asm4
+import info_keys
 
 #This is partcoded part information.
 partInfo = [
@@ -35,9 +35,9 @@ infoToolTip = {
 
 # Remaining fields that can be customized
 try:
-    import infoKeys
-    partInfo += infoKeys.partInfoUserAdded
-    infoToolTip.update(infoKeys.infoToolTipUserAdded)
+    import info_keys
+    partInfo += info_keys.partInfoUserAdded
+    infoToolTip.update(info_keys.infoToolTipUserAdded)
 except ImportError:
     pass
 
@@ -117,7 +117,7 @@ def infoDefault(part):
 
         print ("We have an assembly")
         try:
-            infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, None)
+            info_keys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, None)
         except NotImplementedError as e:
             AssignValuesForAutofile(part, doc,None)
 
@@ -136,7 +136,7 @@ def infoDefault(part):
         #Also file name contains a revision
         #Probably should be looking at a separate .py file that is customized to the users business rules.
         try:
-            infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, ObjSingleBody)
+            info_keys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, ObjSingleBody)
         except NotImplementedError as e:
             print (str (e))
             AssignValuesForAutofile(part, doc,ObjSingleBody)
@@ -205,7 +205,7 @@ def AssignValuesForAutofile(part, doc, singleBodyOfPart):
     #todo if part is not
     try:
 
-        infoKeys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, singleBodyOfPart)
+        info_keys.AssignCustomerValuesIntoUserFieldsForPartWithSingleBody(part, doc, singleBodyOfPart)
     except Exception as e:
         print (f"Customization failed or is not setup : {str(e)}  Attempting to insert default values")
         try:
@@ -591,9 +591,9 @@ class infoPartConfUI():
 
         # Restore file and appen new config
         partInfoDef = dict()
-        for prop in infoPartCmd.partInfo:
+        for prop in info_part_cmd.partInfo:
             partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': True})
-        for prop in infoPartCmd.partInfo_Invisible:
+        for prop in info_part_cmd.partInfo_Invisible:
             partInfoDef.setdefault(prop, {'userData': prop, 'active': True, 'visible': False})
 
         i = 0
@@ -822,4 +822,4 @@ class infoPartConfUI():
 
 
 # Add the command in the workbench
-Gui.addCommand('Asm4_infoPart', infoPartCmd())
+Gui.addCommand('Asm4_infoPart', info_part_cmd())

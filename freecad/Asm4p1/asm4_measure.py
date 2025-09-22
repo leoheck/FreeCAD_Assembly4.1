@@ -40,8 +40,8 @@ from FreeCAD import Console as FCC
 import Part
 
 # only needed for icons
-import Asm4_libs as Asm4
-import selectionFilter
+import asm4_libs as Asm4
+import selection_filter
 
 
 
@@ -125,9 +125,9 @@ class MeasureUI():
 
         # remove selectionFilter
         global Asm4_3DselObserver
-        self.selectionFilterStatus = selectionFilter.observerStatus()
-        selectionFilter.observerDisable()
-        selectionFilter.uncheckAll()
+        self.selectionFilterStatus = selection_filter.observerStatus()
+        selection_filter.observerDisable()
+        selection_filter.uncheckAll()
 
         # draw the GUI, objects are defined later down
         self.drawUI()

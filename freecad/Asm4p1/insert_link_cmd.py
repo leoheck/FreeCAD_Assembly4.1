@@ -15,7 +15,7 @@ from PySide import QtGui, QtCore
 import FreeCADGui as Gui
 import FreeCAD as App
 
-import Asm4_libs as Asm4
+import asm4_libs as Asm4
 
 
 
