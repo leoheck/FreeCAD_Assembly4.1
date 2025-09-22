@@ -69,7 +69,7 @@ class placeLinkCmd():
                         Asm4.warningBox("This Part has the Attachment extension, it can only be placed manually")
                     else:
                         # launch the UI in the task panel
-                        ui = place_link_ui()
+                        ui = placeLinkUI()
                         Gui.Control.showDialog(ui)
                 # else try to convert it
                 else:
@@ -77,7 +77,7 @@ class placeLinkCmd():
                     if convert:
                         Asm4.makeAsmProperties( selection, reset=True )
                         # launch the UI in the task panel
-                        ui = place_link_ui()
+                        ui = placeLinkUI()
                         Gui.Control.showDialog(ui)
             else:
                 Asm4.warningBox('Please select a link in the assembly Model.')
@@ -101,7 +101,7 @@ class placeLinkCmd():
                             # if it's a valid assembly and part
                             if Asm4.isAsm4EE(selection):
                                 # launch the UI in the task panel
-                                ui = place_part_ui()
+                                ui = placePartUI()
                                 Gui.Control.showDialog(ui)
                             # else try to convert it
                             else:
@@ -109,7 +109,7 @@ class placeLinkCmd():
                                 if convert:
                                     Asm4.makeAsmProperties( selection, reset=True )
                                     # launch the UI in the task panel
-                                    ui = place_part_ui()
+                                    ui = placePartUI()
                                     Gui.Control.showDialog(ui)
                         # the selected object doesn't belong to the root assembly
                         else:
