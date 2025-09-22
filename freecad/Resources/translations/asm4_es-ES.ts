@@ -5,8 +5,8 @@
     <name>Asm4</name>
     <message>
         <location filename="../../InitGui.py" line="124"/>
-        <source>Initializing Assembly4 workbench</source>
-        <translation>Inicializando en entorno de trabajo Assembly4</translation>
+        <source>Initializing Assembly4.1 workbench</source>
+        <translation>Inicializando en entorno de trabajo Assembly4.1</translation>
     </message>
     <message>
         <location filename="../../InitGui.py" line="361"/>
@@ -34,13 +34,13 @@
     <name>Asm4_Help</name>
     <message>
         <location filename="../../HelpCmd.py" line="24"/>
-        <source>Help for Assembly4</source>
-        <translation>Ayuda para Assembly4</translation>
+        <source>Help for Assembly4.1</source>
+        <translation>Ayuda para Assembly4.1</translation>
     </message>
     <message>
         <location filename="../../HelpCmd.py" line="25"/>
-        <source>Show basic usage for FreeCAD and Assembly4</source>
-        <translation>Mostrar ayuda de uso básico para FreeCAD y Assembly4</translation>
+        <source>Show basic usage for FreeCAD and Assembly4.1</source>
+        <translation>Mostrar ayuda de uso básico para FreeCAD y Assembly4.1</translation>
     </message>
 </context>
 <context>

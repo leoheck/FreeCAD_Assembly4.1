@@ -13,18 +13,18 @@
     <name>Asm4</name>
     <message>
         <location filename="../InitGui.py" line="57"/>
-        <source>Activating Assembly4 WorkBench</source>
-        <translation>Activation de l&apos;atelier Assembly4</translation>
+        <source>Activating Assembly4.1 WorkBench</source>
+        <translation>Activation de l&apos;atelier Assembly4.1</translation>
     </message>
     <message>
         <location filename="../InitGui.py" line="75"/>
-        <source>Leaving Assembly4 WorkBench</source>
-        <translation>Quiter l&apos;atelier Assembly4</translation>
+        <source>Leaving Assembly4.1 WorkBench</source>
+        <translation>Quiter l&apos;atelier Assembly4.1</translation>
     </message>
     <message>
         <location filename="../InitGui.py" line="95"/>
-        <source>Initializing Assembly4 workbench</source>
-        <translation>Initialisation de l&apos;atelier Assembly4</translation>
+        <source>Initializing Assembly4.1 workbench</source>
+        <translation>Initialisation de l&apos;atelier Assembly4.1</translation>
     </message>
     <message>
         <location filename="../InitGui.py" line="294"/>
@@ -174,13 +174,13 @@
     <name>Asm4_Help</name>
     <message>
         <location filename="../HelpCmd.py" line="36"/>
-        <source>Help for Assembly4</source>
-        <translation>Aide pour Assembly4</translation>
+        <source>Help for Assembly4.1</source>
+        <translation>Aide pour Assembly4.1</translation>
     </message>
     <message>
         <location filename="../HelpCmd.py" line="37"/>
-        <source>Show basic usage for FreeCAD and Assembly4</source>
-        <translation>Voir l&apos;utilisationbasique pour FreeCAD et Assembly4</translation>
+        <source>Show basic usage for FreeCAD and Assembly4.1</source>
+        <translation>Voir l&apos;utilisationbasique pour FreeCAD et Assembly4.1</translation>
     </message>
 </context>
 <context>

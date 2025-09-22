@@ -12,17 +12,17 @@
     <name>Asm4</name>
     <message>
         <location filename="../InitGui.py" line="57"/>
-        <source>Activating Assembly4 WorkBench</source>
+        <source>Activating Assembly4.1 WorkBench</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../InitGui.py" line="75"/>
-        <source>Leaving Assembly4 WorkBench</source>
+        <source>Leaving Assembly4.1 WorkBench</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../InitGui.py" line="95"/>
-        <source>Initializing Assembly4 workbench</source>
+        <source>Initializing Assembly4.1 workbench</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -173,12 +173,12 @@
     <name>Asm4_Help</name>
     <message>
         <location filename="../HelpCmd.py" line="36"/>
-        <source>Help for Assembly4</source>
+        <source>Help for Assembly4.1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../HelpCmd.py" line="37"/>
-        <source>Show basic usage for FreeCAD and Assembly4</source>
+        <source>Show basic usage for FreeCAD and Assembly4.1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
