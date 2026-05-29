@@ -98,14 +98,25 @@ class placeLinkUI():
         self.old_OverrideMaterial = self.selectedObj.ViewObject.OverrideMaterial
         self.old_DrawStyle = self.selectedObj.ViewObject.DrawStyle
         self.old_LineWidth = self.selectedObj.ViewObject.LineWidth
-        self.old_DiffuseColor = self.selectedObj.ViewObject.ShapeMaterial.DiffuseColor
-        self.old_Transparency = self.selectedObj.ViewObject.ShapeMaterial.Transparency
+
+        try:
+            self.old_DiffuseColor = self.selectedObj.ViewObject.ShapeMaterial.DiffuseColor
+            self.old_Transparency = self.selectedObj.ViewObject.ShapeMaterial.Transparency
+        except:
+            self.old_DiffuseColor = self.selectedObj.ViewObject.ShapeAppearance[0].DiffuseColor
+            self.old_Transparency = self.selectedObj.ViewObject.ShapeAppearance[0].Transparency
+
         # set new view properties
         self.selectedObj.ViewObject.OverrideMaterial = True
         self.selectedObj.ViewObject.DrawStyle = DrawStyle
         self.selectedObj.ViewObject.LineWidth = LineWidth
-        self.selectedObj.ViewObject.ShapeMaterial.DiffuseColor = DiffuseColor
-        self.selectedObj.ViewObject.ShapeMaterial.Transparency = Transparency
+
+        try:
+            self.selectedObj.ViewObject.ShapeMaterial.DiffuseColor = DiffuseColor
+            self.selectedObj.ViewObject.ShapeMaterial.Transparency = Transparency
+        except:
+            self.selectedObj.ViewObject.ShapeAppearance[0].DiffuseColor = DiffuseColor
+            self.selectedObj.ViewObject.ShapeAppearance[0].Transparency = Transparency
 
         # get the old values
         self.old_EE     = ''
@@ -222,9 +233,13 @@ class placeLinkUI():
         self.selectedObj.ViewObject.OverrideMaterial = False
         self.selectedObj.ViewObject.DrawStyle    = self.old_DrawStyle
         self.selectedObj.ViewObject.LineWidth    = self.old_LineWidth
-        self.selectedObj.ViewObject.ShapeMaterial.DiffuseColor = self.old_DiffuseColor
-        self.selectedObj.ViewObject.ShapeMaterial.Transparency = self.old_Transparency
 
+        try:
+            self.selectedObj.ViewObject.ShapeMaterial.DiffuseColor = self.old_DiffuseColor
+            self.selectedObj.ViewObject.ShapeMaterial.Transparency = self.old_Transparency
+        except:
+            self.selectedObj.ViewObject.ShapeAppearance[0].DiffuseColor = self.old_DiffuseColor
+            self.selectedObj.ViewObject.ShapeAppearance[0].Transparency = self.old_Transparency
 
     # standard FreeCAD Task panel buttons
     def getStandardButtons(self):
@@ -250,7 +265,6 @@ class placeLinkUI():
         self.selectedObj.recompute()
         # highlight in the 3D window the object we placed
         self.finish()
-
 
     # Free insert
     def clicked(self, button):
