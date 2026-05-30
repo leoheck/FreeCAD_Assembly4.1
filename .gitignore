@@ -1,5 +1,4 @@
-__pycache__/*
-Code/__pycache__/*
-*.directory
-.gitignore
+__pycache__/
+Code/
 *.DS_Store
+*.log
