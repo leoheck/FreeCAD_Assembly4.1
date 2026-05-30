@@ -2,8 +2,8 @@
 <package format="1">
 	<name>Assembly4.1</name>
 	<description>This assembly workbench use lets you put FreeCAD Part and Body together inside a standard Assembly container.</description>
-	<version>0.60.2-0.2</version>
-	<date>2025.09.22</date>
+	<version>0.61.0-0.2</version>
+	<date>2026.05.30</date>
 	<maintainer email="leoheck@gmail.com">leoheck</maintainer>
 	<license file="LICENSE">LGPL-2.1-only</license>
 	<url type="repository" branch="main">https://github.com/leoheck/FreeCAD_Assembly4.1</url>
