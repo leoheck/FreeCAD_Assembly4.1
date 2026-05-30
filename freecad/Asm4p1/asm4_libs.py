@@ -30,7 +30,11 @@ iconPath = os.path.join( codePath, '../Resources/icons' )
 datumTypes = [  'PartDesign::CoordinateSystem', \
                 'PartDesign::Plane',            \
                 'PartDesign::Line',             \
-                'PartDesign::Point']
+                'PartDesign::Point',            \
+                'Part::LocalCoordinateSystem',  \
+                'Part::DatumPlane',             \
+                'Part::DatumLine',              \
+                'Part::DatumPoint' ]
 
 
 partInfo =[     'PartID',                       \
