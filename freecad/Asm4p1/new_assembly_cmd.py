@@ -27,20 +27,22 @@ class newAssemblyCmd:
     |    with some extra features and properties    |
     +-----------------------------------------------+
     
-def makeAssembly():
-    assembly = App.ActiveDocument.addObject('App::Part','Assembly')
-    assembly.Type='Assembly'
-    assembly.addProperty( 'App::PropertyString', 'AssemblyType', 'Assembly' )
-    assembly.AssemblyType = 'Part::Link'
-    assembly.newObject('App::DocumentObjectGroup','Constraints')
-    return assembly
-
+    def makeAssembly():
+        assembly = App.ActiveDocument.addObject('App::Part','Assembly')
+        assembly.Type='Assembly'
+        assembly.addProperty( 'App::PropertyString', 'AssemblyType', 'Assembly' )
+        assembly.AssemblyType = 'Part::Link'
+        assembly.newObject('App::DocumentObjectGroup','Constraints')
+        return assembly
     """
-    def GetResources(self):
-        tooltip  = translate("Commands", "<p>Create a new Assembly container</p>")
-        iconFile = os.path.join( Asm4.iconPath , 'Asm4_Model.svg')
-        return {"MenuText": "New Assembly", "ToolTip": tooltip, "Pixmap" : iconFile }
 
+    def GetResources(self):
+        return {
+            "MenuText": "New Assembly",
+            "Accel": "A, A",
+            "ToolTip": translate("Commands", "<p>Create a new Assembly container</p>"),
+            "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_Model.svg')
+        }
 
     def IsActive(self):
         if App.ActiveDocument:

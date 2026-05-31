@@ -50,49 +50,64 @@ Gui.runCommand('FSChangeParams')
 """
 
 class insertFastener:
-    "My tool object"
+
     def __init__(self, fastenerType):
         self.FSclass = fastenerType
-        self.FScolor = {'Screw' : (0.3, 0.6, 0.7),
-                        'Nut'   : (0.85, 0.3, 0.5),
-                        'Washer': (1.0, 0.75, 0.0),
-                        'ThreadedRod':(0.3, 0.5, 0.75)
-                        }
-        # Screw
-        if  self.FSclass      == 'Screw':
-            self.menutext     = translate("Fasteners", "Insert Screw")
-            self.tooltip      = "<p>Insert a Screw into the Assembly</p>"
-            self.tooltip     += "<p>If another fastener is selected, a new fastener of the same type is created in the same assembly."
-            self.tooltip     += "If an axis or LCS is selected, the new fastener will be attached to it."
-            self.tooltip     += "If an assembly is selected, the new fastener will be inside that assembly.</p>"
-            self.icon         = os.path.join( Asm4.iconPath , 'Asm4_Screw.svg')
-        # Nut
-        elif self.FSclass     == 'Nut':
-            self.menutext     = translate("Fasteners", "Insert Nut")
-            self.tooltip      = "<p>Insert a Nut into the Assembly</p>"
-            self.tooltip     += "<p>If another fastener is selected, a new fastener of the same type is created in the same assembly."
-            self.tooltip     += "If an axis or LCS is selected, the new fastener will be attached to it."
-            self.tooltip     += "If an assembly is selected, the new fastener will be inside that assembly.</p>"
-            self.icon         = os.path.join( Asm4.iconPath , 'Asm4_Nut.svg')
-        # Washer
-        elif self.FSclass     == 'Washer':
-            self.menutext     = translate("Fasteners", "Insert Washer")
-            self.tooltip      = "<p>Insert a Washer into the Assembly</p>"
-            self.tooltip     += "<p>If another fastener is selected, a new fastener of the same type is created in the same assembly."
-            self.tooltip     += "If an axis or LCS is selected, the new fastener will be attached to it."
-            self.tooltip     += "If an assembly is selected, the new fastener will be inside that assembly.</p>"
-            self.icon         = os.path.join( Asm4.iconPath , 'Asm4_Washer.svg')
-        # Threaded Rod (makes errors)
-        elif self.FSclass     == 'ThreadedRod':
-            self.menutext     = translate("Fasteners", "Insert threaded rod")
-            self.tooltip      = "Insert threaded rod"
-            self.icon         = os.path.join( Asm4.iconPath , 'Asm4_Rod.svg')
+        self.FScolor = {
+            'Screw': (0.3, 0.6, 0.7),
+            'Nut': (0.85, 0.3, 0.5),
+            'Washer': (1.0, 0.75, 0.0),
+            'ThreadedRod': (0.3, 0.5, 0.75)
+        }
 
+        if  self.FSclass == 'Screw':
+            self.menutext = translate("Fasteners", "Insert Screw")
+            self.tooltip = "<p>Insert a Screw into the Assembly</p>"
+            self.tooltip += "<p>If another fastener is selected, a new fastener of the same type is created in the same assembly."
+            self.tooltip += "If an axis or LCS is selected, the new fastener will be attached to it."
+            self.tooltip += "If an assembly is selected, the new fastener will be inside that assembly.</p>"
+            self.icon = os.path.join(Asm4.iconPath, 'Asm4_Screw.svg')
+
+        elif self.FSclass == 'Nut':
+            self.menutext = translate("Fasteners", "Insert Nut")
+            self.tooltip = "<p>Insert a Nut into the Assembly</p>"
+            self.tooltip += "<p>If another fastener is selected, a new fastener of the same type is created in the same assembly."
+            self.tooltip += "If an axis or LCS is selected, the new fastener will be attached to it."
+            self.tooltip += "If an assembly is selected, the new fastener will be inside that assembly.</p>"
+            self.icon = os.path.join(Asm4.iconPath, 'Asm4_Nut.svg')
+
+        elif self.FSclass == 'Washer':
+            self.menutext = translate("Fasteners", "Insert Washer")
+            self.tooltip = "<p>Insert a Washer into the Assembly</p>"
+            self.tooltip += "<p>If another fastener is selected, a new fastener of the same type is created in the same assembly."
+            self.tooltip += "If an axis or LCS is selected, the new fastener will be attached to it."
+            self.tooltip += "If an assembly is selected, the new fastener will be inside that assembly.</p>"
+            self.icon = os.path.join(Asm4.iconPath, 'Asm4_Washer.svg')
+
+        elif self.FSclass == 'ThreadedRod':
+            self.menutext = translate("Fasteners", "Insert threaded rod")
+            self.tooltip = "Insert threaded rod"
+            self.icon = os.path.join(Asm4.iconPath, 'Asm4_Rod.svg')
 
     def GetResources(self):
-        return {"MenuText": self.menutext,
-                "ToolTip" : self.tooltip,
-                "Pixmap"  : self.icon }
+
+        if self.FSclass == "Screw":
+            accel = "A, S"
+        elif self.FSclass == "Nut":
+            accel = "A, N"
+        elif self.FSclass == "Washer":
+            accel = "A, W"
+        elif self.FSclass == "ThreadedRod":
+            accel = "A, R"
+        else:
+            accel = ""
+
+        return {
+            "MenuText": self.menutext,
+            "Accel": accel,
+            "ToolTip" : self.tooltip,
+            "Pixmap"  : self.icon
+        }
 
     def IsActive(self):
         # if Asm4.getAssembly():

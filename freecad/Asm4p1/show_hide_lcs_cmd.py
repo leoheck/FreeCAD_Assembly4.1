@@ -25,10 +25,12 @@ class showLcsCmd:
         super(showLcsCmd,self).__init__()
 
     def GetResources(self):
-        return {"MenuText": translate("Asm4_showLcs", "Show LCS"),
-                "ToolTip": translate("Asm4_showLcs", "Show LCS and Datums of selected part and its children"),
-                "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_showLCS.svg')
-                }
+        return {
+            "MenuText": translate("Asm4_showLcs", "Show LCS"),
+            "Accel": "A, S",
+            "ToolTip": translate("Asm4_showLcs", "Show LCS and Datums of selected part and its children"),
+            "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_showLCS.svg')
+        }
 
     def IsActive(self):
         # if something is selected or an Asm4 assembly present
@@ -52,10 +54,12 @@ class hideLcsCmd:
         super(hideLcsCmd,self).__init__()
 
     def GetResources(self):
-        return {"MenuText": translate("Asm4_hideLcs", "Hide LCS"),
-                "ToolTip": translate("Asm4_hideLcs", "Hide LCS and Datums of selected part and its children"),
-                "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_hideLCS.svg')
-                }
+        return {
+            "MenuText": translate("Asm4_hideLcs", "Hide LCS"),
+            "Accel": "A, H",
+            "ToolTip": translate("Asm4_hideLcs", "Hide LCS and Datums of selected part and its children"),
+            "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_hideLCS.svg')
+        }
 
     def IsActive(self):
         # if something is selected or an Asm4 assembly present
@@ -74,7 +78,7 @@ class hideLcsCmd:
     |   the provided object and all its children    |
     +-----------------------------------------------+
 """
-def showHide( show ):
+def showHide(show):
     # reset processed links cache
     processedLinks = []
     # if something is selected

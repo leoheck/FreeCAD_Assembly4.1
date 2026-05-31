@@ -51,9 +51,11 @@ class insertFastener:
 
 
     def GetResources(self):
-        return {"MenuText": self.menutext,
-                "ToolTip": translate("Fasteners", "FastenersWorkbench is not installed.\n \nYou can install it with the FreeCAD AddonsManager:\nMenu Tools > Addon Manager > fasteners"),
-                "Pixmap" : self.icon }
+        return {
+            "MenuText": self.menutext,
+            "ToolTip": translate("Fasteners", "FastenersWorkbench is not installed.\n \nYou can install it with the FreeCAD AddonsManager:\nMenu Tools > Addon Manager > fasteners"),
+            "Pixmap" : self.icon
+        }
 
 
     def IsActive(self):

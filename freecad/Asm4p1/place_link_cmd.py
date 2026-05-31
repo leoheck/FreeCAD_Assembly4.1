@@ -33,10 +33,12 @@ class placeLinkCmd():
         super(placeLinkCmd,self).__init__()
 
     def GetResources(self):
-        return {"MenuText": "Edit Placement of a Part",
-                "ToolTip": "Move/Attach a Part in the assembly",
-                "Pixmap" : os.path.join( Asm4.iconPath , 'Place_Link.svg')
-                }
+        return {
+            "MenuText": "Edit Placement of a Part",
+            "Accel": "A, E",
+            "ToolTip": "Move/Attach a Part in the assembly",
+            "Pixmap" : os.path.join(Asm4.iconPath , 'Place_Link.svg')
+        }
 
     def IsActive(self):
         # We only insert a link into an Asm4  Model

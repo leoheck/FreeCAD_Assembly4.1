@@ -33,7 +33,6 @@ class insertLink():
         # self.UI = QtGui.QDialog()
         # self.drawUI()
 
-
     def GetResources(self):
         tooltip  = "<p>Insert a Part into the assembly. "
         tooltip += "This will create a dynamic link to the part, "
@@ -43,11 +42,13 @@ class insertLink():
         tooltip += "<p>This command also enables to repair broken/missing links. "
         tooltip += "Select the broken link, launch this command, and select a new target part in the list</p>"
         iconFile = 'Link_Part.svg'
-        return {"MenuText" : "Insert Part", 
-                "ToolTip"  : tooltip, 
-                "Pixmap"   : os.path.join( Asm4.iconPath , iconFile )
-                }
 
+        return {
+            "MenuText": "Insert Part",
+            "Accel": "A, I",
+            "ToolTip": tooltip,
+            "Pixmap": os.path.join(Asm4.iconPath, iconFile)
+        }
 
     def IsActive(self):
         # if an App::Link is selected, even a broken one
