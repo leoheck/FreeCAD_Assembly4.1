@@ -1,18 +1,10 @@
 #!/usr/bin/env python3
 # coding: utf-8
-#
-# libraries for FreeCAD's Assembly 4 workbench
-#
+
 # LGPL
 # Copyright HUBERT Zoltán
-
-
-
-"""
-    +-----------------------------------------------+
-    |          shouldn't these be DEFINE's ?        |
-    +-----------------------------------------------+
-"""
+#
+# asm4_libs.py
 
 import os
 
@@ -21,28 +13,49 @@ import FreeCADGui as Gui
 import FreeCAD as App
 from FreeCAD import Console as FCC
 
-codePath   = os.path.dirname(__file__)
-iconPath = os.path.join( codePath, '../Resources/icons' )
+codePath = os.path.dirname(__file__)
+iconPath = os.path.join(codePath, "../Resources/icons")
+
+allow_duplicate_labels = App.ParamGet("User parameter:BaseApp/Preferences/Document").GetBool("DuplicateLabels", False)
+
+partInfo = [
+    "PartID",
+    "PartName",
+    "PartDescription",
+    "PartSupplier"
+]
+
+datumTypes = [
+    "Part::DatumLine",
+    "Part::DatumPlane",
+    "Part::DatumPoint",
+    "Part::LocalCoordinateSystem",
+    "PartDesign::CoordinateSystem",
+    "PartDesign::Line",
+    "PartDesign::Plane",
+    "PartDesign::Point"
+]
+
+containerTypes = [
+    "App::Part",
+    "PartDesign::Body"
+]
+
+def isAsm4Part(obj):
+    if obj is None:
+        return False
+    if obj.TypeId in containerTypes and not isAssembly(obj) and obj.getParentGeoFeatureGroup() is None:
+        return True
+    return False
+
+def isContainer(obj):
+    if obj is None:
+        return False
+    if obj.TypeId == "App::Part" or obj.TypeId == "App::DocumentObjectGroup":
+        return True
+    return False
 
 
-
-# Types of datum objects
-datumTypes = [  'PartDesign::CoordinateSystem', \
-                'PartDesign::Plane',            \
-                'PartDesign::Line',             \
-                'PartDesign::Point',            \
-                'Part::LocalCoordinateSystem',  \
-                'Part::DatumPlane',             \
-                'Part::DatumLine',              \
-                'Part::DatumPoint' ]
-
-
-partInfo =[     'PartID',                       \
-                'PartName',                     \
-                'PartDescription',              \
-                'PartSupplier']
-
-containerTypes = [  'App::Part', 'PartDesign::Body' ]
 
 
 VEC_0 = App.Vector(0, 0, 0)
@@ -104,13 +117,15 @@ def cloneObject(obj):
         result.Document.recompute()
     return result
 
+
 def newLCS(parent, objType, objName, attSupport):
-    result = parent.newObject(objType, objName)
-    if hasattr(result, 'AttachmentSupport'):
-        result.AttachmentSupport = attSupport
+    obj = parent.newObject(objType, objName)
+    if hasattr(obj, "AttachmentSupport"):
+        obj.AttachmentSupport = attSupport
     else:
-        result.Support = attSupport
-    return result
+        obj.Support = attSupport
+    return obj
+
 
 def placeObjectToLCS( attObj, attLink, attDoc, attLCS ):
     expr = makeExpressionDatum( attLink, attDoc, attLCS )
@@ -180,33 +195,11 @@ def getVarContainer():
 
 # the Variables container
 def makeVarContainer():
-    retval = None
-    # check whether there already is a Variables object
-    variables = App.ActiveDocument.getObject('Variables')
-    if variables :
-        if variables.TypeId=='App::FeaturePython':
-            # signature of a PropertyContainer
-            if hasattr(variables,'Type') :
-                if variables.Type == 'App::PropertyContainer':
-                    retval = variables
-            # for compatibility
-            else: 
-                variables.addProperty('App::PropertyString', 'Type')
-                variables.Type = 'App::PropertyContainer'            
-                retval = variables
-        else:
-            FCC.PrintWarning('This Part contains an incompatible \"Variables\" object, ')
-            FCC.PrintWarning('this could lead to unexpected results\n')
-    # there is none, so we create it
-    else:
-        variables = App.ActiveDocument.addObject('App::FeaturePython','Variables')
-        variables.ViewObject.Proxy = setCustomIcon(object,'Asm4_Variables.svg')
-        # signature or a PropertyContainer
-        variables.addProperty('App::PropertyString', 'Type')
-        variables.Type = 'App::PropertyContainer'
-        retval = variables
-    return retval
-
+    obj = App.ActiveDocument.addObject("App::FeaturePython", "Variables")
+    obj.ViewObject.Proxy = setCustomIcon(object, "Asm4_Variables.svg")
+    obj.addProperty("App::PropertyString", "Type")
+    obj.Type = "App::PropertyContainer"
+    return obj
 
 # custom icon
 # views/view_custom.py
@@ -522,16 +515,74 @@ def isAsm4EE(obj):
 
 
 def isAssembly(obj):
-    if not obj:
+    if obj is None:
         return False
-    if obj.TypeId=='App::Part' and obj.Name=='Assembly':
-        if hasattr(obj,'Type') and obj.Type=='Assembly':
+
+    if obj.TypeId == "App::Part" and obj.Name.startswith("Assembly"): #<=== isso eh ruim pq enrigesse tdo, so a propriedade seria top.
+        if hasattr(obj, "Type") and obj.Type == "Assembly":
             return True
+
     return False
 
 
-def isAsm4Model(obj):
-    return isAssembly(obj)
+def findAssemblies():
+    if App.ActiveDocument:
+        objs = [obj for obj in App.ActiveDocument.Objects if isAssembly(obj)]
+        return objs
+    return None
+
+
+TARGET_ASM = None
+SELECTED_INSTANCE = None
+PLACING_NEW_INSTANCE = False
+
+
+def getTargetAssembly():
+
+    selection = Gui.Selection.getSelection()
+    if selection:
+        obj = selection[0]
+        if isAssembly(obj):
+            return obj
+        if obj:
+            parent = obj.getParentGeoFeatureGroup()
+            if parent and isAssembly(parent):
+                return parent
+
+    active_view = Gui.ActiveDocument.ActiveView
+    active_part = active_view.getActiveObject("part")
+    if isAssembly(active_part):
+        return active_part
+
+    assembly_objs = findAssemblies()
+    if assembly_objs and len(assembly_objs) >= 1:
+        return assembly_objs[0]
+
+    return None
+
+
+def formated_label_name(obj):
+    if obj.Label != obj.Name:
+        label_name = f"{obj.Label} [{obj.Name}]"
+    else:
+        label_name = f"{obj.Name}"
+    return label_name
+
+
+def hasCyclicDependency(parent_asm, obj_asm):
+
+    if not parent_asm or not obj_asm:
+        return False
+
+    if parent_asm == obj_asm:
+        return True
+
+    for child in obj_asm.Group:
+        if isLinkToPart(child):
+            if hasCyclicDependency(parent_asm, child.LinkedObject):
+                return True
+
+    return False
 
 
 """
@@ -539,23 +590,23 @@ def isAsm4Model(obj):
     |           Shows a Warning message box         |
     +-----------------------------------------------+
 """
-def warningBox( text ):
+def warningBox(text):
     msgBox = QtGui.QMessageBox()
-    msgBox.setWindowTitle( 'FreeCAD Warning' )
-    msgBox.setIcon( QtGui.QMessageBox.Critical )
-    msgBox.setWindowFlags( QtCore.Qt.WindowStaysOnTopHint )
+    msgBox.setWindowTitle("Warning")
+    msgBox.setIcon(QtGui.QMessageBox.Warning)
+    msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
     msgBox.setText( text )
     msgBox.exec_()
     return
 
 
-def confirmBox( text ):
+def confirmBox(text, title="Info"):
     msgBox = QtGui.QMessageBox()
-    msgBox.setWindowTitle('FreeCAD Warning')
-    msgBox.setIcon(QtGui.QMessageBox.Warning)
-    msgBox.setWindowFlags( QtCore.Qt.WindowStaysOnTopHint )
+    msgBox.setWindowTitle(title)
+    msgBox.setIcon(QtGui.QMessageBox.Question)
+    msgBox.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
     msgBox.setText(text)
-    msgBox.setInformativeText('Are you sure you want to proceed ?')
+    msgBox.setInformativeText("Do you want to proceed?")
     msgBox.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
     msgBox.setEscapeButton(QtGui.QMessageBox.Cancel)
     msgBox.setDefaultButton(QtGui.QMessageBox.Ok)

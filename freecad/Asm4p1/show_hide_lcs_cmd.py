@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
-#
-# showHideLcsCmd.py
+
+# show_hide_lcs_cmd.py
 
 import os
 
@@ -13,114 +13,91 @@ from .asm4_translate import translate
 
 
 
+def _show_all_nested_lcs(show=True):
 
-"""
-    +-----------------------------------------------+
-    |                    Show                       |
-    +-----------------------------------------------+
-"""
-class showLcsCmd:
+    processed_links = []
+
+    selection = Gui.Selection.getSelection()
+
+    if selection:
+        for sel in Gui.Selection.getSelection():
+            if sel.isDerivedFrom('App::Link'):
+                _show_child_lcs(sel, show, processed_links)
+            elif sel.TypeId in Asm4.containerTypes:
+                for obj in sel.getSubObjects(1):
+                    _show_child_lcs(sel.getSubObject(obj, 1), show, processed_links)
+
+    # if not, apply it to all assemblies
+    elif Asm4.findAssemblies():
+        for asm in Asm4.findAssemblies():
+            for obj in asm.getSubObjects(1):
+                _show_child_lcs(asm.getSubObject(obj, 1), show, processed_links)
+
+
+def _show_child_lcs(obj, show, processed_links):
+
+    if obj.TypeId in Asm4.datumTypes:
+        obj.Visibility = show
+
+    elif obj.TypeId == "App::Link" and obj.Name not in processed_links:
+        processed_links.append(obj.Name)
+        for sub_obj_name in obj.LinkedObject.getSubObjects(1):
+            linked_obj = obj.LinkedObject.Document.getObject(sub_obj_name[0:-1])
+            _show_child_lcs(linked_obj, show, processed_links)
+
+    # if it's a container or a group
+    elif obj.TypeId in Asm4.containerTypes or obj.TypeId == "App::DocumentObjectGroup":
+        for sub_obj_name in obj.getSubObjects(1):
+            sub_obj = obj.getSubObject(sub_obj_name, 1)
+            if sub_obj is not None:
+                _show_child_lcs(sub_obj, show, processed_links)
+
+
+
+class ShowLCSCmd:
 
     def __init__(self):
-        super(showLcsCmd,self).__init__()
+        super(ShowLCSCmd, self).__init__()
 
     def GetResources(self):
         return {
             "MenuText": translate("Asm4_showLcs", "Show LCS"),
             "Accel": "A, S",
             "ToolTip": translate("Asm4_showLcs", "Show LCS and Datums of selected part and its children"),
-            "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_showLCS.svg')
+            "Pixmap": os.path.join(Asm4.iconPath, "Asm4_showLCS.svg")
         }
 
     def IsActive(self):
-        # if something is selected or an Asm4 assembly present
-        if Gui.Selection.hasSelection() or Asm4.getAssembly():
+        if Gui.Selection.hasSelection() or Asm4.findAssemblies():
             return True
         return False
 
     def Activated(self):
-        # show
-        showHide(True)
+        _show_all_nested_lcs(show=True)
 
 
 
-"""
-    +-----------------------------------------------+
-    |                      Hide                     |
-    +-----------------------------------------------+
-"""
-class hideLcsCmd:
+class HideLCSCmd:
     def __init__(self):
-        super(hideLcsCmd,self).__init__()
+        super(HideLCSCmd, self).__init__()
 
     def GetResources(self):
         return {
             "MenuText": translate("Asm4_hideLcs", "Hide LCS"),
             "Accel": "A, H",
             "ToolTip": translate("Asm4_hideLcs", "Hide LCS and Datums of selected part and its children"),
-            "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_hideLCS.svg')
+            "Pixmap": os.path.join(Asm4.iconPath, "Asm4_hideLCS.svg")
         }
 
     def IsActive(self):
-        # if something is selected or an Asm4 assembly present
-        if Gui.Selection.hasSelection() or Asm4.getAssembly():
+        if Gui.Selection.hasSelection() or Asm4.findAssemblies():
             return True
         return False
 
     def Activated(self):
-        # hide
-        showHide(False)
-
-
-"""
-    +-----------------------------------------------+
-    |              Show/Hide the LCSs in            |
-    |   the provided object and all its children    |
-    +-----------------------------------------------+
-"""
-def showHide(show):
-    # reset processed links cache
-    processedLinks = []
-    # if something is selected
-    if Gui.Selection.hasSelection():
-        for sel in Gui.Selection.getSelection():
-            if sel.isDerivedFrom('App::Link'):
-                showChildLCSs(sel, show, processedLinks)
-            elif sel.TypeId in Asm4.containerTypes:
-                for objName in sel.getSubObjects(1):
-                    showChildLCSs(sel.getSubObject(objName, 1), show, processedLinks)
-    # if not, apply it to the assembly
-    elif Asm4.getAssembly():
-        asm = Asm4.getAssembly()
-        for objName in asm.getSubObjects(1):
-            showChildLCSs(asm.getSubObject(objName, 1), show, processedLinks)
-
-def showChildLCSs(obj, show, processedLinks):
-    #global processedLinks
-    # if its a datum apply the visibility
-    if obj.TypeId in Asm4.datumTypes:
-        obj.Visibility = show
-    # if it's a link, look for subObjects
-    elif obj.TypeId == 'App::Link' and obj.Name not in processedLinks:
-        processedLinks.append(obj.Name)
-        for objName in obj.LinkedObject.getSubObjects(1):
-            linkedObj = obj.LinkedObject.Document.getObject(objName[0:-1])
-            showChildLCSs(linkedObj, show, processedLinks)
-    # if it's a container or a group
-    elif obj.TypeId in Asm4.containerTypes or obj.TypeId=='App::DocumentObjectGroup':
-        for subObjName in obj.getSubObjects(1):
-            subObj = obj.getSubObject(subObjName, 1)    # 1 for returning the real object
-            if subObj != None:
-                showChildLCSs(subObj, show, processedLinks)
+        _show_all_nested_lcs(show=False)
 
 
 
-
-"""
-    +-----------------------------------------------+
-    |       add the command to the workbench        |
-    +-----------------------------------------------+
-"""
-Gui.addCommand( 'Asm4_showLcs', showLcsCmd() )
-Gui.addCommand( 'Asm4_hideLcs', hideLcsCmd() )
-
+Gui.addCommand("Asm4_showLcs", ShowLCSCmd())
+Gui.addCommand("Asm4_hideLcs", HideLCSCmd())

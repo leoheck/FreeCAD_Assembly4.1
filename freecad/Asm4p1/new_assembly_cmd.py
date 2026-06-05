@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# 
-# newAssemblyCmd.py 
-#
+
 # LGPL
 # Copyright HUBERT Zoltán
-
-
+#
+# new_assembly_cmd.py
 
 import os
+import re
 
 from PySide import QtGui, QtCore
 import FreeCADGui as Gui
@@ -17,108 +16,104 @@ import FreeCAD as App
 from . import asm4_libs as Asm4
 from .asm4_translate import translate
 
+LCS_XY_Plane_Color = (0.0, 0.0, 0.8)
+LCS_YZ_Plane_Color = (1.0, 0.0, 0.0)
+LCS_XZ_Plane_Color = (0.0, 0.6, 0.0)
 
 
-class newAssemblyCmd:
-    """
-    +-----------------------------------------------+
-    |          creates the Assembly4 Model          |
-    |             which is an App::Part             |
-    |    with some extra features and properties    |
-    +-----------------------------------------------+
-    
-    def makeAssembly():
-        assembly = App.ActiveDocument.addObject('App::Part','Assembly')
-        assembly.Type='Assembly'
-        assembly.addProperty( 'App::PropertyString', 'AssemblyType', 'Assembly' )
-        assembly.AssemblyType = 'Part::Link'
-        assembly.newObject('App::DocumentObjectGroup','Constraints')
-        return assembly
-    """
+class NewAssemblyCmd:
 
     def GetResources(self):
         return {
             "MenuText": "New Assembly",
             "Accel": "A, A",
             "ToolTip": translate("Commands", "<p>Create a new Assembly container</p>"),
-            "Pixmap": os.path.join(Asm4.iconPath, 'Asm4_Model.svg')
+            "Pixmap": os.path.join(Asm4.iconPath, "Asm4_Model.svg")
         }
+
 
     def IsActive(self):
         if App.ActiveDocument:
-            return(True)
+            return True
         else:
-            return(False)
+            return False
 
 
-    # the real stuff
     def Activated(self):
-        # check whether there is already Model in the document
-        assy = App.ActiveDocument.getObject('Assembly')
-        if assy is not None:
-            if assy.TypeId=='App::Part':
-                message = "This document already contains a valid Assembly, please use it"
-                Asm4.warningBox(message)
-                # set the Type to Assembly
-                assy.Type = 'Assembly'
-            else:
-                message  = "This document already contains another FreeCAD object called \"Assembly\", "
-                message += "but it's of type \""+assy.TypeId+"\", unsuitable for an assembly. I can\'t proceed."
-                Asm4.warningBox(message)
-            # abort
-            return
-
-        # there is no object called "Assembly"
-        text,ok = QtGui.QInputDialog.getText(None, 'Create a new assembly', 'Enter assembly name :'+' '*30, text='Assembly')
-        if ok and text:
-            # create a group 'Parts' to hold all parts in the assembly document (if any)
-            # must be done before creating the assembly
-            partsGroup = App.ActiveDocument.getObject('Parts')
-            if partsGroup is None:
-                partsGroup = App.ActiveDocument.addObject( 'App::DocumentObjectGroup', 'Parts' )
-                pass
-            # create a new App::Part called 'Assembly'
-            assembly = App.ActiveDocument.addObject('App::Part','Assembly')
-            # set the type as a "proof" that it's an Assembly
-            assembly.Type='Assembly'
-            assembly.Label=text
-            assembly.addProperty( 'App::PropertyString', 'AssemblyType', 'Assembly' )
-            assembly.AssemblyType = 'Part::Link'
-            # add an LCS at the root of the Model, and attach it to the 'Origin'
-            lcs0 = Asm4.newLCS(assembly, 'PartDesign::CoordinateSystem', 'LCS_Origin', [(assembly.Origin.OriginFeatures[0],'')])
-            lcs0.MapMode = 'ObjectXY'
-            lcs0.MapReversed = False
-            # set nice colors for the Origin planes
-            for feature in assembly.Origin.OriginFeatures:
-                if feature.Name[1:6] == "_Axis":
-                    feature.Visibility = False
-                if feature.Name[0:8] == "XY_Plane":
-                    feature.ViewObject.ShapeColor=(0.0, 0.0, 0.8)
-                if feature.Name[0:8] == "YZ_Plane":
-                    feature.ViewObject.ShapeColor=(1.0, 0.0, 0.0)
-                if feature.Name[0:8] == "XZ_Plane":
-                        feature.ViewObject.ShapeColor=(0.0, 0.6, 0.0)
-            # create a group Constraints to store future solver constraints there
-            assembly.newObject('App::DocumentObjectGroup','Constraints')
-            App.ActiveDocument.getObject('Constraints').Visibility = False
-            # create an object Variables to hold variables to be used in this document
-            assembly.addObject(Asm4.makeVarContainer())
-            # create a group Configurations to store future solver constraints there
-            assembly.newObject('App::DocumentObjectGroup','Configurations')
-            App.ActiveDocument.getObject('Configurations').Visibility = False
-            
-            # move existing parts and bodies at the document root to the Parts group
-            # not nested inside other parts, to keep hierarchy
-            if hasattr(partsGroup,'TypeId') and partsGroup.TypeId=='App::DocumentObjectGroup':
-                for obj in App.ActiveDocument.Objects:
-                    if obj.TypeId in Asm4.containerTypes and obj.Name!='Assembly' and obj.getParentGeoFeatureGroup() is None:
-                        partsGroup.addObject(obj)
-
-            # recompute to get rid of the small overlays
-            assembly.recompute()
-            App.ActiveDocument.recompute()
+        self._create_parts_group()
+        self._create_assembly_part()
+        self._create_origin_lcs()
+        self._create_variables_obj()
+        self._create_constraints_group()
+        self._create_configs_group()
+        self._organize_document()
+        self.assembly.recompute()
+        App.ActiveDocument.recompute()
 
 
+    def _create_parts_group(self):
+        self.group = App.ActiveDocument.getObject("Parts")
+        if self.group is None:
+            self.group = App.ActiveDocument.addObject("App::DocumentObjectGroup", "Parts")
 
-# add the command to the workbench
-Gui.addCommand( 'Asm4_newAssembly', newAssemblyCmd() )
+
+    def _create_assembly_part(self):
+        self.assembly = App.ActiveDocument.addObject("App::Part", "Assembly")
+        self.assembly.Type = "Assembly"
+        if Asm4.allow_duplicate_labels:
+            self.assembly.Label = "Assemby"
+        self.assembly.addProperty("App::PropertyString", "AssemblyType", "Assembly")
+        self.assembly.AssemblyType = "Part::Link"
+        self._customize_assembly_origin()
+
+
+    def _customize_assembly_origin(self):
+        for feature in self.assembly.Origin.OriginFeatures:
+            if feature.Name[1:6] == "_Axis":
+                feature.Visibility = False
+            if feature.Name[0:8] == "XY_Plane":
+                feature.ViewObject.ShapeColor = LCS_XY_Plane_Color
+            if feature.Name[0:8] == "YZ_Plane":
+                feature.ViewObject.ShapeColor = LCS_YZ_Plane_Color
+            if feature.Name[0:8] == "XZ_Plane":
+                feature.ViewObject.ShapeColor = LCS_XZ_Plane_Color
+
+
+    def _create_origin_lcs(self):
+        obj = Asm4.newLCS(self.assembly, "PartDesign::CoordinateSystem", "LCS_Origin", [(self.assembly.Origin.OriginFeatures[0], "")])
+        if Asm4.allow_duplicate_labels:
+            obj.Label = "LCS_Origin"
+        obj.MapMode = "ObjectXY"
+        obj.MapReversed = False
+        obj.Visibility = False
+
+
+    def _create_variables_obj(self):
+        obj = Asm4.makeVarContainer()
+        self.assembly.addObject(obj)
+        if Asm4.allow_duplicate_labels:
+            obj.Label = "Variables"
+
+
+    def _create_constraints_group(self):
+        group = self.assembly.newObject("App::DocumentObjectGroup", "Constraints")
+        if Asm4.allow_duplicate_labels:
+            group.Label = "Constraints"
+        group.Visibility = False
+
+
+    def _create_configs_group(self):
+        group = self.assembly.newObject("App::DocumentObjectGroup", "Configurations")
+        if Asm4.allow_duplicate_labels:
+            group.Label = "Configurations"
+        group.Visibility = False
+
+
+    def _organize_document(self):
+        if hasattr(self.group, "TypeId") and self.group.TypeId == "App::DocumentObjectGroup":
+            for obj in App.ActiveDocument.Objects:
+                if Asm4.isAsm4Part(obj):
+                    self.group.addObject(obj)
+
+
+Gui.addCommand("Asm4_newAssembly", NewAssemblyCmd())

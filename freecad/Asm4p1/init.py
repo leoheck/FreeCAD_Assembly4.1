@@ -24,7 +24,6 @@
 ###################################################################################
 
 # import os
-
 # import FreeCAD as App
 
 # from . import asm4_locator
