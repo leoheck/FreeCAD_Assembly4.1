@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <package format="1">
 	<name>Assembly4.1</name>
-	<description>This assembly workbench use lets you put FreeCAD Part and Body together inside a standard Assembly container.</description>
+	<description>Assembly workbench.</description>
 	<version>0.61.0-0.2</version>
 	<date>2026.05.30</date>
 	<maintainer email="leoheck@gmail.com">leoheck</maintainer>
@@ -18,4 +18,10 @@
 			<freecadmin>0.19.0</freecadmin>
 		</workbench>
 	</content>
+	<dependencies>
+		<depend>Fasteners</depend>
+		<python name="cv2" optional="true" />
+		<python name="json" optional="true" />
+		<python name="zipfile" optional="true" />
+	</dependencies>
 </package>
