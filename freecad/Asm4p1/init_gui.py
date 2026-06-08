@@ -21,21 +21,16 @@
 
 import os
 import sys
+import re
 
 import FreeCAD as App
 import FreeCADGui as Gui
 
 from . import asm4_locator
+code_path  = os.path.dirname(asm4_locator.__file__)
+sys.path.insert(1, code_path)
 
-global Asm4_path, Asm4_icon, Asm4_code, Asm4_trans
-
-Asm4_path  = os.path.dirname(asm4_locator.__file__)
-Asm4_code  = os.path.join(Asm4_path, "./")
-Asm4_icon  = os.path.join(Asm4_path, "../Resources/icons/Assembly4.svg")
-Asm4_trans = os.path.join(Asm4_path, "../Resources/translations")
-
-# insert python search path
-sys.path.insert(1, Asm4_code)
+from . import asm4_libs as Asm4
 
 
 class Assembly4p1Workbench(Gui.Workbench):
@@ -43,39 +38,26 @@ class Assembly4p1Workbench(Gui.Workbench):
     def __init__(self):
         self.MenuText = "Assembly 4.1"
         self.ToolTip = "Assembly 4.1 workbench"
-        self.Icon = Asm4_icon
+        self.Icon = os.path.join(Asm4.iconPath, "Assembly4")
 
 
     def Initialize(self):
 
         # Translations
-        # from Asm4_Translate import Qtranslate
-        Gui.addLanguagePath(Asm4_trans)
+        Gui.addLanguagePath(os.path.join(code_path, "../Resources/translations"))
         Gui.updateLocale()
 
-        # Assembly4 version info
-        # with file package.xml (FreeCAD ≥0.21)
-        packageFile  = os.path.join(Asm4_path, "../../package.xml")
+        package_xml  = os.path.join(code_path, "../../package.xml")
 
-        # with file VERSION (FreeCAD > 0.20)
+        # If FreeCAD version >= 0.21
         try:
-            metadata     = App.Metadata(packageFile)
-            Asm4_date    = metadata.Date
-            Asm4_version = metadata.Version
-
-        # with file VERSION (FreeCAD ≤ 0.20)
+            package_data = App.Metadata(package_xml)
+            release_date = package_data.Date
+            version = package_data.Version
         except:
-            import re
-            with open(packageFile, "r") as f:
-                xml = f.read()  # single string with the entire file content
-            match_version = re.search(r"<version>(.*?)</version>", xml)
-            match_date = re.search(r"<date>(.*?)</date>", xml)
-            if match_version:
-                Asm4_version = match_version.group(1)
-            if match_date:
-                Asm4_date = match_version.group(1)
+            release_date, version = self._get_version()
 
-        App.Console.PrintMessage(f"Initializing Assembly4.1 workbench ({Asm4_version}).")
+        App.Console.PrintMessage(f"Initializing Assembly4.1 workbench ({version}, {release_date}).")
         Gui.updateGui()
 
         from . import selection_filter
@@ -187,6 +169,18 @@ class Assembly4p1Workbench(Gui.Workbench):
         self.appendContextMenu("", "Separator")
 
 
+    def _get_version(package_xml):
+        with open(package_xml, "r") as f:
+            package_data = f.read()
+        match_version = re.search(r"<version>(.*?)</version>", package_data)
+        match_date = re.search(r"<date>(.*?)</date>", package_data)
+        if match_version:
+            version = match_version.group(1)
+        if match_date:
+            release_date = match_version.group(1)
+        return release_date, version
+
+
     def _assembly_menu(self):
         cmds = [
             "Asm4_newAssembly",
@@ -254,7 +248,8 @@ class Assembly4p1Workbench(Gui.Workbench):
             "Asm4_linearArray",
             "Asm4_circularArray",
             "Asm4_expressionArray",
-            "Asm4_variablesCmd",
+            "Asm4_addVariable",
+            "Asm4_delVariable",
             "Separator",
             "Asm4_Animate",
             "Asm4_Measure",
@@ -284,6 +279,9 @@ class Assembly4p1Workbench(Gui.Workbench):
             if wb == workbench_name:
                 return True
         return False
+
+
+
 
 
 wb = Assembly4p1Workbench()

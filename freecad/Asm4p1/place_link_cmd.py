@@ -89,7 +89,7 @@ class PlaceLinkCmd():
                 else:
                     convert = Asm4.confirmBox("This Part wasn't assembled with this Assembly4 WorkBench, but I can convert it.")
                     if convert:
-                        Asm4.makeAsmProperties( selection, reset=True )
+                        Asm4.makeAsmProperties(selection, reset=True)
                         # launch the UI in the task panel
                         ui = PlaceLinkUI()
                         Gui.Control.showDialog(ui)
@@ -121,7 +121,7 @@ class PlaceLinkCmd():
                             else:
                                 convert = Asm4.confirmBox("This Part wasn't assembled with this Assembly4 WorkBench, but I can convert it.")
                                 if convert:
-                                    Asm4.makeAsmProperties( selection, reset=True )
+                                    Asm4.makeAsmProperties(selection, reset=True)
                                     # launch the UI in the task panel
                                     ui = placePartUI()
                                     Gui.Control.showDialog(ui)

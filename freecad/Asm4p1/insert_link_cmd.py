@@ -17,7 +17,7 @@ import FreeCAD as App
 from . import asm4_libs as Asm4
 
 
-class InsertLink():
+class InsertLink(QtGui.QDialog):
 
     def __init__(self):
         super(InsertLink, self).__init__()
@@ -51,10 +51,10 @@ class InsertLink():
 
 
     def IsActive(self):
-        # if an App::Link is selected, even a broken one
-        if Gui.Selection.getSelection() and Gui.Selection.getSelection()[0].isDerivedFrom('App::Link'):
+
+        if Gui.Selection.getSelection() and Gui.Selection.getSelection()[0].isDerivedFrom("App::Link"):
             return True
-        # there is an assembly or a root App::Part is selected
+
         elif Asm4.getAssembly() or Asm4.getSelectedRootPart():
             return True
         return False
@@ -62,369 +62,395 @@ class InsertLink():
 
     def Activated(self):
 
-        # initialise stuff
-        self.activeDoc    = App.ActiveDocument
-        self.rootAssembly = None
-        self.origLink     = None
-        self.brokenLink   = False
+        # Assembly can be selected or anything inside of it to preselect it
+        # When there is a selected instance (aka link)
+        # - if the link is broken, fix it
+        # - if the link is good, pre-select it for duplication
 
-        self.UI = QtGui.QDialog()
-        self.drawUI()
+        self.active_doc = App.ActiveDocument
+        self.target_asm = Asm4.getTargetAssembly()
+
+        self.selected_instance = None
+        self.is_broken_link = False
+
+        self.docs = []
+        self.parts = []
+
+        if not self.layout():
+            self._draw_UI()
+        self._init_UI()
+
+        selected_instance, is_valid_link = Asm4.get_selected_link(allow_broken_link=True)
+        if selected_instance:
+            self.selected_instance = selected_instance
+            if is_valid_link:
+                self.is_broken_link = False
+                self._valid_link_mode()
+            else:
+                self.is_broken_link = True
+                self._broken_link_mode()
+
+        self.show()
 
 
-        #self.allParts = []
-        #self.partsDoc = []
-        #self.partList.clear()
-        self.filterPartList.clear()
-        self.linkNameInput.clear()
+    def _preselect_part(self):
+        if self.selected_instance:
+            selected_part = self.selected_instance.LinkedObject
+            search_text = f"{selected_part.Document.Name}#{Asm4.formated_label_name(selected_part)}"
+            part_found = self.parts_list.findItems(search_text, QtCore.Qt.MatchExactly)
+            if part_found:
+                self.parts_list.setCurrentItem(part_found[0])
 
-        # # if an Asm4 Assembly is present, that's where we put the link
-        # if Asm4.getAssembly():
-        #     self.rootAssembly  = Asm4.getAssembly()
-        # # an App::Part at the root of the document is selected, we insert the link there
-        # elif Asm4.getSelectedRootPart():
-        #     self.rootAssembly = Asm4.getSelectedRootPart()
-        # # if a link is selected, we see if we can duplicate it
-        # if Asm4.getSelectedLink():
-        #     selObj = Asm4.getSelectedLink()
-        #     parent = selObj.getParentGeoFeatureGroup()
-        #     # if the selected link is in a root App::Part
-        #     if parent is not None and parent.TypeId == 'App::Part' and parent.getParentGeoFeatureGroup() is None:
-        #         self.rootAssembly = parent
-        #         self.origLink = selObj
-        # # if a broken link is selected
-        # elif len(Gui.Selection.getSelection())==1 :
-        #     selObj = Gui.Selection.getSelection()[0]
-        #     if selObj.isDerivedFrom('App::Link') and selObj.LinkedObject is None:
-        #         parent = selObj.getParentGeoFeatureGroup()
-        #         # if the selected (broken) link is in a root App::Part
-        #         if parent.TypeId == 'App::Part' and parent.getParentGeoFeatureGroup() is None:
-        #             self.brokenLink = True
-        #             self.rootAssembly = parent
-        #             self.origLink = selObj
-        #             self.UI.setWindowTitle('Re-link broken link')
-        #             self.insertButton.setText('Replace')
-        #             self.linkNameInput.setText(Asm4.labelName(selObj))
-        #             self.linkNameInput.setEnabled(False)
 
-        # if self.rootAssembly is None:
-        #     Asm4.warningBox("Create the Assembly object first.")
-        #     return
+    def _valid_link_mode(self):
+        self.setWindowTitle("Insert Part to an Assembly")
+        self.insert_button.setText("Insert")
+        self.instance_name_label.setText("New Instance Name")
+        self._preselect_part()
 
-        self.rootAssembly = Asm4.getTargetAssembly()
 
-        # build the list of available parts
-        self.create_list_of_parts()
+    def _broken_link_mode(self):
+        self.setWindowTitle("Fix Broken Instance")
+        self.insert_button.setText("Update")
+        self.instance_name_label.setText("Update Instance Name")
+        self.instance_name_field.setText(self.selected_instance.Label)
 
-        # if an existing valid App::Link was selected
-        if self.origLink and not self.brokenLink:
-            origPart = self.origLink.LinkedObject
-            # try to find the original part of the selected link
-            origPartText = origPart.Document.Name +"#"+ Asm4.labelName(origPart)
-            # MatchExactly, MatchContains, MatchEndsWith, MatchStartsWith ...
-            partFound = self.partList.findItems( origPartText, QtCore.Qt.MatchExactly )
-            if partFound:
-                self.partList.setCurrentItem(partFound[0])
-                # self.onItemClicked(partFound[0])
-                # if the last character is a number, we increment this number
-                origName = self.origLink.Label
-                lastChar = origName[-1]
-                if lastChar.isnumeric():
-                    (rootName,sep,num) = origName.rpartition('_')
-                    if rootName=="":
-                        rootName = origName[:-3]
-                    proposedLinkName = Asm4.nextInstance(rootName,startAtOne=True)
-                # else we take the next instance
-                else:
-                    proposedLinkName = Asm4.nextInstance(origName,startAtOne=False)
-                # set the proposed name in the entry field
-                self.linkNameInput.setText( proposedLinkName )
 
-        if self.partList.count() > 0:
-            self.partList.setCurrentRow(0)
-            item = self.partList.item(0)
-            self.onItemClicked(item)
+    def _update_instance_name(self):
+        
+        selected_item = self.parts_list.currentItem()
+        if selected_item:
+            selected_part = selected_item.data(QtCore.Qt.UserRole)
 
-        # show the UI
-        self.UI.show()
+            orig_name = selected_part.Label
+            last_char = orig_name[-1]
+            if last_char.isnumeric():
+                base_name, sep, num = orig_name.rpartition("_")
+                if base_name:
+                    base_name = re.sub(r"\d+$", "", orig_name)
+                instance_name = Asm4.next_instance_name(base_name, start_at_one=True)
+            else:
+                instance_name = Asm4.next_instance_name(orig_name, start_at_one=False)
 
-    # Search for all App::Parts and PartDesign::Body in all open documents, expect by the current selected Assembly
-    # Also store the document of the part
-    def create_list_of_parts(self, doc=None):
+            self.instance_name_field.setText(instance_name)
 
-        self.allParts = []
-        self.partsDoc = []
 
-        if doc is None:
-            docs = App.listDocuments().values()
-        else:
-            docs = [doc]
+    def _update_docs_and_parts(self):
 
+        self.target_asm = self.assemblies_combo.currentData()
+
+        self.docs = []
+        self.parts = []
+
+        docs = App.listDocuments().values()
+
+        # Ignore temporary documents.
         for doc in docs:
 
-            # don't consider temporary documents. Guard against older versions of FreeCad
-            # which don't have the Temporary attribute
             try:
-                temp_doc = doc.Temporary 
+                tmp_doc = doc.Temporary
             except AttributeError:
-                temp_doc = False
-                
-            if not temp_doc:
+                tmp_doc = False
+
+
+            if not tmp_doc:
+
+                print("doc", doc, type(doc))
+
                 for obj in doc.findObjects("App::Part"):
-                    # we don't want to link to itself to the 'Model' object
-                    # other App::Part in the same document are OK 
-                    # but only those at top level (not nested inside other containers)
-                    if obj != self.rootAssembly and obj.getParentGeoFeatureGroup() is None:
-                        self.allParts.append(obj)
-                        self.partsDoc.append(doc)
+                    if obj != self.target_asm and obj.getParentGeoFeatureGroup() is None:
+                        self.parts.append(obj)
+                        self.docs.append(doc)
 
                 for obj in doc.findObjects("PartDesign::Body"):
-                    # but only those at top level (not nested inside other containers)
                     if obj.getParentGeoFeatureGroup() is None:
-                        self.allParts.append(obj)
-                        self.partsDoc.append(doc)
+                        self.parts.append(obj)
+                        self.docs.append(doc)
 
-        # build the list
-        self.partList.clear()
-        for idx, part in enumerate(self.allParts):
-            item = QtGui.QListWidgetItem()
-            item.setText(f"{part.Document.Name}#{Asm4.labelName(part)}")
-            item.setIcon(part.ViewObject.Icon)
-            self.partList.addItem(item)
-            if Asm4.hasCyclicDependency(self.rootAssembly, part):
+
+        self._update_parts_list()
+
+
+    def _update_parts_list(self):
+        self.target_asm = self.assemblies_combo.currentData()
+        self.parts_list.clear()
+
+        if self.target_asm:
+            print("self.target_asm:", self.target_asm.Label, type(self.target_asm))
+        else:
+            print("self.target_asm:", self.target_asm, type(self.target_asm))
+
+
+        for part in self.parts:
+            icon = part.ViewObject.Icon
+            label = f"{part.Document.Name}#{Asm4.formated_label_name(part)}"
+            item = QtGui.QListWidgetItem(icon, label)
+            item.setData(QtCore.Qt.UserRole, part)
+            self.parts_list.addItem(item)
+            if Asm4.has_cyclic_dependency(self.target_asm, part):
                 item.setFlags(item.flags() & ~QtCore.Qt.ItemIsEnabled)
                 item.setToolTip("Disabled to prevent cyclic dependency.")
 
+        if self.parts_list.count() >= 0:
+            self.parts_list.setCurrentRow(0)
+            self._on_item_changed()
 
-    def onFilterChange(self):
-        filterStr = self.filterPartList.text().strip()
 
-        first_visible_idx = None
+    def _on_filter_change(self):
 
-        for x in range(self.partList.count()):
-            item = self.partList.item(x)
+        filter_str = self.parts_filter_field.text().strip()
+        selected_index = None
 
-            # check the items's text match the filter ignoring the case
-            matchStr =  re.search(filterStr, item.text(), flags=re.IGNORECASE)
-            if filterStr and not matchStr:
+        for i in range(self.parts_list.count()):
+            item = self.parts_list.item(i)
+            match_str = re.search(filter_str, item.text(), flags=re.IGNORECASE)
+
+            if filter_str and not match_str:
                 item.setHidden(True)
             else:
                 item.setHidden(False)
 
-            if item.isHidden() == False and first_visible_idx == None:
-                first_visible_idx = x
+            if item.isHidden() == False and selected_index == None:
+                selected_index = i
 
-        if self.partList.count() > 0:
-            if first_visible_idx == None:
-                first_visible_idx = 0
-            self.partList.setCurrentRow(first_visible_idx)
-            item = self.partList.item(first_visible_idx)
-            self.onItemClicked(item)
+        if self.parts_list.count() >= 0:
+            if not selected_index:
+                selected_index = 0
+            self.parts_list.setCurrentRow(selected_index)
+            self._on_item_changed()
 
-    # from A2+
-    def openFile(self):
-        filename = None
-        importDoc = None
-        importDocIsOpen = False
-        dialog = QtGui.QFileDialog( QtGui.QApplication.activeWindow(),
-                                    "Select FreeCAD document to import part from" )
-        # set option "DontUseNativeDialog"=True, as native Filedialog shows
-        # misbehavior on Unbuntu 18.04 LTS. It works case sensitively, what is not wanted...
-        '''
-        if a2plib.getNativeFileManagerUsage():
-            dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog, False)
-        else:
-            dialog.setOption(QtGui.QFileDialog.DontUseNativeDialog, True)
-        '''
-        dialog.setNameFilter("Supported Formats *.FCStd *.fcstd (*.FCStd *.fcstd);;All files (*.*)")
+
+    def _on_open_file_button(self):
+
+        file_name = None
+        import_doc = None
+        is_doc_already_open = False
+
+        dialog = QtGui.QFileDialog(
+            QtGui.QApplication.activeWindow(),
+            "Select FreeCAD document to import part from")
+
+        dialog.setNameFilter(
+            "FreeCAD Documents (*.FCStd);;All Files (*)"
+        )
+
         if dialog.exec_():
-            filename = str(dialog.selectedFiles()[0])
-            # look only for filenames, not paths, as there are problems on WIN10 (Address-translation??)
-            requestedFile = os.path.split(filename)[1]
+            file_name = str(dialog.selectedFiles()[0])
+
+            # look only for file_names, not paths, as there are problems on WIN10 (Address-translation??)
+            requested_file = os.path.split(file_name)[1]
+
             # see whether the file is already open
-            for d in App.listDocuments().values():
-                recentFile = os.path.split(d.FileName)[1]
-                if requestedFile == recentFile:
-                    importDoc = d # file is already open...
-                    importDocIsOpen = True
+            for doc in App.listDocuments().values():
+                recent_file = os.path.split(doc.FileName)[1]
+                if requested_file == recent_file:
+                    is_doc_already_open = True
                     break
-            # if not, open it
-            if not importDocIsOpen:
-                if filename.lower().endswith('.fcstd'):
-                    importDoc = App.openDocument(filename)
-                    App.setActiveDocument( self.activeDoc.Name )
-                    # update the part list
-                    self.create_list_of_parts(importDoc)
-        return
+
+            if not is_doc_already_open:
+                if file_name.lower().endswith(".fcstd"):
+                    doc = App.openDocument(file_name)
+                    App.setActiveDocument(self.active_doc.Name)
+                    self._update_docs_and_parts()
+                    self.raise_()
+                    self.activateWindow()
+                    self.parts_filter_field.setFocus()
 
 
-    """
-    +-----------------------------------------------+
-    |         the real stuff happens here           |
-    +-----------------------------------------------+
-    """
+    def _on_insert_button(self):
 
-    def get_item_name(self, text):
-        if "[" in text and "]" in text:
-            return text[text.rfind("[") + 1:text.rfind("]")]
-        return text.strip()
+        self.target_asm = self.assemblies_combo.currentData()
 
-    def format_combo_item(self, obj):
-        pass
+        selected_item = self.parts_list.currentItem()
+        selected_part = selected_item.data(QtCore.Qt.UserRole)
+        instance_name = self.instance_name_field.text()
 
-    def onCreateLink(self):
+        if selected_part:
 
-        Asm4.TARGET_ASM = self.assemblies_combo.currentData()
-        self.rootAssembly = Asm4.TARGET_ASM
+            if self.is_broken_link:
 
-        selected_part = []
-        for selected in self.partList.selectedIndexes():
-            selected_part = self.allParts[selected.row()]
+                self.selected_instance.Label = instance_name
+                self.selected_instance.LinkedObject = selected_part
+                self.selected_instance.recompute(True)
 
-        instance_name = self.linkNameInput.text()
-
-        # Repair broken link
-        if self.brokenLink and selected_part:
-            self.instance_link.LinkedObject = selected_part
-            self.instance_link.recompute()
-            self.UI.close()
-            Gui.Selection.clearSelection()
-            Gui.Selection.addSelection(self.activeDoc.Name, self.rootAssembly.Name, self.instance_link.Name + '.')
-            Gui.runCommand("Asm4_placeLink")
-
-        # only create link if there is a Part object and a name
-        elif self.rootAssembly and selected_part and instance_name:
-    
-            if App.ActiveDocument.FileName !='' or App.ActiveDocument == selected_part.Document:
-
-                instance_link = self.rootAssembly.newObject("App::Link", "Link")
-                instance_link.Label = instance_name
-
-                instance_link.LinkedObject = selected_part
-                Asm4.makeAsmProperties(instance_link)
-                instance_link.recompute()
-                self.UI.close()
+                self.close()
 
                 Gui.Selection.clearSelection()
-                Gui.Selection.addSelection(self.activeDoc.Name, self.rootAssembly.Name, instance_link.Name + '.')
+                Gui.Selection.addSelection(self.active_doc.Name, self.target_asm.Name, f"{self.selected_instance.Name}.")
 
-                Asm4.SELECTED_INSTANCE = instance_link
-                Asm4.PLACING_NEW_INSTANCE = True
+                # Save things it to the next command
+                Asm4.TARGET_ASM = self.target_asm
+                Asm4.SELECTED_INSTANCE = self.selected_instance
+                Asm4.PLACING_NEW_INSTANCE = False
 
                 Gui.runCommand("Asm4_placeLink")
 
-            else:
-                Asm4.warningBox("The document must be saved before inserting a part.")
-                return
+            elif self.target_asm and instance_name:
 
-        # if still open, close the dialog UI
-        self.UI.close()
+                if App.ActiveDocument.FileName or App.ActiveDocument == selected_part.Document:
+
+                    new_instance = self.target_asm.newObject("App::Link", "Link")
+                    new_instance.Label = instance_name
+                    new_instance.LinkedObject = selected_part
+                    Asm4.makeAsmProperties(new_instance)
+                    new_instance.recompute()
+
+                    self.close()
+
+                    Gui.Selection.clearSelection()
+                    Gui.Selection.addSelection(self.active_doc.Name, self.target_asm.Name, f"{new_instance.Name}.")
+
+                    # Save things it to the next command
+                    Asm4.TARGET_ASM = self.target_asm
+                    Asm4.SELECTED_INSTANCE = new_instance
+                    Asm4.PLACING_NEW_INSTANCE = True
+
+                    Gui.runCommand("Asm4_placeLink")
+
+                else:
+                    Asm4.warningBox("The document must be saved before inserting a part.")
+                    return
+
+        self.close()
 
 
-    def onItemClicked(self, item):
-        for selected in self.partList.selectedIndexes():
-            # get the selected part
-            part = self.allParts[selected.row()]
-            doc = self.partsDoc[selected.row()]
-            proposed_instance_name = part.Label
-            # set the proposed name into the text field, unless it's a broken link
-            if not self.brokenLink:
-                self.linkNameInput.setText(proposed_instance_name)
+    def _on_item_changed(self):
+        self.selected_part = self.parts_list.currentItem()
+        if not self.is_broken_link:
+            self._update_instance_name()
+
+        # row = self.parts_list.currentRow()
+        # if row:
+        #     doc = self.docs[row]
+        #     self.selected_part = self.parts[row]
 
 
-    def onItemDoubleClicked(self, item):
-        self.onItemClicked(item)
-        self.onCreateLink()
+    def _on_item_double_clicked(self, item):
+        self._on_item_changed()
+        self._on_insert_button()
 
 
-    def onCancel(self):
-        self.UI.close()
+    def _on_cancel_button(self):
+        self.close()
 
 
-    def _create_target_asm_combo(self):
-        
-        assembly_objs = Asm4.findAssemblies()
+    def _update_assemblies_combo(self):
 
-        self.assemblies_combo = QtGui.QComboBox()
-        for obj in assembly_objs:
-            self.assemblies_combo.addItem(
-                QtGui.QIcon(os.path.join(Asm4.iconPath, "Asm4_Model.svg")), 
-                Asm4.formated_label_name(obj),
-                obj
-            )
+        assemblies = Asm4.findAssemblies()
 
-        if len(assembly_objs) == 1:
+        self.assemblies_combo.clear()
+
+        for obj in assemblies:
+            icon = QtGui.QIcon(os.path.join(Asm4.iconPath, "Asm4_Model.svg"))
+            self.assemblies_combo.addItem(icon, Asm4.formated_label_name(obj), obj)
+
+        self.assemblies_combo.setEnabled(True)
+        if len(assemblies) <= 1:
             self.assemblies_combo.setEnabled(False)
 
-        if not self.rootAssembly:
-            self.rootAssembly = Asm4.getTargetAssembly()
+        self.target_asm = Asm4.getTargetAssembly()
 
-        self.assemblies_combo.setCurrentIndex(0)
-        if self.rootAssembly:
-            search_text = Asm4.formated_label_name(self.rootAssembly)
-            index = self.assemblies_combo.findText(search_text)
-            if index != -1:
+        if self.target_asm:
+            label = Asm4.formated_label_name(self.target_asm)
+            index = self.assemblies_combo.findText(label)
+            if index >= 0:
                 self.assemblies_combo.setCurrentIndex(index)
 
 
-    def updatePartsList(self):
-        self.rootAssembly = self.assemblies_combo.currentData()
-        self.create_list_of_parts()
+    def eventFilter(self, obj, event):
+
+        if obj is self.parts_filter_field and event.type() == QtCore.QEvent.KeyPress:
+
+            if event.key() == QtCore.Qt.Key_Down:
+                row = min(
+                    self.parts_list.count() - 1,
+                    self.parts_list.currentRow() + 1
+                )
+                self.parts_list.setCurrentRow(row)
+                return True
+
+            if event.key() == QtCore.Qt.Key_Up:
+                row = max(
+                    0,
+                    self.parts_list.currentRow() - 1
+                )
+                self.parts_list.setCurrentRow(row)
+                return True
+
+        return super().eventFilter(obj, event)
 
 
-    def drawUI(self):
+    def _init_UI(self):
+        self._update_assemblies_combo()
+        self.parts_filter_field.clear()
+        self.parts_filter_field.setFocus()
+        self.parts_list.clear()
+        self.instance_name_field.clear()
+        self._update_docs_and_parts()
 
-        self.UI.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        self.UI.setModal(False)
-        self.UI.setWindowTitle("Insert Part")
-        self.UI.setWindowIcon(QtGui.QIcon(os.path.join(Asm4.iconPath, "Asm4_Part.svg")))
-        self.UI.resize(500, 450)
 
-        self._create_target_asm_combo()
+    def _draw_UI(self):
 
-        self.filterPartList = QtGui.QLineEdit(self.UI)
-        self.partList = QtGui.QListWidget(self.UI)
-        self.linkNameInput = QtGui.QLineEdit(self.UI)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.setModal(False)
+        self.setWindowTitle("Insert Part to an Assembly")
+        self.resize(500, 450)
 
-        self.cancelButton = QtGui.QPushButton("Cancel", self.UI)
-        self.openFileButton = QtGui.QPushButton("Open File", self.UI)
-        self.insertButton = QtGui.QPushButton("Insert Part", self.UI)
-        self.insertButton.setDefault(True)
+        self.main_layout = QtGui.QVBoxLayout(self)
 
-        # Place the widgets with layouts
-        self.mainLayout = QtGui.QVBoxLayout(self.UI)
-        self.mainLayout.addSpacing(10)
-        self.mainLayout.addWidget(QtGui.QLabel("Target Assembly"))
-        self.mainLayout.addWidget(self.assemblies_combo)
-        self.mainLayout.addSpacing(10)
-        self.mainLayout.addWidget(QtGui.QLabel("Parts Filter"))
-        self.mainLayout.addWidget(self.filterPartList)
-        self.mainLayout.addSpacing(10)
-        self.mainLayout.addWidget(QtGui.QLabel("Select the Part"))
-        self.mainLayout.addWidget(self.partList)
-        self.mainLayout.addSpacing(10)
-        self.mainLayout.addWidget(QtGui.QLabel("New Instance Name"))
-        self.mainLayout.addWidget(self.linkNameInput)
-        self.mainLayout.addWidget(QtGui.QLabel(' '))
-        self.buttonsLayout = QtGui.QHBoxLayout()
-        self.buttonsLayout.addStretch()
-        self.buttonsLayout.addWidget(self.cancelButton)
-        self.buttonsLayout.addWidget(self.openFileButton)
-        self.buttonsLayout.addWidget(self.insertButton)
-        self.mainLayout.addLayout(self.buttonsLayout)
-        self.UI.setLayout(self.mainLayout)
+        self.assemblies_combo = QtGui.QComboBox()
+        self.main_layout.addWidget(QtGui.QLabel("Target Assembly"))
+        self.main_layout.addWidget(self.assemblies_combo)
+        self.main_layout.addSpacing(10)
 
-        self.assemblies_combo.currentIndexChanged.connect(self.updatePartsList)
-        self.assemblies_combo.activated.connect(self.updatePartsList)
+        self.parts_filter_field = QtGui.QLineEdit()
+        self.parts_filter_field.installEventFilter(self)
+        self.parts_filter_field.setFocus()
+        self.main_layout.addWidget(QtGui.QLabel("Parts Filter"))
+        self.main_layout.addWidget(self.parts_filter_field)
+        self.main_layout.addSpacing(10)
 
-        self.partList.itemClicked.connect(self.onItemClicked)
-        self.partList.itemActivated.connect(self.onItemClicked)
-        self.partList.itemDoubleClicked.connect(self.onItemDoubleClicked)
-        self.filterPartList.textChanged.connect(self.onFilterChange)
+        self.parts_list = QtGui.QListWidget()
+        self.main_layout.addWidget(QtGui.QLabel("Select Part"))
+        self.main_layout.addWidget(self.parts_list)
+        self.main_layout.addSpacing(10)
 
-        self.cancelButton.clicked.connect(self.onCancel)
-        self.openFileButton.clicked.connect(self.openFile)
-        self.insertButton.clicked.connect(self.onCreateLink)
+        self.instance_name_field = QtGui.QLineEdit()
+        self.instance_name_label = QtGui.QLabel("New Instance Name")
+        self.main_layout.addWidget(self.instance_name_label)
+        self.main_layout.addWidget(self.instance_name_field)
+        self.main_layout.addSpacing(10)
+
+        self.buttons_layout = QtGui.QHBoxLayout()
+
+        self.cancel_button = QtGui.QPushButton("&Cancel", self)
+        self.open_file = QtGui.QPushButton("&Open File", self)
+        self.insert_button = QtGui.QPushButton("&Insert", self)
+        self.insert_button.setDefault(True)
+
+        self.buttons_layout.addStretch()
+        self.buttons_layout.addWidget(self.cancel_button)
+        self.buttons_layout.addWidget(self.open_file)
+        self.buttons_layout.addWidget(self.insert_button)
+
+        self.main_layout.addLayout(self.buttons_layout)
+
+
+        # Actions
+
+        self.assemblies_combo.currentIndexChanged.connect(self._update_docs_and_parts) #_update_parts_list)
+        self.assemblies_combo.activated.connect(self._update_docs_and_parts) #_update_parts_list)
+
+        self.parts_list.itemClicked.connect(self._on_item_changed)
+        self.parts_list.itemActivated.connect(self._on_item_changed)
+        self.parts_list.currentItemChanged.connect(self._on_item_changed)
+        self.parts_list.itemDoubleClicked.connect(self._on_item_double_clicked)
+
+        self.parts_filter_field.textChanged.connect(self._on_filter_change)
+
+        self.cancel_button.clicked.connect(self._on_cancel_button)
+        self.open_file.clicked.connect(self._on_open_file_button)
+        self.insert_button.clicked.connect(self._on_insert_button)
 
 
 Gui.addCommand("Asm4_insertLink", InsertLink())

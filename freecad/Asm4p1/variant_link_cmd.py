@@ -148,10 +148,10 @@ class makeVariantLink():
                 lastChar = origName[-1]
                 if lastChar.isnumeric():
                     (rootName,sep,num) = origName.rpartition('_')
-                    proposedLinkName = Asm4.nextInstance(rootName,startAtOne=True)
+                    proposedLinkName = Asm4.next_instance_name(rootName,startAtOne=True)
                 # else we take the next instance
                 else:
-                    proposedLinkName = Asm4.nextInstance(origName)
+                    proposedLinkName = Asm4.next_instance_name(origName)
                 # set the proposed name in the entry field
                 if not self.brokenLink:
                     self.linkNameInput.setText( proposedLinkName )
@@ -256,10 +256,10 @@ class makeVariantLink():
                 lastChar = proposedLinkName[-1]
                 if lastChar.isnumeric():
                     (rootName,sep,num) = proposedLinkName.rpartition('_')
-                    proposedLinkName = Asm4.nextInstance(rootName)
+                    proposedLinkName = Asm4.next_instance_name(rootName)
                 # if that name is already taken
                 if self.activeDoc.getObject(proposedLinkName):
-                    proposedLinkName = Asm4.nextInstance(proposedLinkName)
+                    proposedLinkName = Asm4.next_instance_name(proposedLinkName)
                 self.linkNameInput.setText( proposedLinkName )
 
     # filter to display only parts that match this filter

@@ -18,6 +18,11 @@ iconPath = os.path.join(codePath, "../Resources/icons")
 
 allow_duplicate_labels = App.ParamGet("User parameter:BaseApp/Preferences/Document").GetBool("DuplicateLabels", False)
 
+
+LCS_XY_Plane_Color = (0.0, 0.0, 0.8)
+LCS_YZ_Plane_Color = (1.0, 0.0, 0.0)
+LCS_XZ_Plane_Color = (0.0, 0.6, 0.0)
+
 partInfo = [
     "PartID",
     "PartName",
@@ -157,27 +162,37 @@ def placeObjectToLCS( attObj, attLink, attDoc, attLCS ):
     |      Create default Assembly4 properties      |
     +-----------------------------------------------+
 """
-def makeAsmProperties( obj, reset=False ):
-    # property AttachedBy
-    if not hasattr(obj,'AttachedBy'):
-        obj.addProperty( 'App::PropertyString', 'AttachedBy', 'Assembly' )
-    obj.setPropertyStatus('AttachedBy'  ,'ReadOnly')
-    # property AttachedTo
-    if not hasattr(obj,'AttachedTo'):
-        obj.addProperty( 'App::PropertyString', 'AttachedTo', 'Assembly' )
-    obj.setPropertyStatus('AttachedTo'  ,'ReadOnly')
-    # property AttachmentOffset
-    if not hasattr(obj,'AttachmentOffset'):
-        obj.addProperty( 'App::PropertyPlacement', 'AttachmentOffset', 'Assembly' )
-    # property SolverId
-    if not hasattr(obj,'SolverId'):
-        obj.addProperty( 'App::PropertyString', 'SolverId', 'Assembly' )
+def makeAsmProperties(obj, reset=False):
+
+    if obj is None:
+        return
+
+    if not hasattr(obj,"AttachedBy"):
+        obj.addProperty("App::PropertyString", "AttachedBy", "Assembly")
+    obj.setPropertyStatus("AttachedBy", "ReadOnly")
+
+    if not hasattr(obj, "AttachedTo"):
+        obj.addProperty("App::PropertyString", "AttachedTo", "Assembly")
+    obj.setPropertyStatus("AttachedTo", "ReadOnly")
+
+    if not hasattr(obj, "AttachmentOffset"):
+        obj.addProperty("App::PropertyPlacement", "AttachmentOffset", "Assembly")
+
+    if not hasattr(obj, "SolverId"):
+        obj.addProperty("App::PropertyString", "SolverId", "Assembly")
+
     if reset:
         obj.AttachedBy = ''
         obj.AttachedTo = ''
         obj.AttachmentOffset = App.Placement()
         obj.SolverId = ''
-    return
+
+
+
+
+
+
+
 
 
 # checks whether there is a Variables container, and returns it
@@ -349,7 +364,7 @@ def getPartsGroup():
 # The Window that pops up and shows are affected Objects, calls it
 # The Dependencies
 # Objects within Compounds and Bodys and also Linked Objects are left out.
-# 
+#
 # NOTE: Theoretically we could use the App.ActiveDocument.DependencyGraph function,
 # to get really every Object behind a selection.
 def getDependenciesList( CompleteSelection ):
@@ -363,11 +378,11 @@ def getDependenciesList( CompleteSelection ):
             # Some Objects return None Objects,
             # even if it has the 'getSubObjects' attribute
             # 'getSubObjects' delivers unique Names with a trailing .
-            for SubObjName in SubObjNames:              
+            for SubObjName in SubObjNames:
                 SubObjects.append(App.ActiveDocument.getObject(SubObjName[0:-1]))
         # If they are more Sub-Objects within that particular selection,
         # go get them. It doesn't matter If it is a Group or Part or Link.
-        if SubObjects is not None:            
+        if SubObjects is not None:
             SubObjects = getDependenciesList(SubObjects)
             # Adding the Sub-Objects in that way, prevents nested Objects in Objects
             for SubObject in SubObjects:
@@ -383,19 +398,17 @@ def getDependenciesList( CompleteSelection ):
     |           get the next instance's name        |
     +-----------------------------------------------+
 """
-def nextInstance( name, startAtOne=False ):
-    # if there is no such name, return the original
-    if not App.ActiveDocument.getObject(name) and not startAtOne:
+def next_instance_name(name, start_at_one=False):
+    if not App.ActiveDocument.getObject(name) and not start_at_one:
         return name
-    # there is already one, we increment
     else:
-        if startAtOne:
-            instanceNum = 1
+        if start_at_one:
+            instance_num = 1
         else:
-            instanceNum = 2
-        while App.ActiveDocument.getObject( name+'_'+str(instanceNum) ):
-            instanceNum += 1
-        return name+'_'+str(instanceNum)
+            instance_num = 2
+        while App.ActiveDocument.getObject(f"{name}_{str(instance_num)}"):
+            instance_num += 1
+        return f"{name}_{str(instance_num)}"
 
 
 
@@ -518,16 +531,18 @@ def isAssembly(obj):
     if obj is None:
         return False
 
-    if obj.TypeId == "App::Part" and obj.Name.startswith("Assembly"): #<=== isso eh ruim pq enrigesse tdo, so a propriedade seria top.
+    if obj.TypeId == "App::Part" and (obj.Name.startswith("Assembly") or obj.Name.startswith("Model")):
         if hasattr(obj, "Type") and obj.Type == "Assembly":
             return True
 
     return False
 
 
-def findAssemblies():
-    if App.ActiveDocument:
-        objs = [obj for obj in App.ActiveDocument.Objects if isAssembly(obj)]
+def findAssemblies(doc=None):
+    if doc is None:
+        doc = App.ActiveDocument
+    if doc:
+        objs = [obj for obj in doc.Objects if isAssembly(obj)]
         return objs
     return None
 
@@ -569,7 +584,9 @@ def formated_label_name(obj):
     return label_name
 
 
-def hasCyclicDependency(parent_asm, obj_asm):
+def has_cyclic_dependency(parent_asm, obj_asm):
+
+    obj = None
 
     if not parent_asm or not obj_asm:
         return False
@@ -579,7 +596,7 @@ def hasCyclicDependency(parent_asm, obj_asm):
 
     for child in obj_asm.Group:
         if isLinkToPart(child):
-            if hasCyclicDependency(parent_asm, child.LinkedObject):
+            if has_cyclic_dependency(parent_asm, child.LinkedObject):
                 return True
 
     return False
@@ -625,23 +642,25 @@ def confirmBox(text, title="Info"):
     |        Drop-down menu to group buttons        |
     +-----------------------------------------------+
 """
-# from https://github.com/HakanSeven12/FreeCAD-Geomatics-Workbench/commit/d82d27b47fcf794bf6f9825405eacc284de18996
-class dropDownCmd:
-    def __init__(self, cmdlist, menu, tooltip = None, icon = None):
-        self.cmdlist = cmdlist
-        self.menu = menu
-        if tooltip is None:
-            self.tooltip = menu
-        else:
-            self.tooltip = tooltip
+class DropDownCmd():
+
+    def __init__(self, cmds, menu_text=str(), tooltip=str(), default_cmd_index=0):
+        self.cmds = cmds
+        self.menu_text = menu_text
+        self.tooltip = tooltip
+        self.default_cmd_index = default_cmd_index
 
     def GetCommands(self):
-        return tuple(self.cmdlist)
+        return tuple(self.cmds)
+
+    def GetDefaultCommand(self):
+        return self.default_cmd_index
 
     def GetResources(self):
-        return { 'MenuText': self.menu, 'ToolTip': self.tooltip }
-
-
+        return {
+            "MenuText": self.menu_text,
+            "ToolTip": self.tooltip
+        }
 
 
 """
@@ -737,16 +756,53 @@ def getSelectedContainer():
     return retval
 
 
-# returns the selected App::Link
-def getSelectedLink():
-    retval = None
+
+def getSelectedLink(): #old
+    obj = None
     selection = Gui.Selection.getSelection()
-    if len(selection)==1:
-        selObj = selection[0]
-        # it's an App::Link
-        if selObj.isDerivedFrom('App::Link') and selObj.LinkedObject is not None and selObj.LinkedObject.TypeId in containerTypes:
-            retval = selObj
-    return retval
+    if len(selection) >= 1:
+        for obj in selection: 
+            # return the first valid selected link
+            if obj.isDerivedFrom("App::Link") and obj.LinkedObject is not None and obj.LinkedObject.TypeId in containerTypes:
+                return obj
+
+
+def get_all_instances(assembly):
+    objs = []
+    if assembly is None:
+        return objs
+    for obj in assembly.Group: 
+        if obj.isDerivedFrom("App::Link") and obj.LinkedObject is not None and obj.LinkedObject.TypeId in containerTypes:
+            objs.append(obj)
+    return objs 
+
+
+# def get_parent_assembly(obj):
+#     if obj is None:
+#         return
+#     parent = obj.getParentGeoFeatureGroup()
+#     if parent is not None and parent.TypeId == "App::Part" and parent.getParentGeoFeatureGroup() is None:
+#         return obj
+#     return None
+
+
+
+def get_selected_link(allow_broken_link=False):
+    selection = Gui.Selection.getSelection()
+    if len(selection) >= 1:
+        for obj in selection: 
+            # return the first selected link
+            if obj.isDerivedFrom("App::Link"):
+                if obj.LinkedObject is not None:
+                    if obj.LinkedObject.TypeId in containerTypes:
+                        return obj, True
+                elif allow_broken_link:
+                    return obj, False
+    return None, None
+
+
+
+
 
 
 # returns the selected Asm4 variant link
@@ -785,7 +841,7 @@ self.YtranslSpinBox = QtGui.QDoubleSpinBox() → self.YtranslSpinBox = Asm4.QUni
 """
 class QUnitSpinBox(QtGui.QDoubleSpinBox):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)        
+        super().__init__(*args, **kwargs)
         _, self.length_divisor, self.default_unit = (
             App.Units.schemaTranslate(
                 App.Units.Quantity("1 mm"),
@@ -799,8 +855,8 @@ class QUnitSpinBox(QtGui.QDoubleSpinBox):
         return super().value() * self.length_divisor
 
     def setValue(self, distance: float):
-        """sets the value in mm"""        
+        """sets the value in mm"""
         return super().setValue(
             distance / self.length_divisor,
-        ) 
-        
+        )
+

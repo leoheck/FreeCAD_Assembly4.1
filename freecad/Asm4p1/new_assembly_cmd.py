@@ -16,10 +16,6 @@ import FreeCAD as App
 from . import asm4_libs as Asm4
 from .asm4_translate import translate
 
-LCS_XY_Plane_Color = (0.0, 0.0, 0.8)
-LCS_YZ_Plane_Color = (1.0, 0.0, 0.0)
-LCS_XZ_Plane_Color = (0.0, 0.6, 0.0)
-
 
 class NewAssemblyCmd:
 
@@ -72,11 +68,11 @@ class NewAssemblyCmd:
             if feature.Name[1:6] == "_Axis":
                 feature.Visibility = False
             if feature.Name[0:8] == "XY_Plane":
-                feature.ViewObject.ShapeColor = LCS_XY_Plane_Color
+                feature.ViewObject.ShapeColor = Asm4.LCS_XY_Plane_Color
             if feature.Name[0:8] == "YZ_Plane":
-                feature.ViewObject.ShapeColor = LCS_YZ_Plane_Color
+                feature.ViewObject.ShapeColor = Asm4.LCS_YZ_Plane_Color
             if feature.Name[0:8] == "XZ_Plane":
-                feature.ViewObject.ShapeColor = LCS_XZ_Plane_Color
+                feature.ViewObject.ShapeColor = Asm4.LCS_XZ_Plane_Color
 
 
     def _create_origin_lcs(self):

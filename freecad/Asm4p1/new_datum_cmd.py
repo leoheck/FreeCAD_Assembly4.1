@@ -258,4 +258,4 @@ createDatumList = [
     "Asm4_newHole"
 ]
 
-Gui.addCommand("Asm4_createDatum", Asm4.dropDownCmd(createDatumList, "Create Datum Object"))
+Gui.addCommand("Asm4_createDatum", Asm4.DropDownCmd(createDatumList, "Create Datum Object"))

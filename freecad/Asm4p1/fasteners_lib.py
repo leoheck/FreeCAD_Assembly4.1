@@ -394,4 +394,5 @@ FastenersCmdList = [    'Asm4_insertScrew',
                         'Asm4_insertWasher', 
                         'Asm4_cloneFastenersToAxes',
                         'Asm4_FSparameters'] 
-Gui.addCommand( 'Asm4_Fasteners', Asm4.dropDownCmd( FastenersCmdList, 'Fasteners'))
+
+Gui.addCommand( 'Asm4_Fasteners', Asm4.DropDownCmd( FastenersCmdList, 'Fasteners'))
